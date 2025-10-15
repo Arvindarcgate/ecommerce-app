@@ -1,0 +1,456 @@
+/* ===== Home Page General ===== */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+.home-container {
+  font-family: Arial, sans-serif;
+  padding: 10px 60px;
+  background-color: #f0eff7;
+  color: #333;
+  margin-bottom: 300px;
+  margin-top: 0px;
+}
+
+.home-container h1 {
+  font-size: 32px;
+  margin-bottom: 0px;
+  color: #222;
+}
+
+.home-container p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #2946ec;
+}
+
+/* ===== Buttons ===== */
+.home-container button {
+  background-color: #0a0a0a;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  margin: 0px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.home-container button:hover {
+  background-color: #444;
+}
+
+.hero {
+  text-align: left;
+  margin: 0;
+  height: 500px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  /* Gradient layer */
+  background: linear-gradient(to bottom right, #0044d8, #002fb1, #6d28d9);
+
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  background-image: url("data:image/svg+xml,%3Csvg%20width='20'%20height='20'%20xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern%20id='a'%20width='20'%20height='20'%20patternUnits='userSpaceOnUse'%3E%3Ccircle%20cx='10'%20cy='10'%20r='1'%20fill='white'%20opacity='0.1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect%20width='100%25'%20height='100%25'%20fill='url(%23a)'/%3E%3C/svg%3E");
+
+  background-repeat: repeat;
+  pointer-events: none; /* lets clicks go through */
+  z-index: 1;
+}
+
+/* Make the content above the pattern */
+.hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  margin: 0 0 10px 0; /* small gap below */
+  color: #fff8f8;
+  display: inline-block;
+  font-size: 60px;
+}
+
+.hero p {
+  margin: 0 0 20px 0;
+  font-weight: 300;
+  font-size: 22px;
+  color: #fff;
+  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#herocontent {
+  margin-left: 120px;
+}
+
+.heroButtons {
+  margin-top: 20px; /* smaller gap below p */
+  display: flex;
+  justify-content: flex-start; /* align to left */
+  gap: 20px;
+}
+
+.heroSecondary {
+  color: #fffdfd;
+  max-width: 180px;
+  height: 40px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+  word-wrap: wrap;
+  margin-top: 10px;
+}
+
+.heroSecondary:hover {
+  background-color: #fafafa;
+  color: #0018f5;
+}
+/* Part one End 
+     part two start
+ */
+.why {
+  background-color: #ffff;
+  height: 530px;
+  margin-top: 0px;
+  padding-top: 80px;
+  box-sizing: border-box;
+}
+
+.whyFeatures {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 0px;
+  flex-wrap: wrap;
+
+  height: 170px;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  color: #000000f3;
+  text-align: center;
+  margin-top: 0px;
+}
+
+.sectionTitle h3 {
+  margin: 128px;
+}
+
+.sectionSubtitle {
+  font-size: 1.2rem;
+  color: #555;
+  text-align: center;
+}
+
+.feature {
+  flex: 1;
+  min-width: 150px;
+  max-width: 400px;
+  padding: 20px;
+  margin-left: 120px;
+  margin-right: 80px;
+  transition: all 0.3s ease; /* smooth animation */
+  border: 1px solid transparent; /* default: no visible border */
+  border-radius: 10px;
+  box-shadow: none; /* default: no shadow */
+  background-color: #fff; /* clean card look */
+  cursor: pointer;
+  gap: 5px;
+}
+
+.feature:hover {
+  border: 1px solid #ffffff; /* white border */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* elevated shadow */
+  transform: translateY(-5px); /* slight lift */
+}
+
+.feature h4 {
+  margin-bottom: 10px;
+  color: #000;
+  font-weight: 600;
+  font-size: 30px;
+  margin-left: 75px;
+}
+
+.feature p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Part two why end 
+      Part three feature start */
+.featured-products {
+  margin-top: 40px;
+  text-align: center;
+  gap: 20px;
+  background-color: rgb(231, 212, 212);
+}
+
+.featured-products h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.featured-products p {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: #050505;
+}
+
+.icon {
+  width: 40px; /* adjust size */
+  height: 40px;
+  color: #f1f0f5; /* make it red, or any brand color */
+  margin-bottom: 10px;
+  background-color: #276ff5;
+  margin-left: 150px;
+}
+
+/* Common styling for all icons */
+.feature svg {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 20%; /* makes it circular */
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+/* Icon with green background */
+.icon2 {
+  background-color: #4caf50; /* green */
+  stroke: #fff;
+  margin-left: 150px;
+}
+.feature:hover .icon2 {
+  background-color: #388e3c; /* darker green on hover */
+  cursor: pointer; /* show hand cursor */
+}
+
+/* Icon with pink background */
+.icon3 {
+  background-color: #ff4081; /* pink */
+  stroke: #fff;
+  margin-left: 150px;
+}
+
+.feature:hover .icon3 {
+  background-color: #790028;
+}
+
+.products {
+  background-color: #dadada;
+  height: 750px;
+}
+.products h1 {
+  text-align: center;
+  padding-top: 80px;
+  box-sizing: border-box;
+}
+
+.products p {
+  text-align: center;
+  font-size: 25px;
+}
+
+.productCards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.card {
+  background: #f8f5f5;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 290px;
+  height: 350px;
+}
+
+/* Image wrapper for badge overlay */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .imageWrapper img {
+  transform: scale(1.1);
+}
+
+/* Badge on top of image */
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4757;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card h4 {
+  margin: 12px 0 8px;
+  font-size: 16px;
+}
+
+/* Price Section */
+.price {
+  margin: 6px 0;
+}
+
+.currentPrice {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 8px;
+  color: #222;
+}
+
+.originalPrice {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Rating */
+.rating {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* Button with icon */
+.heroPrimary {
+  margin-top: 10px;
+  padding: 8px 14px;
+  margin-left: 6px;
+  background: #063beb;
+  color: #fff;
+  border: none;
+  width: 100%; /* matches card width */
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* space between icon and text */
+}
+
+.heroPrimary:hover {
+  background: #284df0;
+}
+
+.bottomproduct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  width: 200px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.bottomproduct:hover {
+  background-color: #f6f6f8;
+  transform: translateX(2px);
+}
+
+/* Part 3 Product end 
+   Part 4  Newsletter start
+  */
+
+/* ===== Newsletter Section ===== */
+.newsletter {
+  margin-top: 0;
+  height: 350px;
+  text-align: center;
+
+  /* Gradient + SVG grid together */
+  background: linear-gradient(to right, #2563eb, #1d4ed8, #6d28d9),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='grid' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Cpath d='m60 0h-60v60' fill='none' stroke='white' stroke-width='1' opacity='0.1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)'/%3E%3C/svg%3E");
+
+  background-size: cover, auto; /* gradient covers, grid repeats */
+  background-blend-mode: overlay; /* mix them so both are visible */
+
+  color: #fff;
+  padding: 40px 20px;
+  border-radius: 1px;
+}
+
+.newsletter h3 {
+  font-size: 34px;
+  margin-bottom: 12px;
+  font-weight: 300;
+}
+
+.newsletter p {
+  font-size: 19px;
+  color: #ddd;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 100;
+}
+
+.newsbutton {
+  width: 200px;
+  margin-top: 30px;
+}
+
+.newsmail {
+  width: 200px;
+  gap: 10px;
+  margin-right: 10px;
+  height: 30px;
+  border-radius: 10px;
+  border-style: 12px thick rgb(4, 4, 7);
+  box-shadow: whitesmoke;
+  border-style: double;
+}

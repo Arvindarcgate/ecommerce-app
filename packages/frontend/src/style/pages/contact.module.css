@@ -1,0 +1,148 @@
+
+/* Contact.module.css */
+
+.contactPage {
+  font-family: Arial, sans-serif;
+  background-color: #f9fafb;
+  padding: 20px;
+}
+
+.heading {
+  text-align: center;
+  margin-top: 20px;
+  color: #333;
+}
+
+.mainHeading {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.mainHeading h3 {
+  font-size: 1.8rem;
+  color: #444;
+}
+
+.mainHeading p {
+  font-size: 1rem;
+  color: #666;
+}
+
+.contactContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin: 30px auto;
+  max-width: 1200px;
+}
+
+.formContainer {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.formContainer h4 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.formContainer p {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+form div {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #444;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-size: 1rem;
+  transition: border 0.2s ease-in-out;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #4a90e2;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #357abd;
+}
+
+/* Contact Information Section */
+.contactInfo {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.contactInfo h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.infoItem {
+  margin-bottom: 20px;
+}
+
+.contactInfo h4 {
+  color: #4a90e2;
+  margin-bottom: 5px;
+}
+
+/* FAQ Section */
+.faq {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fdfdfd;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.faq h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.faqItem {
+  margin-bottom: 20px;
+}
+
+.faqItem h4 {
+  color: #444;
+  margin-bottom: 5px;
+}

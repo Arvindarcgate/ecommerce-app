@@ -1,0 +1,47 @@
+{
+  "name": "@e-commerce/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nx run-many --target=dev -p @ecommerce/frontend @ecommerce/backend",
+    "build": " nx build frontend",
+    "lint": " nx lint frontend",
+    "test": " nx test frontend"
+  },
+  "private": true,
+  "devDependencies": {
+    "@nx/js": "21.6.3",
+    "@swc-node/register": "~1.9.1",
+    "@swc/core": "~1.5.7",
+    "@swc/helpers": "~0.5.11",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/knex": "^0.15.2",
+    "@types/node": "^20.19.19",
+    "@types/nodemailer": "^7.0.2",
+    "@types/testing-library__react": "^10.0.1",
+    "nx": "21.6.3",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.3.0",
+    "typescript": "~5.9.2"
+  },
+  "workspaces": [
+    "packages/*",
+    "shared"
+  ],
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.90.2",
+    "express": "^5.1.0",
+    "knex": "^3.1.0",
+    "lucide-react": "^0.545.0",
+    "mysql2": "^3.15.1",
+    "objection": "^3.1.5",
+    "react-hook-form": "^7.64.0",
+    "react-hot-toast": "^2.6.0",
+    "zod": "^4.1.12"
+  }
+}

@@ -1,0 +1,128 @@
+.why {
+  width: 100%;
+  display: block;
+  margin-bottom: 60px;
+  height: auto;
+}
+
+.whyFeatures {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  color: #000000f3;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.sectionTitle h3 {
+  margin: 128px;
+}
+
+.sectionSubtitle {
+  font-size: 1.2rem;
+  color: #555;
+  text-align: center;
+}
+
+.feature {
+  flex: 1;
+  min-width: 150px;
+  max-width: 400px;
+  padding: 20px;
+
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  box-shadow: none;
+  background-color: #fff;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.feature:hover {
+  border: 1px solid #ffffff; /* white border */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* elevated shadow */
+  transform: translateY(-5px); /* slight lift */
+}
+
+.feature h4 {
+  margin-bottom: 10px;
+  color: #000;
+  font-weight: 600;
+  font-size: 30px;
+}
+
+.feature p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Part two why end 
+      Part three feature start */
+.featured-products {
+  margin-top: 40px;
+  text-align: center;
+  gap: 20px;
+  background-color: rgb(231, 212, 212);
+}
+
+.featured-products h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.featured-products p {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: #050505;
+}
+
+.icon {
+  width: 40px; /* adjust size */
+  height: 40px;
+  color: #f1f0f5; /* make it red, or any brand color */
+  margin-bottom: 10px;
+  background-color: #276ff5;
+  margin-left: 150px;
+}
+
+/* Common styling for all icons */
+.feature svg {
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 20%; /* makes it circular */
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+/* Icon with green background */
+.icon2 {
+  background-color: #4caf50; /* green */
+  stroke: #fff;
+  margin-left: 150px;
+}
+.feature:hover .icon2 {
+  background-color: #388e3c; /* darker green on hover */
+  cursor: pointer; /* show hand cursor */
+}
+
+/* Icon with pink background */
+.icon3 {
+  background-color: #ff4081; /* pink */
+  stroke: #fff;
+  margin-left: 150px;
+}
+
+.feature:hover .icon3 {
+  background-color: #790028;
+}

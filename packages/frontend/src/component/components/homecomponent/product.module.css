@@ -1,0 +1,165 @@
+.products {
+  background-color: #dadada;
+  padding: 80px 0;
+  min-height: 750px;
+  clear: both;
+  width: 100%;
+  display: block;
+}
+
+.products h1 {
+  text-align: center;
+
+  box-sizing: border-box;
+}
+
+.products p {
+  text-align: center;
+  font-size: 25px;
+}
+
+.productCards {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+/* 
+.card {
+  background: #f8f5f5;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  width: 290px;
+  height: 350px;
+} */
+
+.card {
+  background: #f8f5f5;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 0px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  flex: 1 1 250px;
+  max-width: 100%;
+  height: 350px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .imageWrapper img {
+  transform: scale(1.1);
+}
+
+/* Badge on top of image */
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ff4757;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.card h4 {
+  margin: 12px 0 8px;
+  font-size: 16px;
+}
+
+/* Price Section */
+.price {
+  margin: 6px 0;
+}
+
+.currentPrice {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 8px;
+  color: #222;
+}
+
+.originalPrice {
+  text-decoration: line-through;
+  color: #888;
+}
+
+/* Rating */
+.rating {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+/* Button with icon */
+.heroPrimary {
+  margin-top: 25px;
+  padding: 8px 14px;
+  margin-left: 25px;
+  background: #063beb;
+  color: #fff;
+  border: none;
+  width: 80%;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.heroPrimary:hover {
+  background: #284df0;
+}
+
+.bottomproduct {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  width: 220px;
+  text-align: center;
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+.bottomproduct:hover {
+  background-color: #f6f6f8;
+  transform: translateX(2px);
+}

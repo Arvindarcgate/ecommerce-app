@@ -1,0 +1,49 @@
+/* Reset default button styles */
+.btn {
+  display: inline-block;   /* prevent full width */
+  width: auto;             /* button only as wide as content */
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Variants */
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+ 
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #545b62;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #a71d2a;
+}
+
+/* Optional full-width utility (only if needed) */
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+

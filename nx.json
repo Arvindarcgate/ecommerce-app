@@ -1,0 +1,20 @@
+{
+  "npmScope": "ecommerce",
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "packages"
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "dev"
+        ]
+      }
+    }
+  }
+}
