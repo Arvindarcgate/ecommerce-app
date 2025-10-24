@@ -1,55 +1,11 @@
-/// <reference types='vitest' />
-import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts';
-import * as path from 'path';
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-export default defineConfig(() => ({
-  root: __dirname,
-  cacheDir: '../../node_modules/.vite/packages/admin',
-  plugins: [
-
-
-    nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md']),
-    dts({
-      entryRoot: 'src',
-      tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
-      pathsToAliases: false,
-    }),
-
-
-  ],
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
   server: {
-    port: 3001, // <-- change this to whatever port you want
-    strictPort: true // optional: fail if port is already in use
-  },
-  // Uncomment this if you are using workers.
-  // worker: {
-  //  plugins: [ nxViteTsPaths() ],
-  // },
-  // Configuration for building your library.
-  // See: https://vitejs.dev/guide/build.html#library-mode
-  build: {
-    outDir: '../../dist/packages/admin',
-    emptyOutDir: true,
-    reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
-    lib: {
-      // Could also be a dictionary or array of multiple entry points.
-      entry: 'src/index.ts',
-      name: 'admin',
-      fileName: 'index',
-      // Change this to the formats you want to support.
-      // Don't forget to update your package.json as well.
-      formats: ['es' as const],
-    },
-    rollupOptions: {
-      // External packages that should not be bundled into your library.
-      external: [],
-    },
-  },
-}));
+    port: 3001, // 👈 change this to any port you want
+    open: true  // optional: automatically open browser
+  }
+})

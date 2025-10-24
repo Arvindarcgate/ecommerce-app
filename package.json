@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nx run-many --target=dev -p @ecommerce/frontend @ecommerce/backend",
+    "dev:admin": "nx dev @ecommerce/admin",
     "build": " nx build frontend",
     "lint": " nx lint frontend",
     "test": " nx test frontend"
