@@ -1,27 +1,28 @@
 {
-  "name": "admin",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "@ecommerce/admin",
+  "root": "packages/admin",
   "sourceRoot": "packages/admin/src",
-  "projectType": "library",
-  "release": {
-    "version": {
-      "manifestRootsToUpdate": ["dist/{projectRoot}"],
-      "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
-    }
-  },
-  "tags": [],
+  "projectType": "application",
   "targets": {
-    "nx-release-publish": {
+    "dev": {
+      "executor": "nx:run-commands",
       "options": {
-        "packageRoot": "dist/{projectRoot}"
+        "command": "npm run dev",
+        "cwd": "packages/admin"
       }
     },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+    "build": {
+      "executor": "nx:run-commands",
       "options": {
-        "jestConfig": "packages/admin/jest.config.ts"
+        "command": "npm run build",
+        "cwd": "packages/admin"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run lint",
+        "cwd": "packages/admin"
       }
     }
   }

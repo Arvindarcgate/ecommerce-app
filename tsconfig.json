@@ -9,6 +9,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "packages/admin/src/lib/admin.tsx"
   ]
 }
