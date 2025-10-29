@@ -1,0 +1,31 @@
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #2563eb;
+
+    color: white;
+}
+
+.title {
+    font-size: 1.25rem;
+
+    font-weight: bold;
+}
+
+.links {
+    display: flex;
+    gap: 16px;
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+    transition: text-decoration 0.3s;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
