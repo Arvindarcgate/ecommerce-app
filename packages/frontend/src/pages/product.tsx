@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../style/pages/product.module.css";
 
 interface Product {
@@ -12,6 +13,7 @@ interface Product {
 const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:8000/api/products/all")
@@ -28,15 +30,19 @@ const ProductPage: React.FC = () => {
   }, []);
 
   const handleQuantityChange = (id: number, value: number) => {
-    if (value < 1) return; // Prevent 0 or negative quantity
+    if (value < 1) return;
     setQuantities((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleBuyNow = (product: Product) => {
+    // const quantity = quantities[product.id];
     const quantity = quantities[product.id];
     const totalPrice = product.price * quantity;
-    console.log("🛒 Added to cart:", { ...product, quantity, totalPrice });
-    alert(`✅ ${product.name} (x${quantity}) added to cart — Total: $${totalPrice}`);
+
+
+    navigate("/cart", {
+      state: { product: { ...product, quantity, totalPrice } },
+    });
   };
 
   return (
@@ -61,7 +67,7 @@ const ProductPage: React.FC = () => {
               <div className={styles.productDetails}>
                 <h3 className={styles.productName}>{product.name}</h3>
                 <p className={styles.productSize}>Size: {product.size}</p>
-                <p className={styles.productPrice}>💰 Price: ${product.price}</p>
+                <p className={styles.productPrice}>💰 Price: ₹{product.price}</p>
 
                 <div className={styles.quantityContainer}>
                   <label htmlFor={`qty-${product.id}`}>Qty:</label>
@@ -80,7 +86,7 @@ const ProductPage: React.FC = () => {
 
                 {/* ✅ Dynamic total price */}
                 <p className={styles.updatedPrice}>
-                  Total: <strong>${totalPrice.toFixed(2)}</strong>
+                  Total: <strong>₹{totalPrice.toFixed(2)}</strong>
                 </p>
 
                 <button

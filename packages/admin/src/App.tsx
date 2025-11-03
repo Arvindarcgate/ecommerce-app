@@ -5,6 +5,11 @@ import AdminLogin from './frontend/pages/Authetication/AdminLogin';
 import AdminSignup from './frontend/pages/Authetication/adminsignup';
 import ProductPage from './frontend/pages/productpages'; // ✅ import your product page
 
+import AdminProductedit from './frontend/pages/adminProductedit';
+import OrderHistory from './frontend/pages/orderhistory';
+import GetReady from './frontend/pages/getReady'
+
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -17,7 +22,10 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin-signup" element={<AdminSignup />} />
-            <Route path="/add-product" element={<ProductPage />} /> {/* ✅ new route */}
+            <Route path="/add-product" element={<ProductPage />} />
+            <Route path="/product-edit" element={<AdminProductedit />} />
+            <Route path="/admin/orders" element={<OrderHistory />} />
+            <Route path="/getready" element={< GetReady />} />
           </Routes>
         </div>
       </div>

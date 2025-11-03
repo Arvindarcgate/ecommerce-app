@@ -11,6 +11,7 @@ import Signup from "./component/components/Authetication/singup";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import VerifyEmailPage from "./component/components/Authetication/VerifyMailPage";
 import ProductPage from "./pages/product";
+import CartPage from "./pages/cartpage";
 
 const queryClient = new QueryClient();
 const App: React.FC = () => {
@@ -28,6 +29,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/verify-email" element={< VerifyEmailPage />} />
+        <Route path="/cart" element={< CartPage />} />
       </Routes>
       {!shouldHideFooter && <Footer />}
     </QueryClientProvider>

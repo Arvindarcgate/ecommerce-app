@@ -16,6 +16,16 @@ const Navbar: React.FC = () => {
                 <Link to="/add-product" className={styles.link}>
                     Add Product
                 </Link>
+                <Link to="/getready" className={styles.link}>
+                    Get Ready
+                </Link>
+                <Link to="/product-edit" className={styles.link}>
+                    Product edit
+                </Link>
+                <Link to="/admin/orders" className={styles.link}>
+
+                    Order History
+                </Link>
             </div>
         </nav>
     );

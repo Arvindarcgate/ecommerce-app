@@ -6,7 +6,8 @@ import authRoute from "./routes/auth";
 import { db } from "./db/db"; // ✅ Import Knex instance
 import productRoutes from './routes/productroutes';
 import path from "path";
-
+import adminEditRoutes from "./routes/admineditroutes"
+import orderRoutes from "./routes/orderroutes";
 
 const app = express();
 const PORT: number = 8000;
@@ -26,7 +27,11 @@ app.use('/api/products', productRoutes);
 app.get("/", (_req: Request, res: Response): void => {
     res.send("Server is running");
 });
+app.use("/api/products", adminEditRoutes);
 
+
+
+app.use("/api/orders", orderRoutes);
 
 // ✅ Start DB connection check
 (async () => {
