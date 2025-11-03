@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './AdminLogin.module.css'; // external scoped css
+// src/pages/Authentication/AdminLogin.tsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./AdminLogin.module.css";
 
-const adminlogin: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const AdminLogin: React.FC = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // (Temporary logic) Later you’ll connect this with backend API
         if (email && password) {
-            console.log('Logged in with:', { email, password });
-            alert('Login successful!');
+            console.log("Logged in with:", { email, password });
+            alert("Login successful!");
         } else {
-            alert('Please fill all fields');
+            alert("Please fill all fields");
         }
     };
 
@@ -46,9 +46,9 @@ const adminlogin: React.FC = () => {
                 </form>
 
                 <p className={styles.signupText}>
-                    New here?{' '}
+                    New here?{" "}
                     <span
-                        onClick={() => navigate('/admin-signup')}
+                        onClick={() => navigate("/admin-signup")}
                         className={styles.link}
                     >
                         Create New Account
@@ -59,4 +59,4 @@ const adminlogin: React.FC = () => {
     );
 };
 
-export default adminlogin;
+export default AdminLogin;

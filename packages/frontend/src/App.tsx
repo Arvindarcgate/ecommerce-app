@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 import Home from "./pages/home";
-import Product from "./pages/product";
+
 import Contact from "./pages/contact";
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
@@ -10,6 +10,7 @@ import Login from "./component/components/Authetication/login";
 import Signup from "./component/components/Authetication/singup";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import VerifyEmailPage from "./component/components/Authetication/VerifyMailPage";
+import ProductPage from "./pages/product";
 
 const queryClient = new QueryClient();
 const App: React.FC = () => {
@@ -22,7 +23,7 @@ const App: React.FC = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/product" element={<Product />} />
+        <Route path="/productPage" element={<ProductPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
