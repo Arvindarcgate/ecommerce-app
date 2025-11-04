@@ -31,7 +31,7 @@ const CartPage: React.FC = () => {
 
     const [user, setUser] = useState<{ email: string } | null>(null);
 
-    // 🟢 Simulate user (replace with actual login context later)
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -41,7 +41,16 @@ const CartPage: React.FC = () => {
         }
     }, []);
 
-    // 🛒 Add new product if passed from ProductPage
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser({ email: "guest@example.com" });
+        }
+    }, [])
+
     useEffect(() => {
         if (product) {
             setCartItems((prev) => {

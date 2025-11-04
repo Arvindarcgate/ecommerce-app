@@ -6,18 +6,25 @@ interface Product {
     productName: string;
     price: number;
     size: string;
-    image: File;
-    imagePreview: string;
+    imagePreview: string; // base64 or blob URL
 }
 
 const GetReadyPage: React.FC = () => {
     const [queue, setQueue] = useState<Product[]>([]);
     const navigate = useNavigate();
 
+    // ✅ Load saved queue from localStorage
     useEffect(() => {
         const storedQueue = JSON.parse(localStorage.getItem("productQueue") || "[]");
         setQueue(storedQueue);
     }, []);
+
+    // ✅ Convert base64 / blob URL to real File for upload
+    const urlToFile = async (url: string, filename: string): Promise<File> => {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return new File([blob], filename, { type: blob.type });
+    };
 
     const handleLaunch = async (index: number) => {
         const product = queue[index];
@@ -26,19 +33,23 @@ const GetReadyPage: React.FC = () => {
         );
         if (!confirmLaunch) return;
 
-        const formData = new FormData();
-        formData.append("name", product.productName);
-        formData.append("price", product.price.toString());
-        formData.append("size", product.size);
-        formData.append("image", product.image);
-
         try {
+            // 🔧 Convert preview URL back to File
+            const imageFile = await urlToFile(product.imagePreview, `${product.productName}.png`);
+
+            const formData = new FormData();
+            formData.append("name", product.productName);
+            formData.append("price", product.price.toString());
+            formData.append("size", product.size);
+            formData.append("image", imageFile);
+
             const response = await fetch("http://localhost:8000/api/products/add", {
                 method: "POST",
-                body: formData,
+                body: formData, // no headers needed for FormData
             });
 
             const data = await response.json();
+
             if (response.ok) {
                 alert(`✅ ${product.productName} launched successfully!`);
 
@@ -61,6 +72,7 @@ const GetReadyPage: React.FC = () => {
     return (
         <div className={styles.container}>
             <h2>🚀 Product Launch Queue</h2>
+
             {queue.length === 0 ? (
                 <p>No products in queue. Go back to add more.</p>
             ) : (

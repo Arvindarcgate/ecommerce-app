@@ -33,7 +33,7 @@ app.use("/api/products", adminEditRoutes);
 
 app.use("/api/orders", orderRoutes);
 
-// ✅ Start DB connection check
+
 (async () => {
     try {
         await db.raw("SELECT 1");
@@ -43,12 +43,13 @@ app.use("/api/orders", orderRoutes);
     }
 })();
 
-// ✅ Only listen when not running tests
+
+
+
 if (process.env.NODE_ENV !== "test") {
     app.listen(PORT, (): void => {
         console.log(`✅ Server is running on http://localhost:${PORT}`);
     });
 }
 
-// ✅ Export for Supertest
 export default app;
