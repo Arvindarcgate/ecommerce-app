@@ -15,7 +15,7 @@ const AdminProductEdit: React.FC = () => {
     const [updatedImage, setUpdatedImage] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // 🟢 Fetch all products
+
     const fetchProducts = async () => {
         try {
             const res = await fetch("http://localhost:8000/api/products/all");

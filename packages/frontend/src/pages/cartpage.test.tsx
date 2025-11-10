@@ -24,7 +24,7 @@ jest.mock("react-router-dom", () => ({
     }),
 }));
 
-// 🧩 Setup global mocks
+
 beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
@@ -119,4 +119,7 @@ describe("CartPage Component", () => {
             );
         });
     });
+
+
+
 });

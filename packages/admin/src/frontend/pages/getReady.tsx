@@ -34,7 +34,6 @@ const GetReadyPage: React.FC = () => {
         if (!confirmLaunch) return;
 
         try {
-            // 🔧 Convert preview URL back to File
             const imageFile = await urlToFile(product.imagePreview, `${product.productName}.png`);
 
             const formData = new FormData();
@@ -45,7 +44,7 @@ const GetReadyPage: React.FC = () => {
 
             const response = await fetch("http://localhost:8000/api/products/add", {
                 method: "POST",
-                body: formData, // no headers needed for FormData
+                body: formData,
             });
 
             const data = await response.json();
@@ -53,12 +52,10 @@ const GetReadyPage: React.FC = () => {
             if (response.ok) {
                 alert(`✅ ${product.productName} launched successfully!`);
 
-                // 🧹 Remove launched product from queue
                 const updatedQueue = queue.filter((_, i) => i !== index);
                 setQueue(updatedQueue);
                 localStorage.setItem("productQueue", JSON.stringify(updatedQueue));
 
-                // Redirect if queue empty
                 if (updatedQueue.length === 0) navigate("/");
             } else {
                 alert(`❌ Error: ${data.message || "Something went wrong"}`);
@@ -67,6 +64,16 @@ const GetReadyPage: React.FC = () => {
             console.error("Error launching product:", error);
             alert("Server error. Please try again later.");
         }
+    };
+
+    // 🧹 New: Delete button handler
+    const handleDelete = (index: number) => {
+        const confirmDelete = window.confirm("🗑️ Are you sure you want to delete this product?");
+        if (!confirmDelete) return;
+
+        const updatedQueue = queue.filter((_, i) => i !== index);
+        setQueue(updatedQueue);
+        localStorage.setItem("productQueue", JSON.stringify(updatedQueue));
     };
 
     return (
@@ -87,12 +94,22 @@ const GetReadyPage: React.FC = () => {
                             <h3>{product.productName}</h3>
                             <p>Size: {product.size}</p>
                             <p>Price: ₹{product.price}</p>
-                            <button
-                                onClick={() => handleLaunch(index)}
-                                className={styles.launchBtn}
-                            >
-                                Launch
-                            </button>
+
+                            {/* ✅ Buttons side-by-side */}
+                            <div className={styles.buttonGroup}>
+                                <button
+                                    onClick={() => handleLaunch(index)}
+                                    className={`${styles.launchBtn} ${styles.button}`}
+                                >
+                                    Launch
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(index)}
+                                    className={`${styles.deleteBtn} ${styles.button}`}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

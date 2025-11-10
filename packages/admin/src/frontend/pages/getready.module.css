@@ -62,3 +62,46 @@ h2 {
 .launchBtn:hover {
     background-color: #0056b3;
 }
+
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.button {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 🚀 Launch button styling */
+.launchBtn {
+    background-color: #28a745;
+    color: white;
+}
+
+.launchBtn:hover {
+    background-color: #218838;
+}
+
+/* 🗑️ Delete button styling */
+.deleteBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.deleteBtn:hover {
+    background-color: #c82333;
+}

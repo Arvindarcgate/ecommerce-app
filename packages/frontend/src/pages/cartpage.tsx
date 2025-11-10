@@ -67,12 +67,12 @@ const CartPage: React.FC = () => {
         }
     }, [product]);
 
-    // 💾 Store cart persistently
+
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // 🧮 Update quantity
+
     const handleQuantityChange = (id: number, qty: number) => {
         if (qty < 1) return;
         setCartItems((prev) =>
@@ -82,19 +82,17 @@ const CartPage: React.FC = () => {
         );
     };
 
-    // ❌ Remove item
+
     const handleRemove = (id: number) => {
         setCartItems((prev) => prev.filter((item) => item.id !== id));
     };
 
-    // 💰 Calculate total
     const total = cartItems.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
     );
 
-    // 🚀 Final Order (later send to backend)
-    // 🚀 Final Order (send to backend)
+
     const handleFinalOrder = async () => {
         if (cartItems.length === 0) {
             alert("Your cart is empty!");
@@ -102,7 +100,7 @@ const CartPage: React.FC = () => {
         }
 
         const orderData = {
-            email: user?.email, // user's email as primary key
+            email: user?.email,
             items: cartItems.map((item) => ({
                 product_id: item.id,
                 name: item.name,
