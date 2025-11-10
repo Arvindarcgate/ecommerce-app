@@ -20,6 +20,7 @@ describe("Footer Component", () => {
     expect(screen.getByTestId("icon-twitter")).toBeInTheDocument();
     expect(screen.getByTestId("icon-instagram")).toBeInTheDocument();
     expect(screen.getByTestId("icon-youtube")).toBeInTheDocument();
+
   });
 
   test("renders quick links", () => {

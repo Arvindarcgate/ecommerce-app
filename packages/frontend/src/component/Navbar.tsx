@@ -14,8 +14,9 @@ const Navbar: React.FC = () => {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Products", href: "/products" },
+    { name: "Products", href: "/productpage" },
     { name: "Contact", href: "/contact" },
+    { name: "Cart", href: "/Cart" }
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -114,6 +115,10 @@ const Navbar: React.FC = () => {
                       </Link>
                       <Link to="/contact" className={styles.dropdownItem}>
                         Contact Page
+                      </Link>
+
+                      <Link to="/cart" className={styles.dropdownItem}>
+                        cart
                       </Link>
                     </div>
                   )}

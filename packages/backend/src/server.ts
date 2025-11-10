@@ -1,10 +1,13 @@
-// server.ts
-
+// src/server.ts
 import express, { Request, Response } from "express";
 import newsletterRoute from "./routes/newsletter.route";
 import cors from "cors";
 import authRoute from "./routes/auth";
-import { db } from "./db/db"; // ✅ Import your Knex instance
+import { db } from "./db/db"; // ✅ Import Knex instance
+import productRoutes from './routes/productroutes';
+import path from "path";
+import adminEditRoutes from "./routes/admineditroutes"
+import orderRoutes from "./routes/orderroutes";
 
 const app = express();
 const PORT: number = 8000;
@@ -16,24 +19,37 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api", newsletterRoute);
 app.use("/api/auth", authRoute);
-
+app.use('/api/products', productRoutes);
 app.get("/", (_req: Request, res: Response): void => {
     res.send("Server is running");
 });
+app.use("/api/products", adminEditRoutes);
 
-// ✅ Test Database Connection on Startup
+
+
+app.use("/api/orders", orderRoutes);
+
+
 (async () => {
     try {
-        await db.raw("SELECT 1"); // Simple query to test connection
+        await db.raw("SELECT 1");
         console.log("✅ MySQL Database connected successfully");
     } catch (error) {
         console.error("❌ Database connection failed:", error);
     }
 })();
 
-app.listen(PORT, (): void => {
-    console.log(`✅ Server is running on http://localhost:${PORT}`);
-});
+
+
+
+if (process.env.NODE_ENV !== "test") {
+    app.listen(PORT, (): void => {
+        console.log(`✅ Server is running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
