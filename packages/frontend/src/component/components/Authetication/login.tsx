@@ -1,7 +1,7 @@
-
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./Authcontext";
+import styles from "./login.module.css";
 
 const Login: React.FC = () => {
     const { login } = useContext(AuthContext);
@@ -17,43 +17,43 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="flex items-start justify-center min-h-screen bg-gray-100 px-4 pt-24">
-            <div className="bg-white p-8 rounded-lg shadow-md" style={{ width: '320px' }}>
-                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-                <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <div className={styles.container}>
+            <div className={styles.card}>
+                <h2>Welcome Back 👋</h2>
+                <p className={styles.subtitle}>Login to your account</p>
+
+                <form onSubmit={handleLogin} className={styles.form}>
                     <input
                         type="email"
-                        placeholder="Email"
-                        className="border p-3 rounded w-full"
+                        placeholder="Enter your email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className={styles.input}
                     />
+
                     <input
                         type="password"
-                        placeholder="Password"
-                        className="border p-3 rounded w-full"
+                        placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className={styles.input}
                     />
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white py-3 rounded hover:bg-blue-700 w-full"
-                    >
+
+                    <button type="submit" className={styles.button}>
                         Login
                     </button>
                 </form>
-                <p className="mt-4 text-center text-sm">
+
+                <p className={styles.footerText}>
                     New user?{" "}
-                    <Link to="/signup" className="text-blue-600 hover:underline">
+                    <Link to="/signup" className={styles.link}>
                         Create an account
                     </Link>
                 </p>
             </div>
         </div>
-
-
-
-
     );
 };
 

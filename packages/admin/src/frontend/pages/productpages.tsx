@@ -7,42 +7,43 @@ const ProductPages: React.FC = () => {
     const [price, setPrice] = useState<number | "">("");
     const [size, setSize] = useState("");
     const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>(""); // ✅ Base64 string
+    const [imagePreview, setImagePreview] = useState<string>("");
     const navigate = useNavigate();
 
-    // ✅ Convert image to Base64 and store preview
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        setImage(file || null);
+        if (!file) return;
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string); // ✅ Base64 string
-            };
-            reader.readAsDataURL(file);
-        }
+        setImage(file);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!productName || !price || !size || !image || !imagePreview) {
+        if (!productName || !price || !size || !imagePreview) {
             alert("Please fill all fields before submitting.");
             return;
         }
 
-        // 🧠 Store everything, including Base64 preview
         const newProduct = { productName, price, size, imagePreview };
 
-        const existingQueue = JSON.parse(localStorage.getItem("productQueue") || "[]");
-        localStorage.setItem("productQueue", JSON.stringify([...existingQueue, newProduct]));
-
-        navigate("/getReady");
+        try {
+            const existingQueue = JSON.parse(localStorage.getItem("productQueue") || "[]");
+            localStorage.setItem("productQueue", JSON.stringify([...existingQueue, newProduct]));
+            navigate("/getReady");
+        } catch (error) {
+            console.error("Error saving to localStorage:", error);
+        }
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} data-testid="product-page">
             <div className={styles.card}>
                 <h2>Add New Product</h2>
                 <form onSubmit={handleSubmit} className={styles.form}>
@@ -53,14 +54,18 @@ const ProductPages: React.FC = () => {
                         onChange={(e) => setProductName(e.target.value)}
                         required
                         className={styles.input}
+                        aria-label="Product Name"
                     />
                     <input
                         type="number"
                         placeholder="Enter Price"
                         value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}
+                        onChange={(e) =>
+                            setPrice(e.target.value === "" ? "" : Number(e.target.value))
+                        }
                         required
                         className={styles.input}
+                        aria-label="Product Price"
                     />
                     <input
                         type="text"
@@ -69,6 +74,7 @@ const ProductPages: React.FC = () => {
                         onChange={(e) => setSize(e.target.value)}
                         required
                         className={styles.input}
+                        aria-label="Product Size"
                     />
                     <input
                         type="file"
@@ -76,14 +82,16 @@ const ProductPages: React.FC = () => {
                         onChange={handleImageChange}
                         required
                         className={styles.input}
+                        aria-label="file"
+                        data-testid="file-input"
                     />
 
-                    {/* ✅ Optional live preview */}
                     {imagePreview && (
                         <img
                             src={imagePreview}
                             alt="Preview"
                             className={styles.previewImage}
+                            data-testid="image-preview"
                         />
                     )}
 
