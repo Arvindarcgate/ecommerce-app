@@ -8,7 +8,6 @@ export const subscribe = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Email is required" });
     }
 
-    // req.user should be set by JWT middleware
     const userId = (req as any).user?.id;
 
     if (!userId) {

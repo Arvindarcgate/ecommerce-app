@@ -19,7 +19,6 @@ export const addProduct = async (req: Request, res: Response) => {
             size,
             image: imagePath,
         });
-
         res.status(201).json({
             message: '✅ Product added successfully',
             product,

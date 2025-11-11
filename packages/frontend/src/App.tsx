@@ -7,9 +7,9 @@ import Contact from "./pages/contact";
 import Navbar from "./component/Navbar";
 import Footer from "./component/Footer";
 import Login from "./component/components/Authetication/login";
-import Signup from "./component/components/Authetication/singup";
+import Signup from "./component/components/Authetication/signup";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import VerifyEmailPage from "./component/components/Authetication/VerifyMailPage";
+import VerifyEmailPage from "./component/components/Authetication/VerifyEmailPage";
 import ProductPage from "./pages/product";
 import CartPage from "./pages/cartpage";
 

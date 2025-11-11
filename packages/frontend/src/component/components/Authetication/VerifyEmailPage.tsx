@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-const VerifyEmailPage = () => {
+const VerifyEmailPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     const [message, setMessage] = useState<string | null>(null);
     const [verificationUrl, setVerificationUrl] = useState<string | null>(null);
@@ -9,7 +9,6 @@ const VerifyEmailPage = () => {
     useEffect(() => {
         const token = searchParams.get("token");
         if (token) {
-            // create a clickable verification link that points to backend
             setVerificationUrl(`http://localhost:8000/api/auth/verify?token=${token}`);
         }
     }, [searchParams]);
@@ -29,7 +28,7 @@ const VerifyEmailPage = () => {
     };
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
             <h2>Email Verification</h2>
             {message ? (
                 <p>{message}</p>

@@ -7,6 +7,7 @@ import { AuthContext } from "./components/Authetication/Authcontext";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
 
@@ -16,30 +17,20 @@ const Navbar: React.FC = () => {
     { name: "Home", href: "/" },
     { name: "Products", href: "/productpage" },
     { name: "Contact", href: "/contact" },
-    { name: "Cart", href: "/Cart" }
+    { name: "Cart", href: "/cart" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  }; const [showArrow, setShowArrow] = useState(false);
-
-  const handleLoginClick = () => {
-    setShowArrow(!showArrow);
-  };
-
-
-
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
   return (
     <nav className={styles.navbar}>
       <Container>
         <div className={styles.navContainer}>
-          {/* LEFT: Logo + Links */}
-          <div className={styles.navleft}>
+          {/* LEFT: Logo + Nav Links */}
+          <div className={styles.navLeft}>
             <Link to="/" className={styles.logo}>
               <div className={styles.logoIcon}>E</div>
               <span className={styles.logoText}>ECommerce</span>
@@ -59,9 +50,9 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT: Search + Cart + User */}
-          <div className={styles.navright}>
-            {/* Search Bar */}
+          {/* RIGHT: Search + User + Mobile Menu */}
+          <div className={styles.navRight}>
+            {/* Search */}
             <div className={styles.searchBar}>
               <Search className={styles.searchIcon} />
               <input
@@ -73,88 +64,38 @@ const Navbar: React.FC = () => {
               />
             </div>
 
-            {/* Cart & User */}
-            {/* <div className={styles.actions}>
-              <Link to="/cart" className={styles.cartBtn}>
-                <ShoppingCart />
-              </Link>
-
-              {user ? (
-                <div className={styles.profileSection}>
-                  <span className={styles.userText}>Welcome, {user.email.split("@")[0]}</span>
-                  <button className={styles.logoutBtn} onClick={logout}>
-                    <LogOut /> Logout
-                  </button>
-                </div>
-              ) : (
-                <Link to="/login" className={styles.loginBtn}>
-                  <User /> Login
-                </Link>
-              )}
-            </div> */}
-
-
+            {/* User / Auth Section */}
             <div className={styles.profileSection} onClick={toggleDropdown}>
               {user ? (
                 <>
                   <span className={styles.userText}>
                     Welcome, {user.email.split("@")[0]}
                   </span>
-
-
                   {isDropdownOpen && (
                     <div className={styles.dropdownMenu}>
                       <Link to="/user-details" className={styles.dropdownItem}>
                         User Details
                       </Link>
-                      <button className={styles.dropdownItem} onClick={logout}>
-                        Logout
-                      </button>
-                      <Link to="/products" className={styles.dropdownItem}>
+                      <Link to="/productpage" className={styles.dropdownItem}>
                         Products
                       </Link>
                       <Link to="/contact" className={styles.dropdownItem}>
-                        Contact Page
+                        Contact
                       </Link>
-
                       <Link to="/cart" className={styles.dropdownItem}>
-                        cart
+                        Cart
                       </Link>
+                      <button className={styles.dropdownItem} onClick={logout}>
+                        <LogOut size={16} /> Logout
+                      </button>
                     </div>
                   )}
                 </>
               ) : (
                 <>
-                  <div className={styles.profileSection}>
-                    <Link
-                      to="/login"
-                      className={styles.loginBtn}
-                      onClick={handleLoginClick}
-                    >
-                      <User /> Login
-                    </Link>
-
-                    {showArrow && <span className={styles.arrowIcon}>▼</span>}
-                  </div>
-
-
-                  {isDropdownOpen && (
-                    <div className={styles.dropdownMenu}>
-                      <Link to="/login" className={styles.dropdownItem}>
-                        User Details
-                      </Link>
-                      <Link to="/products" className={styles.dropdownItem}>
-                        Products
-                      </Link>
-                      <Link to="/contact" className={styles.dropdownItem}>
-                        Contact Page
-                      </Link>
-
-                      <Link to="/Logout" className={styles.dropdownItem}>
-                        Logout
-                      </Link>
-                    </div>
-                  )}
+                  <Link to="/login" className={styles.loginBtn}>
+                    <User size={18} /> Login
+                  </Link>
                 </>
               )}
             </div>
@@ -162,16 +103,15 @@ const Navbar: React.FC = () => {
             {/* Mobile Menu Toggle */}
             <button
               className={styles.mobileToggle}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X /> : <Menu />}
             </button>
           </div>
         </div>
 
-
-
-        {/* MOBILE DROPDOWN MENU */}
+        {/* MOBILE MENU */}
         {isMobileMenuOpen && (
           <div className={styles.mobileMenu}>
             {navigation.map((item) => (
@@ -184,7 +124,6 @@ const Navbar: React.FC = () => {
                 {item.name}
               </Link>
             ))}
-
             <div className={styles.mobileSearch}>
               <Search className={styles.searchIcon} />
               <input
@@ -194,6 +133,26 @@ const Navbar: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+
+            {user ? (
+              <button
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className={styles.mobileLogoutBtn}
+              >
+                <LogOut size={16} /> Logout
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className={styles.mobileLoginBtn}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <User size={16} /> Login
+              </Link>
+            )}
           </div>
         )}
       </Container>

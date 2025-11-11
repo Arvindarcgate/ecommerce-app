@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "../pages/adminproductedit.module.css"; // ✅ ensure correct path
+import styles from "../pages/adminproductedit.module.css";
 
 interface Product {
     id: number;
@@ -36,7 +36,7 @@ const AdminProductEdit: React.FC = () => {
         setUpdatedImage(null); // clear previous selection
     };
 
-    // 🗑️ Delete product
+
     const handleDelete = async (id: number) => {
         if (!window.confirm("Are you sure you want to delete this product?")) return;
 
@@ -57,7 +57,7 @@ const AdminProductEdit: React.FC = () => {
         }
     };
 
-    // ✅ Submit edited product
+
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editingProduct) return;
@@ -108,7 +108,7 @@ const AdminProductEdit: React.FC = () => {
                             className={styles.image}
                         />
                         <h3>{product.name}</h3>
-                        <p>💰 ${product.price}</p>
+                        <p>💰 ₹{product.price}</p>
                         <p>📏 Size: {product.size}</p>
 
                         <div className={styles.actions}>
@@ -129,7 +129,7 @@ const AdminProductEdit: React.FC = () => {
                 ))}
             </div>
 
-            {/* ✅ Edit Form */}
+
             {editingProduct && (
                 <div className={styles.editForm}>
                     <h3>Edit Product</h3>
