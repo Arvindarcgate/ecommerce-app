@@ -12,9 +12,16 @@ const Login: React.FC = () => {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        await login(email, password);
-        navigate("/");
+
+        const res = await login(email, password);
+
+        if (res.success) {
+            navigate("/");
+        } else {
+            alert(res.message || "Login failed. Please try again.");
+        }
     };
+
 
     return (
         <div className={styles.container}>

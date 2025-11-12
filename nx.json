@@ -38,5 +38,12 @@
         "targetName": "jest:test"
       }
     }
-  ]
+  ],
+  "generators": {
+    "@nx/react": {
+      "library": {
+        "unitTestRunner": "jest"
+      }
+    }
+  }
 }
