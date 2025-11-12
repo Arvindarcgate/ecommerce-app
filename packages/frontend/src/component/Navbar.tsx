@@ -7,8 +7,8 @@ import { AuthContext } from "./components/Authetication/Authcontext";
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
 
   const { user, logout } = useContext(AuthContext);
@@ -24,13 +24,14 @@ const Navbar: React.FC = () => {
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+  const closeDropdown = () => setIsDropdownOpen(false);
 
   return (
     <nav className={styles.navbar}>
       <Container>
         <div className={styles.navContainer}>
-          {/* LEFT: Logo + Nav Links */}
-          <div className={styles.navLeft}>
+          {/* LEFT: Logo + Navigation Links */}
+          <div className={styles.navleft}>
             <Link to="/" className={styles.logo}>
               <div className={styles.logoIcon}>E</div>
               <span className={styles.logoText}>ECommerce</span>
@@ -50,8 +51,8 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT: Search + User + Mobile Menu */}
-          <div className={styles.navRight}>
+          { }
+          <div className={styles.navright}>
             {/* Search */}
             <div className={styles.searchBar}>
               <Search className={styles.searchIcon} />
@@ -65,38 +66,63 @@ const Navbar: React.FC = () => {
             </div>
 
             {/* User / Auth Section */}
-            <div className={styles.profileSection} onClick={toggleDropdown}>
+            <div className={styles.profileSection}>
               {user ? (
                 <>
-                  <span className={styles.userText}>
-                    Welcome, {user.email.split("@")[0]}
+                  <span
+                    className={styles.userText}
+                    onClick={toggleDropdown}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Welcome, {user?.email ? user.email.split("@")[0] : "User"} ▼
                   </span>
+
                   {isDropdownOpen && (
                     <div className={styles.dropdownMenu}>
-                      <Link to="/user-details" className={styles.dropdownItem}>
+                      <Link
+                        to="/user-details"
+                        className={styles.dropdownItem}
+                        onClick={closeDropdown}
+                      >
                         User Details
                       </Link>
-                      <Link to="/productpage" className={styles.dropdownItem}>
+                      <Link
+                        to="/productpage"
+                        className={styles.dropdownItem}
+                        onClick={closeDropdown}
+                      >
                         Products
                       </Link>
-                      <Link to="/contact" className={styles.dropdownItem}>
+                      <Link
+                        to="/contact"
+                        className={styles.dropdownItem}
+                        onClick={closeDropdown}
+                      >
                         Contact
                       </Link>
-                      <Link to="/cart" className={styles.dropdownItem}>
+                      <Link
+                        to="/cart"
+                        className={styles.dropdownItem}
+                        onClick={closeDropdown}
+                      >
                         Cart
                       </Link>
-                      <button className={styles.dropdownItem} onClick={logout}>
+                      <button
+                        className={styles.dropdownItem}
+                        onClick={() => {
+                          logout();
+                          closeDropdown();
+                        }}
+                      >
                         <LogOut size={16} /> Logout
                       </button>
                     </div>
                   )}
                 </>
               ) : (
-                <>
-                  <Link to="/login" className={styles.loginBtn}>
-                    <User size={18} /> Login
-                  </Link>
-                </>
+                <Link to="/login" className={styles.loginBtn}>
+                  <User /> Login
+                </Link>
               )}
             </div>
 
@@ -124,6 +150,7 @@ const Navbar: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+
             <div className={styles.mobileSearch}>
               <Search className={styles.searchIcon} />
               <input

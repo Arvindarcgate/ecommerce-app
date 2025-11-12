@@ -1,8 +1,6 @@
-
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../style/pages/cart.module.css";
-import { useNavigate } from "react-router-dom";
 
 interface Product {
     id: number;
@@ -17,40 +15,40 @@ interface LocationState {
     product?: Product;
 }
 
-
 const CartPage: React.FC = () => {
     const location = useLocation();
     const { product } = (location.state || {}) as LocationState;
     const navigate = useNavigate();
 
-
+    // --- CART ITEMS STATE ---
     const [cartItems, setCartItems] = useState<Product[]>(() => {
         const storedCart = localStorage.getItem("cart");
         return storedCart ? JSON.parse(storedCart) : [];
     });
 
+    // --- USER STATE ---
     const [user, setUser] = useState<{ email: string } | null>(null);
 
-
+    // ✅ Load user from localStorage or fallback to guest
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                if (parsedUser?.email) {
+                    setUser(parsedUser);
+                } else {
+                    setUser({ email: "guest@example.com" });
+                }
+            } catch {
+                setUser({ email: "guest@example.com" });
+            }
         } else {
             setUser({ email: "guest@example.com" });
         }
     }, []);
 
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            setUser({ email: "guest@example.com" });
-        }
-    }, [])
-
+    // ✅ Add product to cart when navigated from product page
     useEffect(() => {
         if (product) {
             setCartItems((prev) => {
@@ -67,11 +65,12 @@ const CartPage: React.FC = () => {
         }
     }, [product]);
 
-
+    // ✅ Save cart to localStorage whenever updated
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
+    // --- HANDLERS ---
 
     const handleQuantityChange = (id: number, qty: number) => {
         if (qty < 1) return;
@@ -82,7 +81,6 @@ const CartPage: React.FC = () => {
         );
     };
 
-
     const handleRemove = (id: number) => {
         setCartItems((prev) => prev.filter((item) => item.id !== id));
     };
@@ -92,7 +90,14 @@ const CartPage: React.FC = () => {
         0
     );
 
+    // ✅ Optional logout handler
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        setUser({ email: "guest@example.com" });
+        navigate("/login");
+    };
 
+    // --- FINAL ORDER SUBMIT ---
     const handleFinalOrder = async () => {
         if (cartItems.length === 0) {
             alert("Your cart is empty!");
@@ -114,9 +119,7 @@ const CartPage: React.FC = () => {
         try {
             const res = await fetch("http://localhost:8000/api/orders/create", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(orderData),
             });
 
@@ -135,11 +138,11 @@ const CartPage: React.FC = () => {
         }
     };
 
-
     return (
         <div className={styles.cartContainer}>
             <h1 className={styles.title}>🛒 Your Shopping Cart</h1>
 
+            {/* USER INFO */}
             <div className={styles.userInfo}>
                 {user ? (
                     <p>
@@ -149,15 +152,27 @@ const CartPage: React.FC = () => {
                     <p>Welcome, Guest</p>
                 )}
 
-                <button
-                    className={styles.addMoreBtn}
-                    onClick={() => navigate("/productpage")}
-                >
-                    ➕ Add More Products
-                </button>
+                <div>
+                    <button
+                        className={styles.addMoreBtn}
+                        onClick={() => navigate("/productpage")}
+                    >
+                        ➕ Add More Products
+                    </button>
+
+                    {user?.email !== "guest@example.com" && (
+                        <button
+                            className={styles.logoutBtn}
+                            onClick={handleLogout}
+                            style={{ marginLeft: "10px" }}
+                        >
+                            🚪 Logout
+                        </button>
+                    )}
+                </div>
             </div>
 
-
+            {/* CART ITEMS */}
             {cartItems.length === 0 ? (
                 <p className={styles.emptyCart}>Your cart is empty.</p>
             ) : (
@@ -187,7 +202,8 @@ const CartPage: React.FC = () => {
                                         />
                                     </div>
                                     <p>
-                                        Total: <strong>₹{item.price * item.quantity}</strong>
+                                        Total:{" "}
+                                        <strong>₹{item.price * item.quantity}</strong>
                                     </p>
                                 </div>
                                 <button
@@ -200,9 +216,13 @@ const CartPage: React.FC = () => {
                         ))}
                     </div>
 
+                    {/* CART SUMMARY */}
                     <div className={styles.summary}>
                         <h2>Total Amount: ₹{total}</h2>
-                        <button onClick={handleFinalOrder} className={styles.finalBtn}>
+                        <button
+                            onClick={handleFinalOrder}
+                            className={styles.finalBtn}
+                        >
                             🏁 Final Order
                         </button>
                     </div>
