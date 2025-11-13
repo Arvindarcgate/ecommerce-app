@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../style/pages/product.module.css";
+// import { Button } from '../../../uilibrary/src/component/Button';
+import { Button } from '@ecommerce/uilibrary';
+
+
+
 
 interface Product {
   id: number;
@@ -33,11 +38,11 @@ const ProductPage: React.FC = () => {
     if (value < 1) return;
     setQuantities((prev) => ({ ...prev, [id]: value }));
   };
-
   const handleBuyNow = (product: Product) => {
     // const quantity = quantities[product.id];
     const quantity = quantities[product.id];
     const totalPrice = product.price * quantity;
+
 
 
     navigate("/cart", {
@@ -64,6 +69,8 @@ const ProductPage: React.FC = () => {
                 />
               </div>
 
+
+
               <div className={styles.productDetails}>
                 <h3 className={styles.productName}>{product.name}</h3>
                 <p className={styles.productSize}>Size: {product.size}</p>
@@ -89,12 +96,9 @@ const ProductPage: React.FC = () => {
                   Total: <strong>₹{totalPrice.toFixed(2)}</strong>
                 </p>
 
-                <button
-                  className={styles.buyButton}
-                  onClick={() => handleBuyNow(product)}
-                >
-                  🛒 Buy Now
-                </button>
+
+                {<Button variant="primary" size="md" className={styles.buyButton}
+                  onClick={() => handleBuyNow(product)}>  🛒 Buy Now</Button>}
               </div>
             </div>
           );
