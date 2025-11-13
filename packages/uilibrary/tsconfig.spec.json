@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true, // ✅ Required for references
+    "outDir": "../../dist/out-tsc",
+    "types": [
+      "jest",
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ]
+}

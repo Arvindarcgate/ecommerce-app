@@ -1,27 +1,66 @@
+// {
+//   "compilerOptions": {
+//     "composite": true,
+//     "declarationMap": true,
+//     "emitDeclarationOnly": true,
+//     "importHelpers": true,
+//     "isolatedModules": true,
+//     "lib": [
+//       "es2022"
+//     ],
+//     "module": "nodenext",
+//     "moduleResolution": "nodenext",
+//     "noEmitOnError": true,
+//     "noFallthroughCasesInSwitch": true,
+//     "noImplicitOverride": true,
+//     "noImplicitReturns": true,
+//     "noUnusedLocals": true,
+//     "skipLibCheck": true,
+//     "strict": true,
+//     "target": "es2022",
+//     "customConditions": [
+//       "@e-commerce/source"
+//     ],
+//     "baseUrl": ".",
+//     "paths": {
+//       "@my-monorepo/admin": [
+//         "packages/admin/src/index.ts"
+//       ],
+//       "@my-monorepo/*": [
+//         "packages/*/src"
+//       ],
+//       "@e-commerce/packages": [
+//         "packages/src/index.ts"
+//       ],
+//       "@ecommerce/uilibrary": [
+//         "packages/uilibrary/src/index.ts"
+//       ]
+//     }
+//   }
+// }
 {
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "lib": ["es2022"],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
-    "target": "es2022",
-    "customConditions": ["@e-commerce/source"],
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@my-monorepo/admin": ["packages/admin/src/index.ts"],
-      "@my-monorepo/*": ["packages/*/src"],
-      "@e-commerce/packages": ["packages/src/index.ts"]
+      "@ecommerce/uilibrary": [
+        "packages/uilibrary/src/index.ts"
+      ],
+      "@ecommerce/*": [
+        "packages/*/src/index.ts"
+      ]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

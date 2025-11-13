@@ -8,9 +8,17 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "dev"]
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "dev"
+        ]
       }
     }
+  },
+  "affected": {
+    "defaultBase": "main"
   },
   "release": {
     "version": {
@@ -45,5 +53,6 @@
         "unitTestRunner": "jest"
       }
     }
-  }
+  },
+  "defaultProject": "frontend"
 }

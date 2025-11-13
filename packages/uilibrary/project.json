@@ -1,0 +1,55 @@
+{
+  "name": "uilibrary",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/uilibrary/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/uilibrary",
+        "configFile": "packages/uilibrary/vite.config.ts"
+      }
+    },
+    "dev": {
+      "executor": "@nx/vite:dev",
+      "options": {
+        "configFile": "packages/uilibrary/vite.config.ts"
+      }
+    },
+    "preview": {
+      "executor": "@nx/vite:preview",
+      "options": {
+        "buildTarget": "uilibrary:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/uilibrary/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/uilibrary"
+      ],
+      "options": {
+        "jestConfig": "packages/uilibrary/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [
+    "scope:ui",
+    "type:library"
+  ]
+}
