@@ -23,7 +23,6 @@ const Navbar: React.FC = () => {
                     Product edit
                 </Link>
                 <Link to="/admin/orders" className={styles.link}>
-
                     Order History
                 </Link>
             </div>
