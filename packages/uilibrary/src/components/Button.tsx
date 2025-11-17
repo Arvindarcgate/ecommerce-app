@@ -10,12 +10,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     icon?: React.ReactNode;
 }
 
-/**
- * A reusable button component with TailwindCSS variants.
- * 
- * Example:
- * <Button variant="primary" size="lg">Click Me</Button>
- */
+
 export const Button: React.FC<ButtonProps> = ({
     variant = "primary",
     size = "md",

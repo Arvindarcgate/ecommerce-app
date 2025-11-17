@@ -4,9 +4,6 @@ import styles from "../style/pages/product.module.css";
 // import { Button } from '../../../uilibrary/src/component/Button';
 import { Button } from '@ecommerce/uilibrary';
 
-
-
-
 interface Product {
   id: number;
   name: string;

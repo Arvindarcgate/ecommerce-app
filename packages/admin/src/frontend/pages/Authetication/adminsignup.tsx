@@ -1,37 +1,78 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Adminsignup.module.css';
+// src/pages/Authentication/AdminSignup.tsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./Adminsignup.module.css";
 
-const adminsignup: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [role, setRole] = useState('');
+const AdminSignup: React.FC = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!email || !password || !newPassword || !role) {
-            alert('Please fill in all fields.');
+        if (!name || !email || !password) {
+            alert("Please fill all fields");
             return;
         }
 
-        if (password !== newPassword) {
-            alert('Passwords do not match!');
-            return;
-        }
+        try {
+            setLoading(true);
 
-        // You can connect this to your backend API later
-        console.log('Signup details:', { email, password, role });
-        alert(`Account created for ${role} successfully!`);
+            const response = await fetch("http://localhost:8000/admin/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password,
+                    role: "admin", // 👈 Important
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                alert(data.message || "Signup failed");
+                return;
+            }
+
+            alert("Admin Account Created Successfully!");
+
+            // OPTIONAL: Save token
+            localStorage.setItem("token", data.token);
+
+            // Redirect to Admin Login Page
+            navigate("/admin-login");
+
+        } catch (error) {
+            alert("Something went wrong while signing up");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.card}>
                 <h2>Admin Signup</h2>
-                <form onSubmit={handleSubmit} className={styles.form}>
+
+                <form onSubmit={handleSignup} className={styles.form}>
+
+                    <input
+                        type="text"
+                        placeholder="Enter Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className={styles.input}
+                    />
+
                     <input
                         type="email"
                         placeholder="Enter Email"
@@ -40,6 +81,7 @@ const adminsignup: React.FC = () => {
                         required
                         className={styles.input}
                     />
+
                     <input
                         type="password"
                         placeholder="Enter Password"
@@ -48,39 +90,28 @@ const adminsignup: React.FC = () => {
                         required
                         className={styles.input}
                     />
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                        className={styles.input}
-                    />
 
-                    <select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        required
-                        className={styles.select}
+                    <button
+                        type="submit"
+                        className={styles.button}
+                        disabled={loading}
                     >
-                        <option value="">Select Role</option>
-                        <option value="superadmin">Superadmin</option>
-                        <option value="seller">Seller</option>
-                        <option value="developer">Developer</option>
-                    </select>
-
-                    <button type="submit" className={styles.button}>Sign Up</button>
-
-                    <p className={styles.loginText}>
-                        Already have an account?{' '}
-                        <span onClick={() => navigate('/admin-login')} className={styles.link}>
-                            Login
-                        </span>
-                    </p>
+                        {loading ? "Creating..." : "Create Account"}
+                    </button>
                 </form>
+
+                <p className={styles.signupText}>
+                    Already have an account?{" "}
+                    <span
+                        onClick={() => navigate("/admin-login")}
+                        className={styles.link}
+                    >
+                        Login Here
+                    </span>
+                </p>
             </div>
         </div>
     );
 };
 
-export default adminsignup;
+export default AdminSignup;
