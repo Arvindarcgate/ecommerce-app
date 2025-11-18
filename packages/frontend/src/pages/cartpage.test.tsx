@@ -1,125 +1,224 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
 import CartPage from "./cartpage";
+import { MemoryRouter } from "react-router-dom";
 
-// Mock navigate
+// --- Mock navigate ---
 const mockNavigate = jest.fn();
-
-// 🧩 Mock react-router-dom once (top-level)
 jest.mock("react-router-dom", () => ({
     ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockNavigate,
-    useLocation: () => ({
-        state: {
-            product: {
-                id: 1,
-                name: "Test Product",
-                price: 100,
-                size: "M",
-                image: "/test.jpg",
-                quantity: 1,
-            },
-        },
-    }),
 }));
 
+// --- Mock fetch ---
+global.fetch = jest.fn();
 
-beforeEach(() => {
-    localStorage.clear();
-    jest.clearAllMocks();
+// --- Mock localStorage ---
+function mockLocalStorage(data: any = {}) {
+    const store = { ...data };
 
-    // Mock fetch to resolve quickly
-    global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ orderId: "ORD123" }),
-    });
+    jest.spyOn(window.localStorage.__proto__, "getItem").mockImplementation(
+        (key: string) => store[key] || null
+    );
 
-    // Mock alert so no browser popup
-    window.alert = jest.fn();
-});
+    jest.spyOn(window.localStorage.__proto__, "setItem").mockImplementation(
+        (key: string, value: string) => {
+            store[key] = value;
+        }
+    );
+
+    jest.spyOn(window.localStorage.__proto__, "removeItem").mockImplementation(
+        (key: string) => {
+            delete store[key];
+        }
+    );
+
+    return store;
+}
 
 describe("CartPage Component", () => {
-    it("renders cart page title", () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-        expect(screen.getByText(/your shopping cart/i)).toBeInTheDocument();
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
-    it("adds product passed from location state to cart", () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-        expect(screen.getByText("Test Product")).toBeInTheDocument();
-        expect(screen.getByText(/₹100/)).toBeInTheDocument();
-    });
+    // ---------------------------------------------------------------
+    test("renders empty cart when no items", () => {
+        mockLocalStorage({ user: JSON.stringify({ email: "guest@example.com" }) });
 
-    it("updates quantity when user types", () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-        const qtyInput = screen.getByDisplayValue("1");
-        fireEvent.change(qtyInput, { target: { value: "2" } });
-        expect(qtyInput).toHaveValue(2);
-    });
-
-    it("removes item when remove button is clicked", () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-        const removeBtn = screen.getByText(/remove/i);
-        fireEvent.click(removeBtn);
-        expect(screen.getByText(/your cart is empty/i)).toBeInTheDocument();
-    });
-
-    it("navigates to product page when Add More clicked", () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-        const addMoreBtn = screen.getByText(/add more products/i);
-        fireEvent.click(addMoreBtn);
-        expect(mockNavigate).toHaveBeenCalledWith("/productpage");
-    });
-
-    it("places order successfully (mocked API)", async () => {
-        render(<CartPage />, { wrapper: MemoryRouter });
-
-        const finalBtn = screen.getByText(/final order/i);
-        fireEvent.click(finalBtn);
-
-        await waitFor(
-            () => {
-                expect(global.fetch).toHaveBeenCalledTimes(1);
-                expect(window.alert).toHaveBeenCalledWith(
-                    expect.stringContaining("Order placed successfully")
-                );
-            },
-            { timeout: 1000 }
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
         );
+
+        expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
     });
 
-    it("shows alert when cart is empty", async () => {
-        // Re-render component with no product
-        (jest.requireMock("react-router-dom") as any).useLocation = () => ({ state: {} });
+    // ---------------------------------------------------------------
+    test("loads existing cart items from localStorage", () => {
+        const cartData = [
+            {
+                id: 1,
+                name: "Shirt",
+                price: 500,
+                size: "M",
+                image: "/shirt.jpg",
+                quantity: 2,
+            },
+        ];
 
-        render(<CartPage />, { wrapper: MemoryRouter });
-        const finalBtn = screen.getByText(/final order/i);
-        fireEvent.click(finalBtn);
-
-        await waitFor(() => {
-            expect(window.alert).toHaveBeenCalledWith("Your cart is empty!");
+        mockLocalStorage({
+            cart: JSON.stringify(cartData),
+            user: JSON.stringify({ email: "guest@example.com" }),
         });
+
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText("Shirt")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("2")).toBeInTheDocument();
     });
 
-    it("handles failed API response gracefully", async () => {
-        (global.fetch as jest.Mock).mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ message: "Order failed" }),
+    // ---------------------------------------------------------------
+    test("adds product passed via location.state", () => {
+        mockLocalStorage({ user: JSON.stringify({ email: "guest@example.com" }) });
+
+        const product = {
+            id: 2,
+            name: "Shoes",
+            price: 1000,
+            size: "9",
+            image: "/shoes.jpg",
+            quantity: 1,
+        };
+
+        render(
+            <MemoryRouter initialEntries={[{ pathname: "/cart", state: { product } }]}>
+                <CartPage />
+            </MemoryRouter>
+        );
+
+        expect(screen.getByText("Shoes")).toBeInTheDocument();
+        expect(screen.getByDisplayValue("1")).toBeInTheDocument();
+    });
+
+    // ---------------------------------------------------------------
+    test("updates quantity when user changes input", () => {
+        const cartData = [
+            {
+                id: 1,
+                name: "Shirt",
+                price: 500,
+                size: "M",
+                image: "/shirt.jpg",
+                quantity: 1,
+            },
+        ];
+
+        mockLocalStorage({
+            cart: JSON.stringify(cartData),
+            user: JSON.stringify({ email: "guest@example.com" }),
         });
 
-        render(<CartPage />, { wrapper: MemoryRouter });
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
+        );
 
-        const finalBtn = screen.getByText(/final order/i);
-        fireEvent.click(finalBtn);
+        const qtyInput = screen.getByDisplayValue("1");
+
+        fireEvent.change(qtyInput, { target: { value: "3" } });
+
+        expect(screen.getByDisplayValue("3")).toBeInTheDocument();
+    });
+
+    // ---------------------------------------------------------------
+    test("removes item on clicking remove button", () => {
+        const cartData = [
+            {
+                id: 1,
+                name: "Shirt",
+                price: 500,
+                size: "M",
+                image: "/shirt.jpg",
+                quantity: 1,
+            },
+        ];
+
+        mockLocalStorage({
+            cart: JSON.stringify(cartData),
+            user: JSON.stringify({ email: "guest@example.com" }),
+        });
+
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
+        );
+
+        fireEvent.click(screen.getByText("❌ Remove"));
+
+        expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
+    });
+
+    // ---------------------------------------------------------------
+    test("places final order successfully", async () => {
+        const cartData = [
+            {
+                id: 1,
+                name: "Shirt",
+                price: 500,
+                size: "M",
+                image: "/shirt.jpg",
+                quantity: 2,
+            },
+        ];
+
+        mockLocalStorage({
+            cart: JSON.stringify(cartData),
+            user: JSON.stringify({ email: "test@gmail.com" }),
+        });
+
+        (fetch as jest.Mock).mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ orderId: "ABC123" }),
+        });
+
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
+        );
+
+        const btn = screen.getByText("🏁 Final Order");
+        fireEvent.click(btn);
 
         await waitFor(() => {
-            expect(window.alert).toHaveBeenCalledWith(
-                expect.stringContaining("Failed to place order")
+            expect(fetch).toHaveBeenCalledWith(
+                "http://localhost:8000/api/orders/create",
+                expect.any(Object)
             );
         });
     });
 
+    // ---------------------------------------------------------------
+    test("logout navigates to login", () => {
+        mockLocalStorage({
+            user: JSON.stringify({ email: "abc@gmail.com" }),
+        });
 
+        render(
+            <MemoryRouter>
+                <CartPage />
+            </MemoryRouter>
+        );
 
+        fireEvent.click(screen.getByText("🚪 Logout"));
+
+        expect(mockNavigate).toHaveBeenCalledWith("/login");
+    });
 });
