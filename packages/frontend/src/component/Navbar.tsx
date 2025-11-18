@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
 
   const navigation = [
-    { name: "Home", href: "/" },
+    { name: "Home", href: "/Home" },
     { name: "Products", href: "/productpage" },
     { name: "Contact", href: "/contact" },
     { name: "Cart", href: "/cart" },
