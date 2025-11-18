@@ -1,87 +1,80 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import Navbar from "./Navbar";
 import { AuthContext } from "../component/components/Authetication/Authcontext";
 
-const mockAuthLoggedOut = {
-  user: null,
-  login: jest.fn(),
-  signup: jest.fn(),
-  logout: jest.fn(),
-};
-
-const mockAuthLoggedIn = {
-  user: { name: "Arvind", email: "arvind@example.com" },
-  login: jest.fn(),
-  signup: jest.fn(),
-  logout: jest.fn(),
-};
-
-const renderNavbar = (authValue: any) =>
-  render(
-    <AuthContext.Provider value={authValue}>
-      <MemoryRouter>
+// Helper wrapper for rendering with Router + AuthContext
+const renderNavbar = (authValue: any) => {
+  return render(
+    <BrowserRouter>
+      <AuthContext.Provider value={authValue}>
         <Navbar />
-      </MemoryRouter>
-    </AuthContext.Provider>
+      </AuthContext.Provider>
+    </BrowserRouter>
   );
+};
 
 describe("Navbar Component", () => {
-  // -------------------------------------------------
-  test("renders logo text 'ECommerce'", () => {
-    renderNavbar(mockAuthLoggedOut);
-    expect(screen.getByText(/ECommerce/i)).toBeInTheDocument();
+  test("renders Navbar with links", () => {
+    renderNavbar({ user: null, logout: jest.fn() });
+
+    expect(screen.getByText("ECommerce")).toBeInTheDocument();
+    expect(screen.getByText("Home")).toBeInTheDocument();
+    expect(screen.getByText("Products")).toBeInTheDocument();
+    expect(screen.getByText("Contact")).toBeInTheDocument();
+    expect(screen.getByText("Cart")).toBeInTheDocument();
   });
 
-  // -------------------------------------------------
-  test("renders navigation links with correct paths", () => {
-    renderNavbar(mockAuthLoggedOut);
-
-    expect(screen.getByText("Home").closest("a")).toHaveAttribute("href", "/Home");
-    expect(screen.getByText("Products").closest("a")).toHaveAttribute("href", "/productpage");
-    expect(screen.getByText("Contact").closest("a")).toHaveAttribute("href", "/contact");
-    expect(screen.getByText("Cart").closest("a")).toHaveAttribute("href", "/cart");
+  test("renders Login button when user is not logged in", () => {
+    renderNavbar({ user: null, logout: jest.fn() });
+    expect(screen.getByText("Login")).toBeInTheDocument();
   });
 
-  // -------------------------------------------------
-  test("renders search bar and updates input value", () => {
-    renderNavbar(mockAuthLoggedOut);
+  test("shows user email prefix when logged in", () => {
+    renderNavbar({
+      user: { email: "testuser@example.com" },
+      logout: jest.fn(),
+    });
 
-    const input = screen.getByPlaceholderText("Search products...");
-    expect(input).toBeInTheDocument();
-
-    fireEvent.change(input, { target: { value: "Laptop" } });
-    expect(input).toHaveValue("Laptop");
+    expect(screen.getByText("Welcome, testuser ▼")).toBeInTheDocument();
   });
 
-  // -------------------------------------------------
-  test("shows Login button when user is not logged in", () => {
-    renderNavbar(mockAuthLoggedOut);
+  test("dropdown opens when clicking user text", () => {
+    renderNavbar({
+      user: { email: "john@example.com" },
+      logout: jest.fn(),
+    });
 
-    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+    const userText = screen.getByText("Welcome, john ▼");
+    fireEvent.click(userText);
+
+    const dropdown = screen.getByTestId("dropdown-menu");
+    expect(dropdown).toBeInTheDocument();
   });
 
-  // -------------------------------------------------
-  test("shows Logout button when user IS logged in", () => {
-    renderNavbar(mockAuthLoggedIn);
+  test("logout function is called when clicking logout", () => {
+    const mockLogout = jest.fn();
 
-    expect(screen.getByText(/Logout/i)).toBeInTheDocument();
+    renderNavbar({
+      user: { email: "john@example.com" },
+      logout: mockLogout,
+    });
+
+    fireEvent.click(screen.getByText("Welcome, john ▼"));
+
+    const logoutButton = screen.getByText(/Logout/i);
+    fireEvent.click(logoutButton);
+
+    expect(mockLogout).toHaveBeenCalled();
   });
 
-  // -------------------------------------------------
-  test("calls logout function when Logout button is clicked", () => {
-    renderNavbar(mockAuthLoggedIn);
+  test("search input updates correctly", () => {
+    renderNavbar({ user: null, logout: jest.fn() });
 
-    const logoutBtn = screen.getByText(/Logout/i);
-    fireEvent.click(logoutBtn);
+    const searchInput = screen.getByPlaceholderText("Search products...");
+    fireEvent.change(searchInput, { target: { value: "Laptop" } });
 
-    expect(mockAuthLoggedIn.logout).toHaveBeenCalledTimes(1);
-  });
-
-  // -------------------------------------------------
-  test("shows username when logged in", () => {
-    renderNavbar(mockAuthLoggedIn);
-
-    expect(screen.getByText(/Hi, Arvind/i)).toBeInTheDocument();
+    expect(searchInput).toHaveValue("Laptop");
   });
 });

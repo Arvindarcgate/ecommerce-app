@@ -76,7 +76,10 @@ const Navbar: React.FC = () => {
                   </span>
 
                   {isDropdownOpen && (
-                    <div className={styles.dropdownMenu}>
+                    <div
+                      className={styles.dropdownMenu}
+                      data-testid="dropdown-menu"
+                    >
                       <Link
                         to="/user-details"
                         className={styles.dropdownItem}
