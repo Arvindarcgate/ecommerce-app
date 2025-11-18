@@ -20,13 +20,12 @@ const CartPage: React.FC = () => {
     const { product } = (location.state || {}) as LocationState;
     const navigate = useNavigate();
 
-    // --- CART ITEMS STATE ---
+
     const [cartItems, setCartItems] = useState<Product[]>(() => {
         const storedCart = localStorage.getItem("cart");
         return storedCart ? JSON.parse(storedCart) : [];
     });
 
-    // --- USER STATE ---
     const [user, setUser] = useState<{ email: string } | null>(null);
 
     // ✅ Load user from localStorage or fallback to guest

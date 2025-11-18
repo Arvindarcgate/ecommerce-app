@@ -1,12 +1,11 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingCart, User, Search, Menu, X, LogOut } from "lucide-react";
+import { User, Search, LogOut } from "lucide-react";
 import styles from "../style/component/Navbar.module.css";
 import Container from "../style/component/ui/Container";
 import { AuthContext } from "./components/Authetication/Authcontext";
 
 const Navbar: React.FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
@@ -23,7 +22,6 @@ const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
-  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const closeDropdown = () => setIsDropdownOpen(false);
 
   return (
@@ -51,7 +49,7 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          { }
+          {/* RIGHT SECTION */}
           <div className={styles.navright}>
             {/* Search */}
             <div className={styles.searchBar}>
@@ -74,7 +72,7 @@ const Navbar: React.FC = () => {
                     onClick={toggleDropdown}
                     style={{ cursor: "pointer" }}
                   >
-                    Welcome, {user?.email ? user.email.split("@")[0] : "User"} ▼
+                    Welcome, {user.email.split("@")[0]} ▼
                   </span>
 
                   {isDropdownOpen && (
@@ -86,6 +84,7 @@ const Navbar: React.FC = () => {
                       >
                         User Details
                       </Link>
+
                       <Link
                         to="/productpage"
                         className={styles.dropdownItem}
@@ -93,6 +92,7 @@ const Navbar: React.FC = () => {
                       >
                         Products
                       </Link>
+
                       <Link
                         to="/contact"
                         className={styles.dropdownItem}
@@ -100,6 +100,7 @@ const Navbar: React.FC = () => {
                       >
                         Contact
                       </Link>
+
                       <Link
                         to="/cart"
                         className={styles.dropdownItem}
@@ -107,6 +108,7 @@ const Navbar: React.FC = () => {
                       >
                         Cart
                       </Link>
+
                       <button
                         className={styles.dropdownItem}
                         onClick={() => {
@@ -125,63 +127,8 @@ const Navbar: React.FC = () => {
                 </Link>
               )}
             </div>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className={styles.mobileToggle}
-              onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <X /> : <Menu />}
-            </button>
           </div>
         </div>
-
-        {/* MOBILE MENU */}
-        {isMobileMenuOpen && (
-          <div className={styles.mobileMenu}>
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={styles.mobileNavLink}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-
-            <div className={styles.mobileSearch}>
-              <Search className={styles.searchIcon} />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            {user ? (
-              <button
-                onClick={() => {
-                  logout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className={styles.mobileLogoutBtn}
-              >
-                <LogOut size={16} /> Logout
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className={styles.mobileLoginBtn}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <User size={16} /> Login
-              </Link>
-            )}
-          </div>
-        )}
       </Container>
     </nav>
   );

@@ -1,55 +1,87 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Navbar from "./Navbar";
 import { AuthContext } from "../component/components/Authetication/Authcontext";
 
-describe("Navbar Component", () => {
-  test("renders logo and navigation links", () => {
-    render(
-      <AuthContext.Provider
-        value={{
-          user: null,
-          login: jest.fn(),
-          signup: jest.fn(),
-          logout: jest.fn(),
-        }}
-      >
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
-      </AuthContext.Provider>
-    );
+const mockAuthLoggedOut = {
+  user: null,
+  login: jest.fn(),
+  signup: jest.fn(),
+  logout: jest.fn(),
+};
 
-    expect(screen.getByText("ECommerce")).toBeInTheDocument();
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("Products")).toBeInTheDocument();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
+const mockAuthLoggedIn = {
+  user: { name: "Arvind", email: "arvind@example.com" },
+  login: jest.fn(),
+  signup: jest.fn(),
+  logout: jest.fn(),
+};
+
+const renderNavbar = (authValue: any) =>
+  render(
+    <AuthContext.Provider value={authValue}>
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    </AuthContext.Provider>
+  );
+
+describe("Navbar Component", () => {
+  // -------------------------------------------------
+  test("renders logo text 'ECommerce'", () => {
+    renderNavbar(mockAuthLoggedOut);
+    expect(screen.getByText(/ECommerce/i)).toBeInTheDocument();
   });
 
-  test("renders user dropdown when logged in", () => {
-    const mockUser = { email: "test@example.com" };
-    const mockLogout = jest.fn();
+  // -------------------------------------------------
+  test("renders navigation links with correct paths", () => {
+    renderNavbar(mockAuthLoggedOut);
 
-    render(
-      <AuthContext.Provider
-        value={{
-          user: mockUser,
-          login: jest.fn(),
-          signup: jest.fn(),
-          logout: mockLogout,
-        }}
-      >
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
-      </AuthContext.Provider>
-    );
+    expect(screen.getByText("Home").closest("a")).toHaveAttribute("href", "/Home");
+    expect(screen.getByText("Products").closest("a")).toHaveAttribute("href", "/productpage");
+    expect(screen.getByText("Contact").closest("a")).toHaveAttribute("href", "/contact");
+    expect(screen.getByText("Cart").closest("a")).toHaveAttribute("href", "/cart");
+  });
 
-    const userText = screen.getByText(/Welcome, test/i);
-    fireEvent.click(userText);
+  // -------------------------------------------------
+  test("renders search bar and updates input value", () => {
+    renderNavbar(mockAuthLoggedOut);
 
-    expect(screen.getByText("User Details")).toBeInTheDocument();
-    expect(screen.getByText("Logout")).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Search products...");
+    expect(input).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "Laptop" } });
+    expect(input).toHaveValue("Laptop");
+  });
+
+  // -------------------------------------------------
+  test("shows Login button when user is not logged in", () => {
+    renderNavbar(mockAuthLoggedOut);
+
+    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------
+  test("shows Logout button when user IS logged in", () => {
+    renderNavbar(mockAuthLoggedIn);
+
+    expect(screen.getByText(/Logout/i)).toBeInTheDocument();
+  });
+
+  // -------------------------------------------------
+  test("calls logout function when Logout button is clicked", () => {
+    renderNavbar(mockAuthLoggedIn);
+
+    const logoutBtn = screen.getByText(/Logout/i);
+    fireEvent.click(logoutBtn);
+
+    expect(mockAuthLoggedIn.logout).toHaveBeenCalledTimes(1);
+  });
+
+  // -------------------------------------------------
+  test("shows username when logged in", () => {
+    renderNavbar(mockAuthLoggedIn);
+
+    expect(screen.getByText(/Hi, Arvind/i)).toBeInTheDocument();
   });
 });
