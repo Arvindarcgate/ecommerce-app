@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../style/pages/cart.module.css";
 
@@ -17,86 +17,77 @@ interface LocationState {
 
 const CartPage: React.FC = () => {
     const location = useLocation();
-    const { product } = (location.state || {}) as LocationState;
     const navigate = useNavigate();
 
+    const { product } = (location.state || {}) as LocationState;
 
+    const firstRender = useRef(true);
+
+    // CART STATE
     const [cartItems, setCartItems] = useState<Product[]>(() => {
-        const storedCart = localStorage.getItem("cart");
-        return storedCart ? JSON.parse(storedCart) : [];
+        const stored = localStorage.getItem("cart");
+        return stored ? JSON.parse(stored) : [];
     });
 
+    // USER STATE
     const [user, setUser] = useState<{ email: string } | null>(null);
 
-    // ✅ Load user from localStorage or fallback to guest
+    // Load user only once
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            try {
-                const parsedUser = JSON.parse(storedUser);
-                if (parsedUser?.email) {
-                    setUser(parsedUser);
-                } else {
-                    setUser({ email: "guest@example.com" });
-                }
-            } catch {
-                setUser({ email: "guest@example.com" });
-            }
-        } else {
+        try {
+            const stored = localStorage.getItem("user");
+            const parsed = stored ? JSON.parse(stored) : null;
+            setUser(parsed?.email ? parsed : { email: "guest@example.com" });
+        } catch {
             setUser({ email: "guest@example.com" });
         }
     }, []);
 
-    // ✅ Add product to cart when navigated from product page
+    // Add product once
     useEffect(() => {
-        if (product) {
-            setCartItems((prev) => {
-                const existing = prev.find((item) => item.id === product.id);
-                if (existing) {
-                    return prev.map((item) =>
-                        item.id === product.id
-                            ? { ...item, quantity: item.quantity }
-                            : item
-                    );
-                }
-                return [...prev, { ...product, quantity: 1 }];
-            });
-        }
+        if (!product) return;
+
+        setCartItems(prev => {
+            const exists = prev.find(item => item.id === product.id);
+            if (exists) return prev;
+            return [...prev, { ...product, quantity: 1 }];
+        });
     }, [product]);
 
-    // ✅ Save cart to localStorage whenever updated
+    // Save to localStorage after first render
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
         localStorage.setItem("cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // --- HANDLERS ---
-
+    // HANDLERS
     const handleQuantityChange = (id: number, qty: number) => {
         if (qty < 1) return;
-        setCartItems((prev) =>
-            prev.map((item) =>
+        setCartItems(prev =>
+            prev.map(item =>
                 item.id === id ? { ...item, quantity: qty } : item
             )
         );
     };
 
     const handleRemove = (id: number) => {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
+        setCartItems(prev => prev.filter(item => item.id !== id));
     };
 
-    const total = cartItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-    );
-
-    // ✅ Optional logout handler
     const handleLogout = () => {
         localStorage.removeItem("user");
         setUser({ email: "guest@example.com" });
         navigate("/login");
     };
 
-    // --- FINAL ORDER SUBMIT ---
+    const total = cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
+
     const handleFinalOrder = async () => {
         if (cartItems.length === 0) {
             alert("Your cart is empty!");
@@ -105,35 +96,35 @@ const CartPage: React.FC = () => {
 
         const orderData = {
             email: user?.email,
-            items: cartItems.map((item) => ({
+            items: cartItems.map(item => ({
                 product_id: item.id,
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
-                total: item.price * item.quantity,
+                total: item.price * item.quantity
             })),
-            totalAmount: total,
+            totalAmount: total
         };
 
         try {
             const res = await fetch("http://localhost:8000/api/orders/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData),
+                body: JSON.stringify(orderData)
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                alert(`✅ Order placed successfully!\nOrder ID: ${data.orderId}`);
+                alert(`Order placed! ID: ${data.orderId}`);
                 setCartItems([]);
                 localStorage.removeItem("cart");
             } else {
-                alert(`❌ Failed to place order: ${data.message}`);
+                alert(`Failed: ${data.message}`);
             }
         } catch (err) {
-            console.error("Error placing order:", err);
-            alert("⚠️ Something went wrong while placing the order.");
+            console.error(err);
+            alert("Error placing order.");
         }
     };
 
@@ -143,13 +134,9 @@ const CartPage: React.FC = () => {
 
             {/* USER INFO */}
             <div className={styles.userInfo}>
-                {user ? (
-                    <p>
-                        Welcome, <strong>{user.email.split("@")[0]}</strong>
-                    </p>
-                ) : (
-                    <p>Welcome, Guest</p>
-                )}
+                <p>
+                    Welcome, <strong>{user?.email.split("@")[0]}</strong>
+                </p>
 
                 <div>
                     <button
@@ -177,35 +164,71 @@ const CartPage: React.FC = () => {
             ) : (
                 <>
                     <div className={styles.cartList}>
-                        {cartItems.map((item) => (
+                        {cartItems.map(item => (
                             <div key={item.id} className={styles.cartCard}>
                                 <img
                                     src={`http://localhost:8000${item.image}`}
                                     alt={item.name}
                                     className={styles.image}
                                 />
+
                                 <div className={styles.details}>
                                     <h3>{item.name}</h3>
                                     <p>Size: {item.size}</p>
                                     <p>Price: ₹{item.price}</p>
+
+                                    {/* --- UPDATED BLOCK WITH TEST IDs --- */}
                                     <div className={styles.quantityRow}>
                                         <label>Qty:</label>
+
+                                        <button
+                                            data-testid="decrease-btn"
+                                            onClick={() =>
+                                                handleQuantityChange(
+                                                    item.id,
+                                                    item.quantity - 1
+                                                )
+                                            }
+                                        >
+                                            -
+                                        </button>
+
                                         <input
                                             type="number"
                                             min="1"
                                             value={item.quantity}
                                             onChange={(e) =>
-                                                handleQuantityChange(item.id, Number(e.target.value))
+                                                handleQuantityChange(
+                                                    item.id,
+                                                    Number(e.target.value)
+                                                )
                                             }
                                             className={styles.quantityInput}
                                         />
+
+                                        <button
+                                            data-testid="increase-btn"
+                                            onClick={() =>
+                                                handleQuantityChange(
+                                                    item.id,
+                                                    item.quantity + 1
+                                                )
+                                            }
+                                        >
+                                            +
+                                        </button>
                                     </div>
+
                                     <p>
                                         Total:{" "}
-                                        <strong>₹{item.price * item.quantity}</strong>
+                                        <strong>
+                                            ₹{item.price * item.quantity}
+                                        </strong>
                                     </p>
                                 </div>
+
                                 <button
+                                    data-testid="remove-btn"
                                     onClick={() => handleRemove(item.id)}
                                     className={styles.removeBtn}
                                 >
@@ -215,9 +238,10 @@ const CartPage: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* CART SUMMARY */}
+                    {/* SUMMARY */}
                     <div className={styles.summary}>
                         <h2>Total Amount: ₹{total}</h2>
+
                         <button
                             onClick={handleFinalOrder}
                             className={styles.finalBtn}

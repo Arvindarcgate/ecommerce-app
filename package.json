@@ -7,7 +7,7 @@
     "dev:admin": "nx dev @ecommerce/admin",
     "build": " nx build frontend",
     "lint": " nx lint frontend",
-    "test": " nx test frontend"
+    "test": "nx run-many --target=test -p @ecommerce/frontend @ecommerce/admin @ecommerce/backend"
   },
   "private": true,
   "devDependencies": {
