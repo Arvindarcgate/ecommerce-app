@@ -59,8 +59,8 @@ const AdminLogin: React.FC = () => {
         <div className={styles.container}>
             <div className={styles.card}>
                 <h2>Admin Login</h2>
+                <form onSubmit={handleLogin} className={styles.form} role="form">
 
-                <form onSubmit={handleLogin} className={styles.form}>
                     <input
                         type="email"
                         placeholder="Enter Email"

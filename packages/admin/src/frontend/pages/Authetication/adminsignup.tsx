@@ -62,7 +62,8 @@ const AdminSignup: React.FC = () => {
             <div className={styles.card}>
                 <h2>Admin Signup</h2>
 
-                <form onSubmit={handleSignup} className={styles.form}>
+                <form onSubmit={handleSignup} className={styles.form} role="form">
+
 
                     <input
                         type="text"

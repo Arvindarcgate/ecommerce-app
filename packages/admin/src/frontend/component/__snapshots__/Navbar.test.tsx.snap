@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Navbar Component matches snapshot 1`] = `
+<DocumentFragment>
+  <nav
+    class="navbar"
+  >
+    <h1
+      class="title"
+    >
+      Admin Portal
+    </h1>
+    <div
+      class="links"
+    >
+      <a
+        class="link"
+        data-discover="true"
+        href="/admin-login"
+      >
+        Admin Login
+      </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/admin-signup"
+      >
+        Admin Signup
+      </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/add-product"
+      >
+        Add Product
+      </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/getready"
+      >
+        Get Ready
+      </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/product-edit"
+      >
+        Product edit
+      </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/admin/orders"
+      >
+        Order History
+      </a>
+    </div>
+  </nav>
+</DocumentFragment>
+`;
