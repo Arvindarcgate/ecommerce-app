@@ -6,7 +6,7 @@
     "dev": "ts-node src/server.ts",
     "migrate:make": "knex migrate:make --knexfile knexfile.ts",
     "migrate:latest": "knex migrate:latest --knexfile knexfile.ts",
-    "test": "NODE_ENV=test jest --detectOpenHandles"
+    "test": "NODE_ENV=test jest --detectOpenHandles --coverage"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
