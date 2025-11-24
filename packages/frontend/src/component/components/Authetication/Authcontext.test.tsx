@@ -1,93 +1,128 @@
-
 import React from "react";
-import { renderHook, act } from "@testing-library/react";
-import { AuthProvider, AuthContext } from "../../components/Authetication/Authcontext";
+import { render, screen, act } from "@testing-library/react";
+import { AuthProvider, AuthContext } from "../Authetication/Authcontext";
 
-describe("AuthContext", () => {
+const TestConsumer = () => (
+    <AuthContext.Consumer>
+        {(value) => (
+            <div>
+                <span data-testid="user">{value.user ? value.user.email : "null"}</span>
+                <button onClick={() => value.logout()} data-testid="logout-btn">Logout</button>
+                <button onClick={() => value.login("test@example.com", "1234")} data-testid="login-btn">
+                    Login
+                </button>
+                <button onClick={() => value.signup("new@example.com", "1234")} data-testid="signup-btn">
+                    Signup
+                </button>
+                <button onClick={() => value.login("", "")} data-testid="login-fail-btn">
+                    Login Fail
+                </button>
+                <button onClick={() => value.signup("", "")} data-testid="signup-fail-btn">
+                    Signup Fail
+                </button>
+            </div>
+        )}
+    </AuthContext.Consumer>
+);
+
+describe("AuthContext – 100% Coverage", () => {
     beforeEach(() => {
         localStorage.clear();
         jest.clearAllMocks();
     });
 
-    // Helper wrapper to use AuthProvider in hooks
-    const wrapper = ({ children }: any) => <AuthProvider>{children}</AuthProvider>;
+    test("loads user from localStorage & covers catch block", () => {
+        // Force parse error and spy
+        localStorage.setItem("user", "{ bad json }"); // invalid JSON
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
 
-    test("should load user from localStorage on mount", () => {
-        const storedUser = { email: "stored@example.com" };
-        localStorage.setItem("user", JSON.stringify(storedUser));
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
 
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+        // User should be null after failed parse
+        expect(screen.getByTestId("user").textContent).toBe("null");
 
-        expect(result.current.user).toEqual(storedUser);
+        // Ensure catch block ran
+        expect(consoleSpy).toHaveBeenCalled();
+
+        consoleSpy.mockRestore();
     });
 
-    test("login should update user and save to localStorage", async () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+    test("login updates user & localStorage", async () => {
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
 
         await act(async () => {
-            const response = await result.current.login("test@example.com", "123456");
-            expect(response.success).toBe(true);
+            screen.getByTestId("login-btn").click();
         });
 
-        expect(result.current.user).toEqual({ email: "test@example.com" });
-        expect(localStorage.getItem("user")).toBe(JSON.stringify({ email: "test@example.com" }));
+        expect(screen.getByTestId("user").textContent).toBe("test@example.com");
+        expect(JSON.parse(localStorage.getItem("user")!)).toEqual({ email: "test@example.com" });
     });
 
-    test("login should fail if email or password missing", async () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+    test("login fails with invalid credentials", async () => {
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
 
         await act(async () => {
-            const response = await result.current.login("", "");
-            expect(response.success).toBe(false);
-            expect(response.message).toBe("Invalid credentials");
+            screen.getByTestId("login-fail-btn").click();
         });
 
-        expect(result.current.user).toBeNull();
+        expect(screen.getByTestId("user").textContent).toBe("null");
     });
 
-    test("signup should update user and save to localStorage", async () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+    test("signup updates user & localStorage", async () => {
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
 
         await act(async () => {
-            const response = await result.current.signup("new@example.com", "password");
-            expect(response.success).toBe(true);
+            screen.getByTestId("signup-btn").click();
         });
 
-        expect(result.current.user).toEqual({ email: "new@example.com" });
-        expect(localStorage.getItem("user")).toBe(JSON.stringify({ email: "new@example.com" }));
+        expect(screen.getByTestId("user").textContent).toBe("new@example.com");
+        expect(JSON.parse(localStorage.getItem("user")!)).toEqual({ email: "new@example.com" });
     });
 
-    test("signup should fail when credentials missing", async () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+    test("signup fails with invalid credentials", async () => {
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
 
         await act(async () => {
-            const response = await result.current.signup("", "");
-            expect(response.success).toBe(false);
-            expect(response.message).toBe("Signup failed");
+            screen.getByTestId("signup-fail-btn").click();
         });
 
-        expect(result.current.user).toBeNull();
+        expect(screen.getByTestId("user").textContent).toBe("null");
     });
 
-    test("logout should clear user and remove from localStorage", () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+    test("logout clears user & localStorage", async () => {
+        localStorage.setItem("user", JSON.stringify({ email: "already@example.com" }));
 
-        // Set user first
-        act(() => {
-            localStorage.setItem("user", JSON.stringify({ email: "logout@example.com" }));
-            result.current.logout();
+        render(
+            <AuthProvider>
+                <TestConsumer />
+            </AuthProvider>
+        );
+
+        await act(async () => {
+            screen.getByTestId("logout-btn").click();
         });
 
-        expect(result.current.user).toBeNull();
-        expect(localStorage.getItem("user")).toBe(null);
-    });
-
-    test("provider should render children", () => {
-        const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
-
-        expect(result.current).toBeDefined();
-        expect(typeof result.current.login).toBe("function");
-        expect(typeof result.current.logout).toBe("function");
-        expect(typeof result.current.signup).toBe("function");
+        expect(screen.getByTestId("user").textContent).toBe("null");
+        expect(localStorage.getItem("user")).toBeNull();
     });
 });

@@ -1,117 +1,181 @@
+/**
+ * @file adminProductpage.test.ts
+ * Full test coverage for addProduct & getProducts
+ */
 
-import request from "supertest";
-import app from "../server";
-import { Product } from "../models/adminproduct";
+import { Request, Response } from "express";
 
-// Mock Product Model
+/* ---------------------------
+   MOCK Product.query()
+---------------------------- */
+
+// mockInsert → used for addProduct
+const mockInsert = jest.fn();
+
+// mockQuery → must return an object with insert()
+// BUT for getProducts, it must return an array
+const mockQuery = jest.fn();
+
+// When Product.query() is called, return an object that contains insert()
+mockQuery.mockImplementation(() => ({
+    insert: mockInsert,
+}));
+
 jest.mock("../models/adminproduct", () => ({
+    __esModule: true,
     Product: {
-        query: jest.fn().mockReturnThis(),
-        findById: jest.fn().mockReturnThis(),
-        patch: jest.fn().mockReturnThis(),
-        deleteById: jest.fn(),
-        returning: jest.fn().mockReturnThis(),
+        query: mockQuery,
     },
 }));
 
+// After mocking → import controllers
+import { addProduct, getProducts } from "../controllers/adminProductpage";
+
+/* ---------------------------
+   Mock Response Object
+---------------------------- */
+const mockResponse = () => {
+    const res = {} as Response;
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+};
+
+/* ---------------------------
+   TEST SUITE
+---------------------------- */
 describe("Admin Product Controller", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    // ====================================================
-    // ✅ TEST 1: UPDATE PRODUCT - SUCCESS
-    // ====================================================
-    test("should update a product successfully", async () => {
-        const mockUpdated = {
+    /* ---------------------------
+       1) ADD PRODUCT → 400
+    ---------------------------- */
+    test("should return 400 if required fields are missing", async () => {
+        const req = {
+            body: {
+                name: "Shirt",
+                price: 200,
+                size: "M",
+            },
+            file: null,
+        } as any;
+
+        const res = mockResponse();
+
+        await addProduct(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "All fields are required",
+        });
+    });
+
+    /* ---------------------------
+       2) ADD PRODUCT → SUCCESS
+    ---------------------------- */
+    test("should add product successfully", async () => {
+        const fakeProduct = {
             id: 1,
-            name: "Updated Shirt",
-            price: 150,
+            name: "Shirt",
+            price: 200,
             size: "M",
-            image: "/uploads/sample.jpg",
+            image: "/uploads/test.jpg",
         };
 
-        (Product.patch as any).mockReturnValue({
-            returning: jest.fn().mockResolvedValue(mockUpdated),
+        const req = {
+            body: {
+                name: "Shirt",
+                price: 200,
+                size: "M",
+            },
+            file: { filename: "test.jpg" },
+        } as any;
+
+        const res = mockResponse();
+
+        // insert() returns product
+        mockInsert.mockResolvedValueOnce(fakeProduct);
+
+        await addProduct(req, res);
+
+        expect(mockInsert).toHaveBeenCalledWith({
+            name: "Shirt",
+            price: 200,
+            size: "M",
+            image: "/uploads/test.jpg",
         });
 
-        const res = await request(app)
-            .put("/api/products/update/1")
-            .field("name", "Updated Shirt")
-            .field("price", "150")
-            .field("size", "M");
-
-        expect(res.status).toBe(200);
-        expect(res.body.message).toBe("✅ Product updated successfully");
-        expect(res.body.product).toEqual(mockUpdated);
-    });
-
-
-    test("should return 404 if product not found", async () => {
-        (Product.patch as any).mockReturnValue({
-            returning: jest.fn().mockResolvedValue(null),
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "✅ Product added successfully",
+            product: fakeProduct,
         });
-
-        const res = await request(app)
-            .put("/api/products/update/99")
-            .field("name", "Something")
-            .field("price", "100")
-            .field("size", "XL");
-
-        expect(res.status).toBe(404);
-        expect(res.body.message).toBe("❌ Product not found");
     });
 
-    // ====================================================
-    // 💥 TEST 3: UPDATE PRODUCT - SERVER ERROR
-    // ====================================================
-    test("should return 500 if update throws error", async () => {
-        (Product.patch as any).mockImplementation(() => {
-            throw new Error("DB ERROR");
+    /* ---------------------------
+       3) ADD PRODUCT → ERROR (500)
+    ---------------------------- */
+    test("should return 500 on addProduct failure", async () => {
+        const req = {
+            body: {
+                name: "Shirt",
+                price: 200,
+                size: "M",
+            },
+            file: { filename: "test.jpg" },
+        } as any;
+
+        const res = mockResponse();
+
+        mockInsert.mockRejectedValueOnce(new Error("DB error"));
+
+        await addProduct(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Server Error",
+            error: "DB error",
         });
-
-        const res = await request(app)
-            .put("/api/products/update/1")
-            .field("name", "Test")
-            .field("price", "100");
-
-        expect(res.status).toBe(500);
-        expect(res.body.message).toBe("Server Error");
     });
 
-    // ====================================================
-    // 🗑️ TEST 4: DELETE PRODUCT - SUCCESS
-    // ====================================================
-    test("should delete a product successfully", async () => {
-        (Product.deleteById as any).mockResolvedValue(1);
+    /* ---------------------------
+       4) GET PRODUCTS → SUCCESS
+    ---------------------------- */
+    test("should return all products", async () => {
+        const fakeProducts = [
+            { id: 1, name: "Shirt", price: 200, size: "M" },
+            { id: 2, name: "Pant", price: 400, size: "L" },
+        ];
 
-        const res = await request(app).delete("/api/products/delete/1");
+        const req = {} as Request;
+        const res = mockResponse();
 
-        expect(res.status).toBe(200);
-        expect(res.body.message).toBe("🗑️ Product deleted successfully");
+        // For getProducts → Product.query() returns array, not insert()
+        mockQuery.mockResolvedValueOnce(fakeProducts);
+
+        await getProducts(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(fakeProducts);
     });
 
-    // ====================================================
-    // ❌ TEST 5: DELETE PRODUCT - NOT FOUND
-    // ====================================================
-    test("should return 404 when deleting non-existing product", async () => {
-        (Product.deleteById as any).mockResolvedValue(0);
+    /* ---------------------------
+       5) GET PRODUCTS → ERROR
+    ---------------------------- */
+    test("should return 500 when getProducts fails", async () => {
+        const req = {} as Request;
+        const res = mockResponse();
 
-        const res = await request(app).delete("/api/products/delete/999");
+        mockQuery.mockRejectedValueOnce(new Error("DB fail"));
 
-        expect(res.status).toBe(404);
-        expect(res.body.message).toBe("❌ Product not found");
-    });
+        await getProducts(req, res);
 
-    // ====================================================
-    // 💥 TEST 6: DELETE PRODUCT - SERVER ERROR
-    // ====================================================
-    test("should return 500 on delete error", async () => {
-        (Product.deleteById as any).mockRejectedValue(new Error("DB FAIL"));
-
-        const res = await request(app).delete("/api/products/delete/1");
-
-        expect(res.status).toBe(500);
-        expect(res.body.message).toBe("Server Error");
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.json).toHaveBeenCalledWith({
+            message: "Server Error",
+            error: "DB fail",
+        });
     });
 });

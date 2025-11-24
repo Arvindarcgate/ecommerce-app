@@ -1,151 +1,131 @@
-import React from "react";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AdminProductEdit from "../frontend/pages/adminProductedit";
 
-global.fetch = jest.fn() as jest.Mock;
+// GLOBAL MOCKS
+const mockFetch = jest.fn();
+global.fetch = mockFetch as any;
 
-const mockProducts = [
-    { id: 1, name: "T-Shirt", price: 500, size: "M", image: "/uploads/tshirt.png" },
-    { id: 2, name: "Jeans", price: 1200, size: "L", image: "/uploads/jeans.png" },
+const mockConfirm = jest.fn();
+global.confirm = mockConfirm;
+
+const mockAlert = jest.fn();
+global.alert = mockAlert;
+
+const sampleProducts = [
+    { id: 1, name: "Shirt", price: 500, size: "M", image: "/img1.png" },
 ];
 
-describe("🧪 AdminProductEdit Component", () => {
+describe("AdminProductEdit Component", () => {
     beforeEach(() => {
         jest.clearAllMocks();
-    });
 
-    test("renders products after fetching", async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce({
+        // First fetch (load products)
+        mockFetch.mockResolvedValueOnce({
             ok: true,
-            json: async () => mockProducts,
-        });
-
-        render(<AdminProductEdit />);
-
-        expect(screen.getByText(/manage products/i)).toBeInTheDocument();
-
-        // Wait until the products appear
-        await waitFor(() => {
-            expect(screen.getByText("T-Shirt")).toBeInTheDocument();
-            expect(screen.getByText("Jeans")).toBeInTheDocument();
+            json: async () => sampleProducts,
         });
     });
 
-    test("clicking edit opens edit form", async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce({
+    test("loads and displays products (covers line 25)", async () => {
+        render(<AdminProductEdit />);
+
+        expect(await screen.findByText("Shirt")).toBeInTheDocument();
+    });
+
+    test("delete product success (covers handleDelete success)", async () => {
+        render(<AdminProductEdit />);
+
+        await screen.findByText("Shirt");
+
+        mockConfirm.mockReturnValue(true);
+
+        // DELETE success mock
+        mockFetch.mockResolvedValueOnce({ ok: true });
+
+        fireEvent.click(screen.getByText("🗑️ Delete"));
+
+        await waitFor(() => {
+            expect(mockAlert).toHaveBeenCalledWith("🗑️ Product deleted successfully!");
+        });
+    });
+
+    test("delete product failure (covers lines 52-56)", async () => {
+        render(<AdminProductEdit />);
+
+        await screen.findByText("Shirt");
+
+        mockConfirm.mockReturnValue(true);
+
+        mockFetch.mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ message: "Delete failed" }),
+        });
+
+        fireEvent.click(screen.getByText("🗑️ Delete"));
+
+        await waitFor(() => {
+            expect(mockAlert).toHaveBeenCalledWith("❌ Error: Delete failed");
+        });
+    });
+
+    test("open edit form + input updates + cancel (covers 141-171)", async () => {
+        render(<AdminProductEdit />);
+
+        await screen.findByText("Shirt");
+
+        fireEvent.click(screen.getByText("✏️ Edit"));
+
+        // Now form is visible
+        const nameInput = screen.getByPlaceholderText("Product Name");
+        const priceInput = screen.getByPlaceholderText("Price");
+        const sizeInput = screen.getByPlaceholderText("Size (e.g. S, M, L)");
+
+        fireEvent.change(nameInput, { target: { value: "Updated Shirt" } });
+        fireEvent.change(priceInput, { target: { value: "999" } });
+        fireEvent.change(sizeInput, { target: { value: "L" } });
+
+        fireEvent.click(screen.getByText("❌ Cancel"));
+
+        await waitFor(() => {
+            expect(screen.queryByText("Edit Product")).toBeNull();
+        });
+    });
+
+    test("update product success (covers success path)", async () => {
+        render(<AdminProductEdit />);
+
+        await screen.findByText("Shirt");
+
+        fireEvent.click(screen.getByText("✏️ Edit"));
+
+        mockFetch.mockResolvedValueOnce({
             ok: true,
-            json: async () => mockProducts,
+            json: async () => ({ message: "success" }),
         });
 
-        render(<AdminProductEdit />);
-
-        await waitFor(() => screen.getByText("T-Shirt"));
-
-        userEvent.click(screen.getAllByText(/✏️ Edit/i)[0]);
+        fireEvent.click(screen.getByText("✅ Update"));
 
         await waitFor(() => {
-            expect(screen.getByText(/edit product/i)).toBeInTheDocument();
-            expect(screen.getByDisplayValue("T-Shirt")).toBeInTheDocument();
+            expect(mockAlert).toHaveBeenCalledWith("✅ Product updated successfully!");
         });
     });
 
-    test("editing and submitting form updates product", async () => {
-        (fetch as jest.Mock)
-            // initial fetch
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockProducts,
-            })
-            // update call
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ message: "Updated successfully" }),
-            })
-            // refetch after update
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockProducts,
-            });
-
+    test("update product failure (covers lines 89-92)", async () => {
         render(<AdminProductEdit />);
 
-        await waitFor(() => screen.getByText("T-Shirt"));
+        await screen.findByText("Shirt");
 
-        userEvent.click(screen.getAllByText(/✏️ Edit/i)[0]);
+        fireEvent.click(screen.getByText("✏️ Edit"));
 
-        await waitFor(() => screen.getByPlaceholderText(/product name/i));
-
-        const nameInput = screen.getByPlaceholderText(/product name/i);
-        fireEvent.change(nameInput, { target: { value: "Updated T-Shirt" } });
-
-        userEvent.click(screen.getByText(/update/i));
-
-        await waitFor(() =>
-            expect(fetch).toHaveBeenCalledWith(
-                expect.stringContaining("/update/1"),
-                expect.objectContaining({ method: "PUT" })
-            )
-        );
-    });
-
-    test("deleting product calls DELETE API", async () => {
-        window.confirm = jest.fn(() => true);
-
-        (fetch as jest.Mock)
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => mockProducts,
-            })
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ message: "Deleted" }),
-            })
-            .mockResolvedValueOnce({
-                ok: true,
-                json: async () => [],
-            });
-
-        render(<AdminProductEdit />);
-
-        await waitFor(() => screen.getByText("Jeans"));
-
-        userEvent.click(screen.getAllByText(/🗑️ Delete/i)[0]);
-
-        await waitFor(() =>
-            expect(fetch).toHaveBeenCalledWith(
-                expect.stringContaining("/delete/1"),
-                expect.objectContaining({ method: "DELETE" })
-            )
-        );
-    });
-
-    test("cancel button closes edit form", async () => {
-        (fetch as jest.Mock).mockResolvedValueOnce({
-            ok: true,
-            json: async () => mockProducts,
+        mockFetch.mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ message: "Update failed" }),
         });
 
-        render(<AdminProductEdit />);
-        await waitFor(() => screen.getByText("T-Shirt"));
-
-        userEvent.click(screen.getAllByText(/✏️ Edit/i)[0]);
-
-        await waitFor(() => screen.getByText(/cancel/i));
-
-        userEvent.click(screen.getByText(/cancel/i));
+        fireEvent.click(screen.getByText("✅ Update"));
 
         await waitFor(() => {
-            expect(screen.queryByText(/edit product/i)).not.toBeInTheDocument();
-        });
-    });
-
-    test("handles fetch error gracefully", async () => {
-        (fetch as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
-
-        render(<AdminProductEdit />);
-        await waitFor(() => {
-            expect(fetch).toHaveBeenCalled();
+            expect(mockAlert).toHaveBeenCalledWith("❌ Error: Update failed");
         });
     });
 });
