@@ -1,6 +1,3 @@
-// ============================
-// 🔥 CHAINABLE KNEX MOCK SETUP
-// ============================
 const mockQueryBuilder = {
     insert: jest.fn().mockReturnThis(),
     select: jest.fn().mockReturnThis(),
@@ -17,13 +14,9 @@ jest.mock("../db/Knex", () => ({
     default: mockKnex,
 }));
 
-// Must be AFTER mocks
 import { Request, Response } from "express";
 import { createOrder, getAllOrders } from "../controllers/ordercontroller";
 
-// ============================
-// 🔥 MOCK RESPONSE HELPER
-// ============================
 const mockResponse = () => {
     const res = {} as Response;
     res.status = jest.fn().mockReturnValue(res);
@@ -31,31 +24,22 @@ const mockResponse = () => {
     return res;
 };
 
-// ============================
-// 🔥 TEST SUITE
-// ============================
 describe("Order Controller", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    // ========================================
-    // 1) INVALID ORDER (400)
-    // ========================================
-    test("should return 400 for invalid order data", async () => {
+    test("returns 400 for invalid order data", async () => {
         const req = { body: {} } as Request;
         const res = mockResponse();
 
         await createOrder(req, res);
 
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Invalid order data",
-        });
+        expect(res.json).toHaveBeenCalledWith({ message: "Invalid order data" });
     });
 
-    
-    test("should create an order successfully", async () => {
+    test("creates an order successfully", async () => {
         const req = {
             body: {
                 email: "test@example.com",
@@ -74,10 +58,7 @@ describe("Order Controller", () => {
 
         const res = mockResponse();
 
-        // Mock order insert returning ID
         mockQueryBuilder.insert.mockResolvedValueOnce([10]);
-
-        // Mock item insert
         mockQueryBuilder.insert.mockResolvedValueOnce({});
 
         await createOrder(req, res);
@@ -90,8 +71,7 @@ describe("Order Controller", () => {
         });
     });
 
-    
-    test("should return 500 if DB throws error", async () => {
+    test("returns 500 when DB fails to insert order", async () => {
         const req = {
             body: {
                 email: "x@test.com",
@@ -113,10 +93,7 @@ describe("Order Controller", () => {
         });
     });
 
-    // ========================================
-    // 4) GET ALL ORDERS (SUCCESS)
-    // ========================================
-    test("should return all orders", async () => {
+    test("returns all orders", async () => {
         const req = { query: {} } as any;
         const res = mockResponse();
 
@@ -153,10 +130,7 @@ describe("Order Controller", () => {
         ]);
     });
 
-    // ========================================
-    // 5) FILTER BY EMAIL
-    // ========================================
-    test("should filter orders by email", async () => {
+    test("filters orders by email", async () => {
         const req = { query: { email: "x@test.com" } } as any;
         const res = mockResponse();
 
@@ -182,10 +156,7 @@ describe("Order Controller", () => {
         );
     });
 
-    // ========================================
-    // 6) GET ALL ORDERS FAIL (500)
-    // ========================================
-    test("should return 500 when DB throws error while fetching", async () => {
+    test("returns 500 when failing to fetch orders", async () => {
         const req = { query: {} } as any;
         const res = mockResponse();
 
