@@ -17,6 +17,11 @@ node_modules
 .settings/
 *.sublime-workspace
 
+# test coverage
+coverage
+# or for all packages
+**/coverage
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json

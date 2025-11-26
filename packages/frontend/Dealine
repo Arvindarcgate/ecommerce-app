@@ -1,0 +1,91 @@
+
+
+Project Name: Ecommerce.
+
+Dealine Date:  04/12/2025.
+
+Description of Project.
+    This  Ecommerce  is build on Nx mono repo architecture
+    In which packages frontend , backend , admin Panel.
+    MySql Database. 
+
+Functionality To Be Done.
+
+1.  Authentication   
+   . JWT Based Login + Sign up Both  for Admin and Frontend. 
+    . Ensure Role Based Access and token storage.
+    
+
+2.  Product Page 
+    . In These Product page from Admin panel Product Added , Edit or Delete Through Admin Panel.
+       that changes Directly reflect in Frontend Product Page
+
+3. Navbar 
+     . Added Search Functionality in Navbar. Directly Search Product through Navbar .
+
+4. Rewrite The Code.
+     . Change The Existing code and Maintain Optimize the code in all files .
+
+5.  Test cases 
+     Rewrite The test cases of files Modify and Maintain test Coverage above 90%. 
+
+6. Cart Function.
+     .Product can directly Added through cart and place the order and save in database.  
+
+7. Order History.
+    Proper Ui Of Order History see in Admin Panel whose order and order details.    
+
+
+
+
+         Project Name: Ecommerce
+         Deadline Date: 04/12/2025
+
+         Description of Project
+          This Ecommerce project is built on an Nx monorepo architecture, which includes the following packages:
+
+                     Frontend
+                      Backend
+                    Admin Panel
+ The project uses a MySQL database.
+
+ 
+        Functionality To Be Done
+
+        1. Authentication
+        Implement JWT-based Login and Signup for both Admin and Frontend.
+         Ensure role-based access and secure token storage.
+
+         2. Product Page
+
+         From the Admin Panel, products can be added, edited, or deleted.
+
+         All changes should directly reflect on the Frontend Product Page.
+
+3. Navbar
+
+Add search functionality in the Navbar.
+
+Users should be able to directly search products using the Navbar.
+
+4. Rewrite the Code
+
+Update the existing code and maintain optimized, clean, and efficient code across all files.
+
+5. Test Cases
+
+Rewrite test cases for all modified files.
+
+Maintain above 90% test coverage.
+
+6. Cart Function
+
+Users can directly add products to the cart and place orders.
+
+Order details should be saved in the database.
+
+7. Order History
+
+Implement a proper UI for Order History in the Admin Panel.
+
+Admin should be able to view all orders and their details.

@@ -1,34 +1,23 @@
-/**
- * @file adminProductpage.test.ts
- * DRY optimized test coverage for addProduct & getProducts
- */
 
 import { Request, Response } from "express";
 
-/* ----------------------------------
-   COMMON MOCKS (DRY)
------------------------------------ */
 
-// mockInsert → used for addProduct
 const mockInsert = jest.fn();
 
-// mockQuery → by default returns { insert }
 const mockQuery = jest.fn().mockImplementation(() => ({
     insert: mockInsert,
 }));
 
-// Mock Product model
+
 jest.mock("../models/adminproduct", () => ({
     __esModule: true,
     Product: { query: mockQuery },
 }));
 
-// Import controllers AFTER mocks
+
 import { addProduct, getProducts } from "../controllers/adminProductpage";
 
-/* ----------------------------------
-   REUSABLE MOCK RESPONSE (DRY)
------------------------------------ */
+
 const createRes = () => {
     const res = {} as Response;
     res.status = jest.fn().mockReturnValue(res);
@@ -36,9 +25,7 @@ const createRes = () => {
     return res;
 };
 
-/* ----------------------------------
-   REUSABLE PRODUCT PAYLOADS (DRY)
------------------------------------ */
+
 const validBody = {
     name: "Shirt",
     price: 200,
@@ -53,17 +40,13 @@ const fakeProduct = {
     image: "/uploads/test.jpg",
 };
 
-/* ----------------------------------
-   TEST SUITE
------------------------------------ */
+
 describe("Admin Product Controller (DRY optimized)", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    /* ---------------------------
-       ADD PRODUCT → 400
-    ---------------------------- */
+
     test("should return 400 if required fields are missing", async () => {
         const req = { body: { ...validBody }, file: null } as any;
         const res = createRes();
@@ -76,9 +59,7 @@ describe("Admin Product Controller (DRY optimized)", () => {
         });
     });
 
-    /* ---------------------------
-       ADD PRODUCT → SUCCESS
-    ---------------------------- */
+
     test("should add product successfully", async () => {
         const req = { body: validBody, file: validFile } as any;
         const res = createRes();
@@ -99,9 +80,7 @@ describe("Admin Product Controller (DRY optimized)", () => {
         });
     });
 
-    /* ---------------------------
-       ADD PRODUCT → ERROR (500)
-    ---------------------------- */
+
     test("should return 500 on addProduct failure", async () => {
         const req = { body: validBody, file: validFile } as any;
         const res = createRes();
@@ -117,9 +96,7 @@ describe("Admin Product Controller (DRY optimized)", () => {
         });
     });
 
-    /* ---------------------------
-       GET PRODUCTS → SUCCESS
-    ---------------------------- */
+
     test("should return all products", async () => {
         const fakeProducts = [
             { id: 1, name: "Shirt", price: 200, size: "M" },
@@ -129,7 +106,7 @@ describe("Admin Product Controller (DRY optimized)", () => {
         const req = {} as Request;
         const res = createRes();
 
-        // override to return array (not insert)
+
         mockQuery.mockResolvedValueOnce(fakeProducts);
 
         await getProducts(req, res);
@@ -138,9 +115,7 @@ describe("Admin Product Controller (DRY optimized)", () => {
         expect(res.json).toHaveBeenCalledWith(fakeProducts);
     });
 
-    /* ---------------------------
-       GET PRODUCTS → ERROR
-    ---------------------------- */
+
     test("should return 500 when getProducts fails", async () => {
         const req = {} as Request;
         const res = createRes();

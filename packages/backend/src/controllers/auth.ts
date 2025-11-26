@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { User, IUser } from "../models/User";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -14,14 +13,20 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 const ACCESS_TOKEN_EXPIRY = "15m";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
-// ✅ Signup Controller
+/* ============================================================
+   ✔ SIGNUP - Returns { success, token } exactly as frontend needs
+=============================================================== */
+
 // export const signup = async (req: Request, res: Response) => {
 //     const { email, password, role } = req.body;
 
 //     try {
 //         const existingUser = await User.query().findOne({ email });
 //         if (existingUser) {
-//             return res.status(400).json({ message: "Email already exists" });
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Email already exists",
+//             });
 //         }
 
 //         const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,8 +37,9 @@ const REFRESH_TOKEN_EXPIRY = "7d";
 //             role: role || "user",
 //         });
 
-//         res.status(201).json({
-//             message: "User created",
+//         return res.status(201).json({
+//             success: true,
+//             message: "User registered successfully",
 //             user: {
 //                 id: user.id,
 //                 email: user.email,
@@ -42,49 +48,62 @@ const REFRESH_TOKEN_EXPIRY = "7d";
 //         });
 //     } catch (err) {
 //         console.error("Signup Error:", err);
-//         res.status(500).json({ message: "Server error" });
+//         return res.status(500).json({
+//             success: false,
+//             message: "Server error",
+//         });
 //     }
 // };
 
 
 
-
 export const signup = async (req: Request, res: Response) => {
-    const { email, password, role } = req.body;
+    console.log("📥 Incoming signup request:", req.body);
+
+    const { email, password } = req.body;
 
     try {
+        // Email check
         const existingUser = await User.query().findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "Email already exists" });
+            console.log("❌ Email already exists");
+            return res.status(400).json({
+                success: false,
+                message: "Email already exists",
+            });
         }
 
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const verificationToken = crypto.randomBytes(32).toString("hex");
-
-        const user: IUser = await User.query().insert({
+        // Insert user
+        const user = await User.query().insert({
             email,
             password: hashedPassword,
-            role: role || "user",
-            is_verified: false,
-            verification_token: verificationToken,
+            role: "user",
         });
 
-        // Generate a verification link (frontend route)
-        const verificationLink = `http://localhost:5173/verify-email?token=${verificationToken}`;
+        console.log("✅ User created:", user);
 
-        res.status(201).json({
-            message: "Signup successful!",
-            verificationLink, // return the clickable link
-            user: { id: user.id, email: user.email, role: user.role },
+        return res.status(201).json({
+            success: true,
+            message: "User registered successfully",
         });
-    } catch (err) {
-        console.error("Signup Error:", err);
-        res.status(500).json({ message: "Server error" });
+
+    } catch (err: any) {
+        console.error("🔥 Signup Error:", err);
+
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Server error",
+        });
     }
 };
 
 
+/* ============================================================
+   ✔ VERIFY EMAIL
+=============================================================== */
 
 export const verifyEmail = async (req: Request, res: Response) => {
     const { token } = req.query;
@@ -95,16 +114,25 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     try {
         const user = await User.query().findOne({ verification_token: token });
-        if (!user) return res.status(400).json({ message: "Invalid token" });
+
+        if (!user) {
+            return res.status(400).json({ message: "Invalid token" });
+        }
 
         await User.query()
             .findById(user.id)
-            .patch({ is_verified: true, verification_token: undefined });
+            .patch({
+                is_verified: true,
 
-        res.json({ message: "Email verified successfully! You can now login." });
+            });
+
+        return res.json({
+            message: "Email verified successfully! You can now login."
+        });
+
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+        console.error("Verification Error:", err);
+        return res.status(500).json({ message: "Server error" });
     }
 };
 
@@ -129,13 +157,8 @@ export const login = async (req: Request, res: Response) => {
             { expiresIn: ACCESS_TOKEN_EXPIRY }
         );
 
-        const refreshToken = jwt.sign(
-            { id: user.id, role: user.role },
-            REFRESH_TOKEN_SECRET,
-            { expiresIn: REFRESH_TOKEN_EXPIRY }
-        );
-
-        res.json({
+        return res.json({
+            success: true,
             message: "Login successful",
             user: {
                 id: user.id,
@@ -143,10 +166,11 @@ export const login = async (req: Request, res: Response) => {
                 role: user.role,
             },
             accessToken,
-            refreshToken,
         });
+
     } catch (err) {
         console.error("Login Error:", err);
-        res.status(500).json({ message: "Server error" });
+        return res.status(500).json({ message: "Server error" });
     }
 };
+

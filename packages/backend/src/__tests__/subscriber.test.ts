@@ -26,7 +26,6 @@ describe("POST /subscribe", () => {
         jest.clearAllMocks();
     });
 
-    // ----------------------------------------------------
     test("❌ Should return 400 if email is missing", async () => {
         const response = await request(app)
             .post("/subscribe")
@@ -37,7 +36,6 @@ describe("POST /subscribe", () => {
         expect(response.body.error).toBe("Email is required");
     });
 
-    // ----------------------------------------------------
     test("❌ Should return 401 if user is unauthorized", async () => {
         const response = await request(app)
             .post("/subscribe")
@@ -47,7 +45,7 @@ describe("POST /subscribe", () => {
         expect(response.body.error).toBe("Unauthorized");
     });
 
-    // ----------------------------------------------------
+
     test("✅ Should subscribe user successfully", async () => {
         (db as any).mockReturnValueOnce({
             insert: jest.fn().mockResolvedValueOnce([1])
@@ -64,7 +62,7 @@ describe("POST /subscribe", () => {
         expect(db).toHaveBeenCalledWith("subscribers");
     });
 
-    // ----------------------------------------------------
+
     test("❌ Should return 500 on database error", async () => {
         (db as any).mockReturnValueOnce({
             insert: jest.fn().mockRejectedValueOnce(new Error("DB Error"))
