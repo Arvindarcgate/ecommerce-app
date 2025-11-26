@@ -13,10 +13,11 @@ const Navbar: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
 
   const navigation = [
-    { name: "Home", href: "/Home" },
+    { name: "Home", href: "/" },
     { name: "Products", href: "/productpage" },
     { name: "Contact", href: "/contact" },
     { name: "Cart", href: "/cart" },
+    { name: "AuthLogin", href: "/Authlogin" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

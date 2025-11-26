@@ -1,68 +1,72 @@
 /**
  * @file adminProductpage.test.ts
- * Full test coverage for addProduct & getProducts
+ * DRY optimized test coverage for addProduct & getProducts
  */
 
 import { Request, Response } from "express";
 
-/* ---------------------------
-   MOCK Product.query()
----------------------------- */
+/* ----------------------------------
+   COMMON MOCKS (DRY)
+----------------------------------- */
 
 // mockInsert → used for addProduct
 const mockInsert = jest.fn();
 
-// mockQuery → must return an object with insert()
-// BUT for getProducts, it must return an array
-const mockQuery = jest.fn();
-
-// When Product.query() is called, return an object that contains insert()
-mockQuery.mockImplementation(() => ({
+// mockQuery → by default returns { insert }
+const mockQuery = jest.fn().mockImplementation(() => ({
     insert: mockInsert,
 }));
 
+// Mock Product model
 jest.mock("../models/adminproduct", () => ({
     __esModule: true,
-    Product: {
-        query: mockQuery,
-    },
+    Product: { query: mockQuery },
 }));
 
-// After mocking → import controllers
+// Import controllers AFTER mocks
 import { addProduct, getProducts } from "../controllers/adminProductpage";
 
-/* ---------------------------
-   Mock Response Object
----------------------------- */
-const mockResponse = () => {
+/* ----------------------------------
+   REUSABLE MOCK RESPONSE (DRY)
+----------------------------------- */
+const createRes = () => {
     const res = {} as Response;
     res.status = jest.fn().mockReturnValue(res);
     res.json = jest.fn().mockReturnValue(res);
     return res;
 };
 
-/* ---------------------------
+/* ----------------------------------
+   REUSABLE PRODUCT PAYLOADS (DRY)
+----------------------------------- */
+const validBody = {
+    name: "Shirt",
+    price: 200,
+    size: "M",
+};
+
+const validFile = { filename: "test.jpg" };
+
+const fakeProduct = {
+    id: 1,
+    ...validBody,
+    image: "/uploads/test.jpg",
+};
+
+/* ----------------------------------
    TEST SUITE
----------------------------- */
-describe("Admin Product Controller", () => {
+----------------------------------- */
+describe("Admin Product Controller (DRY optimized)", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     /* ---------------------------
-       1) ADD PRODUCT → 400
+       ADD PRODUCT → 400
     ---------------------------- */
     test("should return 400 if required fields are missing", async () => {
-        const req = {
-            body: {
-                name: "Shirt",
-                price: 200,
-                size: "M",
-            },
-            file: null,
-        } as any;
-
-        const res = mockResponse();
+        const req = { body: { ...validBody }, file: null } as any;
+        const res = createRes();
 
         await addProduct(req, res);
 
@@ -73,37 +77,18 @@ describe("Admin Product Controller", () => {
     });
 
     /* ---------------------------
-       2) ADD PRODUCT → SUCCESS
+       ADD PRODUCT → SUCCESS
     ---------------------------- */
     test("should add product successfully", async () => {
-        const fakeProduct = {
-            id: 1,
-            name: "Shirt",
-            price: 200,
-            size: "M",
-            image: "/uploads/test.jpg",
-        };
+        const req = { body: validBody, file: validFile } as any;
+        const res = createRes();
 
-        const req = {
-            body: {
-                name: "Shirt",
-                price: 200,
-                size: "M",
-            },
-            file: { filename: "test.jpg" },
-        } as any;
-
-        const res = mockResponse();
-
-        // insert() returns product
         mockInsert.mockResolvedValueOnce(fakeProduct);
 
         await addProduct(req, res);
 
         expect(mockInsert).toHaveBeenCalledWith({
-            name: "Shirt",
-            price: 200,
-            size: "M",
+            ...validBody,
             image: "/uploads/test.jpg",
         });
 
@@ -115,19 +100,11 @@ describe("Admin Product Controller", () => {
     });
 
     /* ---------------------------
-       3) ADD PRODUCT → ERROR (500)
+       ADD PRODUCT → ERROR (500)
     ---------------------------- */
     test("should return 500 on addProduct failure", async () => {
-        const req = {
-            body: {
-                name: "Shirt",
-                price: 200,
-                size: "M",
-            },
-            file: { filename: "test.jpg" },
-        } as any;
-
-        const res = mockResponse();
+        const req = { body: validBody, file: validFile } as any;
+        const res = createRes();
 
         mockInsert.mockRejectedValueOnce(new Error("DB error"));
 
@@ -141,7 +118,7 @@ describe("Admin Product Controller", () => {
     });
 
     /* ---------------------------
-       4) GET PRODUCTS → SUCCESS
+       GET PRODUCTS → SUCCESS
     ---------------------------- */
     test("should return all products", async () => {
         const fakeProducts = [
@@ -150,9 +127,9 @@ describe("Admin Product Controller", () => {
         ];
 
         const req = {} as Request;
-        const res = mockResponse();
+        const res = createRes();
 
-        // For getProducts → Product.query() returns array, not insert()
+        // override to return array (not insert)
         mockQuery.mockResolvedValueOnce(fakeProducts);
 
         await getProducts(req, res);
@@ -162,11 +139,11 @@ describe("Admin Product Controller", () => {
     });
 
     /* ---------------------------
-       5) GET PRODUCTS → ERROR
+       GET PRODUCTS → ERROR
     ---------------------------- */
     test("should return 500 when getProducts fails", async () => {
         const req = {} as Request;
-        const res = mockResponse();
+        const res = createRes();
 
         mockQuery.mockRejectedValueOnce(new Error("DB fail"));
 

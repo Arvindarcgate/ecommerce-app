@@ -54,9 +54,7 @@ describe("Order Controller", () => {
         });
     });
 
-    // ========================================
-    // 2) CREATE ORDER SUCCESS
-    // ========================================
+    
     test("should create an order successfully", async () => {
         const req = {
             body: {
@@ -92,9 +90,7 @@ describe("Order Controller", () => {
         });
     });
 
-    // ========================================
-    // 3) CREATE ORDER FAILS (500)
-    // ========================================
+    
     test("should return 500 if DB throws error", async () => {
         const req = {
             body: {

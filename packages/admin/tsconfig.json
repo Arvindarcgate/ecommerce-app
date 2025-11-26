@@ -17,6 +17,8 @@
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.d.ts",
-    "global.d.ts"
+    "global.d.ts",
+    "setuptest.ts",
+    "jest.config.cjs"
   ]
 }

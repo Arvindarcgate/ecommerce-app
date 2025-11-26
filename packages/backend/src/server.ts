@@ -3,7 +3,7 @@ import express, { Request, Response } from "express";
 import newsletterRoute from "./routes/newsletter.route";
 import cors from "cors";
 import authRoute from "./routes/auth";
-import { db } from "./db/db"; // ✅ Import Knex instance
+import { db } from "./db/db";
 import productRoutes from './routes/productroutes';
 import path from "path";
 // import adminEditRoutes from "./routes/admineditroutes"
@@ -27,7 +27,7 @@ app.use('/api/products', productRoutes);
 app.get("/", (_req: Request, res: Response): void => {
     res.send("Server is running");
 });
-// app.use("/api/products", adminEditRoutes);
+
 
 
 

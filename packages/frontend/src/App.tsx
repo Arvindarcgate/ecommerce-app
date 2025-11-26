@@ -24,8 +24,8 @@ const App: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <Navbar />
       <Routes>
-        <Route path="/" element={<AuthLogin />} />
-        <Route path="/Home" element={<Home />} />
+        <Route path="/AuthLogin" element={<AuthLogin />} />
+        <Route path="/" element={<Home />} />
         <Route path="/productPage" element={<ProductPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />

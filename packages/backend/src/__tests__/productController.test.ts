@@ -35,9 +35,7 @@ describe("Product Controller Tests", () => {
         (Product.query as jest.Mock).mockReturnValue(mockQuery);
     });
 
-    // ============================================================
-    // 🟦 UPDATE PRODUCT TESTS
-    // ============================================================
+
     test("✅ Should update product successfully", async () => {
         const updatedProductMock = {
             id: 1,
@@ -93,9 +91,7 @@ describe("Product Controller Tests", () => {
         expect(response.body.error).toBe("DB Error");
     });
 
-    // ============================================================
-    // 🟥 DELETE PRODUCT TESTS
-    // ============================================================
+
     test("🗑️ Should delete product successfully", async () => {
         mockQuery.deleteById.mockResolvedValue(1);
 

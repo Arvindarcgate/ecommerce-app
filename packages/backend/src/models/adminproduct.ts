@@ -9,6 +9,8 @@ export class Product extends Model {
     image!: string;
 
     static tableName = 'products';
+    static patch: any;
+    static deleteById: any;
 
     static get jsonSchema() {
         return {
