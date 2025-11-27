@@ -23,7 +23,7 @@ const Signup: React.FC = () => {
     try {
       const res = await signup(email, password);
 
-      console.log("Signup Response:", res); // 🔥 LOG RESPONSE
+      console.log("Signup Response:", res);
 
       if (res.success) {
         alert("Account created successfully!");
@@ -88,7 +88,7 @@ const Signup: React.FC = () => {
             Login
           </Link>
         </p>
-      </div>1
+      </div>
     </div>
   );
 };

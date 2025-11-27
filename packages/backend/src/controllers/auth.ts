@@ -58,48 +58,47 @@ const REFRESH_TOKEN_EXPIRY = "7d";
 
 
 export const signup = async (req: Request, res: Response) => {
-    console.log("📥 Incoming signup request:", req.body);
-
     const { email, password } = req.body;
 
     try {
-        // Email check
+        console.log("HERE IT GOT TRIGGERED")
+        // 1. Check if email exists
         const existingUser = await User.query().findOne({ email });
+        console.log("HERE TRYING TO SING UP USER: ", existingUser)
         if (existingUser) {
-            console.log("❌ Email already exists");
             return res.status(400).json({
                 success: false,
                 message: "Email already exists",
             });
         }
 
-        // Hash password
+        // 2. Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insert user
+        // 3. Create user
         const user = await User.query().insert({
             email,
             password: hashedPassword,
-            role: "user",
+            role: "user" // default role (optional)
         });
-
-        console.log("✅ User created:", user);
 
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            },
         });
-
-    } catch (err: any) {
-        console.error("🔥 Signup Error:", err);
-
+    } catch (err) {
+        console.error("Signup Error:", err);
         return res.status(500).json({
             success: false,
-            message: err.message || "Server error",
+            message: "Server error",
         });
     }
 };
-
 
 /* ============================================================
    ✔ VERIFY EMAIL
