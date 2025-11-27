@@ -1,19 +1,28 @@
-// src/server.ts
+
 import express, { Request, Response } from "express";
 import newsletterRoute from "./routes/newsletter.route";
 import cors from "cors";
 import authRoute from "./routes/auth";
-import { db } from "./db/db"; // ✅ Import Knex instance
+import { db } from "./db/db";
 import productRoutes from './routes/productroutes';
 import path from "path";
-// import adminEditRoutes from "./routes/admineditroutes"
+import adminEditRoutes from "./routes/admineditroutes"
 import orderRoutes from "./routes/orderroutes";
 
 const app = express();
 const PORT: number = 8000;
 
+
+
 app.use(
     cors({
+        origin: (origin, callback) => {
+            if (!origin || origin.startsWith("http://localhost")) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
         credentials: true,
     })
 );
@@ -27,7 +36,8 @@ app.use('/api/products', productRoutes);
 app.get("/", (_req: Request, res: Response): void => {
     res.send("Server is running");
 });
-// app.use("/api/products", adminEditRoutes);
+
+app.use("/api/products", adminEditRoutes);
 
 
 
@@ -53,3 +63,22 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 export default app;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

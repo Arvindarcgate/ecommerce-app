@@ -22,3 +22,5 @@ router.put("/update/:id", upload.single("image"), updateProduct);
 router.delete("/delete/:id", deleteProduct);
 
 export default router;
+
+
