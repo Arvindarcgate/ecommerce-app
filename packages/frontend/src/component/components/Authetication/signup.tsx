@@ -20,19 +20,30 @@ const Signup: React.FC = () => {
       return;
     }
 
-    const res = await signup(email, password);
+    try {
+      const res = await signup(email, password);
 
-    if (res.success && res.token) {
-      navigate(`/verify-email?token=${res.token}`);
-    } else {
-      alert(res.message || "Signup failed. Try again.");
+      console.log("Signup Response:", res);
+
+      if (res.success) {
+        alert("Account created successfully!");
+        navigate("/login");
+      } else {
+        console.error("Signup Error:", res); // 🔥 SHOW ERROR IN CONSOLE
+        alert(res.message || "Signup failed");
+      }
+    } catch (error) {
+      console.error("Signup Exception:", error); // 🔥 EXCEPTION ERROR
+      alert("Something went wrong!");
     }
   };
+
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <h2 className={styles.title}>Sign Up</h2>
+
         <form onSubmit={handleSignup} className={styles.form}>
           <input
             type="email"

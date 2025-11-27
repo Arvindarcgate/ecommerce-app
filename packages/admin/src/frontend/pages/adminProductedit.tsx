@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import styles from "../pages/adminproductedit.module.css";
 
@@ -19,10 +21,16 @@ const AdminProductEdit: React.FC = () => {
     const fetchProducts = async () => {
         try {
             const res = await fetch("http://localhost:8000/api/products/all");
+
+            if (!res.ok) {
+                console.error("❌ Failed to fetch products:", res.status);
+                return;
+            }
+
             const data = await res.json();
             setProducts(data);
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("❌ Error fetching products:", error);
         }
     };
 
@@ -30,30 +38,33 @@ const AdminProductEdit: React.FC = () => {
         fetchProducts();
     }, []);
 
-    // ✏️ Start editing
+
     const handleEdit = (product: Product) => {
         setEditingProduct(product);
-        setUpdatedImage(null); // clear previous selection
+        setUpdatedImage(null);
     };
 
 
     const handleDelete = async (id: number) => {
-        if (!window.confirm("Are you sure you want to delete this product?")) return;
+        if (!window.confirm("Are you sure?")) return;
 
         try {
-            const res = await fetch(`http://localhost:8000/api/products/delete/${id}`, {
-                method: "DELETE",
-            });
+            const res = await fetch(
+                `http://localhost:8000/api/products/delete/${id}`,
+                { method: "DELETE" }
+            );
 
-            if (res.ok) {
-                alert("🗑️ Product deleted successfully!");
-                fetchProducts();
-            } else {
-                const data = await res.json();
-                alert(`❌ Error: ${data.message}`);
+            if (!res.ok) {
+                const err = await res.text();
+                console.error(" Backend delete error:", err);
+                alert("Delete failed");
+                return;
             }
+
+            alert("🗑️ Product deleted!");
+            fetchProducts();
         } catch (error) {
-            console.error("Error deleting product:", error);
+            console.error(" Error deleting product:", error);
         }
     };
 
@@ -63,6 +74,7 @@ const AdminProductEdit: React.FC = () => {
         if (!editingProduct) return;
 
         setLoading(true);
+
         const formData = new FormData();
         formData.append("name", editingProduct.name);
         formData.append("price", editingProduct.price.toString());
@@ -70,23 +82,36 @@ const AdminProductEdit: React.FC = () => {
         if (updatedImage) formData.append("image", updatedImage);
 
         try {
-            const res = await fetch(
-                `http://localhost:8000/api/products/update/${editingProduct.id}`,
-                {
-                    method: "PUT",
-                    body: formData,
-                }
-            );
+            const url = `http://localhost:8000/api/products/update/${editingProduct.id}`;
 
-            const data = await res.json();
+            console.log("📡 PUT →", url);
+
+            const res = await fetch(url, {
+                method: "PUT",
+                body: formData,
+            });
+
+            const text = await res.text();
+
+
+            console.log("🔍 Raw backend response:", text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch {
+                console.error(" Backend returned HTML instead of JSON");
+                alert("Update failed — check backend route");
+                return;
+            }
 
             if (res.ok) {
-                alert("✅ Product updated successfully!");
+                alert("✅ Product updated!");
                 setEditingProduct(null);
                 setUpdatedImage(null);
                 fetchProducts();
             } else {
-                alert(`❌ Error: ${data.message}`);
+                alert(` Error: ${data.message}`);
             }
         } catch (error) {
             console.error("Error updating product:", error);
@@ -94,6 +119,7 @@ const AdminProductEdit: React.FC = () => {
             setLoading(false);
         }
     };
+
 
     return (
         <div className={styles.container}>
@@ -129,7 +155,6 @@ const AdminProductEdit: React.FC = () => {
                 ))}
             </div>
 
-
             {editingProduct && (
                 <div className={styles.editForm}>
                     <h3>Edit Product</h3>
@@ -143,6 +168,7 @@ const AdminProductEdit: React.FC = () => {
                             placeholder="Product Name"
                             required
                         />
+
                         <input
                             type="number"
                             value={editingProduct.price}
@@ -155,15 +181,20 @@ const AdminProductEdit: React.FC = () => {
                             placeholder="Price"
                             required
                         />
+
                         <input
                             type="text"
                             value={editingProduct.size}
                             onChange={(e) =>
-                                setEditingProduct({ ...editingProduct, size: e.target.value })
+                                setEditingProduct({
+                                    ...editingProduct,
+                                    size: e.target.value,
+                                })
                             }
-                            placeholder="Size (e.g. S, M, L)"
+                            placeholder="Size"
                             required
                         />
+
                         <input
                             type="file"
                             accept="image/*"
@@ -171,16 +202,18 @@ const AdminProductEdit: React.FC = () => {
                                 setUpdatedImage(e.target.files ? e.target.files[0] : null)
                             }
                         />
+
                         <div className={styles.formActions}>
-                            <button type="submit" className={styles.updateBtn} disabled={loading}>
-                                {loading ? "⏳ Updating..." : "✅ Update"}
+                            <button type="submit" disabled={loading} className={styles.updateBtn}>
+                                {loading ? "⏳ Updating..." : "Update"}
                             </button>
+
                             <button
                                 type="button"
                                 onClick={() => setEditingProduct(null)}
                                 className={styles.cancelBtn}
                             >
-                                ❌ Cancel
+                                Cancel
                             </button>
                         </div>
                     </form>
