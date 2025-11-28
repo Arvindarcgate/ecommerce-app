@@ -18,7 +18,7 @@ export const subscribe = async (req: Request, res: Response) => {
         await db("subscribers").insert({ email, user_id: userId });
         return res.status(201).json({ message: "Subscribed successfully" });
     } catch (error) {
-        console.error("❌ Error inserting email:", error);
+        console.error("Error inserting email:", error);
         return res.status(500).json({ error: "Something went wrong" });
     }
 };

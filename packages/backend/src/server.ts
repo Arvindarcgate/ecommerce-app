@@ -47,9 +47,9 @@ app.use("/api/orders", orderRoutes);
 (async () => {
     try {
         await db.raw("SELECT 1");
-        console.log("✅ MySQL Database connected successfully");
+        console.log(" MySQL Database connected successfully");
     } catch (error) {
-        console.error("❌ Database connection failed:", error);
+        console.error("Database connection failed:", error);
     }
 })();
 
@@ -58,7 +58,7 @@ app.use("/api/orders", orderRoutes);
 
 if (process.env.NODE_ENV !== "test") {
     app.listen(PORT, (): void => {
-        console.log(`✅ Server is running on http://localhost:${PORT}`);
+        console.log(` Server is running on http://localhost:${PORT}`);
     });
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const VerifyEmailPage: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -17,7 +18,7 @@ const VerifyEmailPage: React.FC = () => {
         // Auto verify as soon as page loads
         const verifyEmail = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/auth/verify?token=${token}`);
+                const res = await fetch(`${API_BASE_URL}/api/auth/verify?token=${token}`);
                 const data = await res.json();
                 setMessage(data.message);
 

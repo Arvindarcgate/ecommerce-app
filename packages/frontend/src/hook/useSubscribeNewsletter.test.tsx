@@ -2,6 +2,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSubscribeNewsletter } from "./useSubscribeNewsletter";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const createWrapper = () => {
     const queryClient = new QueryClient();
@@ -33,7 +34,7 @@ describe("useSubscribeNewsletter", () => {
 
         // Assertions
         expect(global.fetch).toHaveBeenCalledWith(
-            "http://localhost:8000/api/subscribe",
+            `${API_BASE_URL}/api/subscribe`,
             expect.objectContaining({
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -47,7 +48,7 @@ describe("useSubscribeNewsletter", () => {
     });
 
     it("should throw error on failed response", async () => {
-        // Mock fetch failure
+       
         global.fetch = jest.fn(() =>
             Promise.resolve({
                 ok: false,

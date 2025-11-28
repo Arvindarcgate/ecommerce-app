@@ -109,7 +109,7 @@ describe("Admin Product Controller", () => {
 
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith({
-            message: "✅ Product added successfully",
+            message: " Product added successfully",
             product: fakeProduct,
         });
     });

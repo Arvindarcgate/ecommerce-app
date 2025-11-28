@@ -10,6 +10,7 @@ import type { z } from "zod";
 import { Loader } from "lucide-react";
 
 
+
 type FormData = z.infer<typeof newsletterSchema>;
 
 const Newsletter: React.FC = () => {
@@ -37,17 +38,6 @@ const Newsletter: React.FC = () => {
     });
   };
 
-  // const onSubmit = {data: FormData} => {
-  //   mutate(data.email, {
-  //     onSuccess: (res) => {
-  //       toast.success(res.message || "Subscribed successfully!");
-  //       resetField("email");
-  //     },
-  //     onError: (err) => {
-  //       toast.error((err as Error).message);
-  //     },
-  //   } );
-  // };
 
   return (
     <div className={styles.newsletter}>

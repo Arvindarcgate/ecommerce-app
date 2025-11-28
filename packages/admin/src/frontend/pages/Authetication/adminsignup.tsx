@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Adminsignup.module.css";
+import toast from "react-hot-toast";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AdminSignup: React.FC = () => {
     const [name, setName] = useState("");
@@ -15,14 +17,14 @@ const AdminSignup: React.FC = () => {
         e.preventDefault();
 
         if (!name || !email || !password) {
-            alert("Please fill all fields");
+        toast.error("Please fill all fields");
             return;
         }
 
         try {
             setLoading(true);
 
-            const response = await fetch("http://localhost:8000/admin/signup", {
+            const response = await fetch(`${API_BASE_URL}/admin/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -31,27 +33,27 @@ const AdminSignup: React.FC = () => {
                     name,
                     email,
                     password,
-                    role: "admin", // 👈 Important
+                    role: "admin", 
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                alert(data.message || "Signup failed");
+                toast.error(data.message || "Signup failed");
                 return;
             }
 
-            alert("Admin Account Created Successfully!");
+            toast.success("Admin Account Created Successfully!");
 
-            // OPTIONAL: Save token
+            
             localStorage.setItem("token", data.token);
 
-            // Redirect to Admin Login Page
+           
             navigate("/admin-login");
 
         } catch (error) {
-            alert("Something went wrong while signing up");
+            toast.error("Something went wrong while signing up");
         } finally {
             setLoading(false);
         }

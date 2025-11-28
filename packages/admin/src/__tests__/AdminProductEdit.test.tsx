@@ -64,7 +64,7 @@ describe("AdminProductEdit Component", () => {
         fireEvent.click(screen.getByText("🗑️ Delete"));
 
         await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("❌ Error: Delete failed");
+            expect(mockAlert).toHaveBeenCalledWith("Error: Delete failed");
         });
     });
 
@@ -84,7 +84,7 @@ describe("AdminProductEdit Component", () => {
         fireEvent.change(priceInput, { target: { value: "999" } });
         fireEvent.change(sizeInput, { target: { value: "L" } });
 
-        fireEvent.click(screen.getByText("❌ Cancel"));
+        fireEvent.click(screen.getByText("Cancel"));
 
         await waitFor(() => {
             expect(screen.queryByText("Edit Product")).toBeNull();
@@ -103,10 +103,10 @@ describe("AdminProductEdit Component", () => {
             json: async () => ({ message: "success" }),
         });
 
-        fireEvent.click(screen.getByText("✅ Update"));
+        fireEvent.click(screen.getByText(" Update"));
 
         await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("✅ Product updated successfully!");
+            expect(mockAlert).toHaveBeenCalledWith(" Product updated successfully!");
         });
     });
 
@@ -122,10 +122,10 @@ describe("AdminProductEdit Component", () => {
             json: async () => ({ message: "Update failed" }),
         });
 
-        fireEvent.click(screen.getByText("✅ Update"));
+        fireEvent.click(screen.getByText(" Update"));
 
         await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("❌ Error: Update failed");
+            expect(mockAlert).toHaveBeenCalledWith("Error: Update failed");
         });
     });
 });

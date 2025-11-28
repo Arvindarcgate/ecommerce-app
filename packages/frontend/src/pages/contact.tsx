@@ -20,7 +20,7 @@ const Contact: React.FC = () => {
   // handle form submit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted ✅", formData);
+    console.log("Form Submitted ", formData);
   };
 
   return (

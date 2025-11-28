@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./AdminLogin.module.css";
+import toast from "react-hot-toast";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AdminLogin: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -14,14 +17,14 @@ const AdminLogin: React.FC = () => {
         e.preventDefault();
 
         if (!email || !password) {
-            alert("Please fill all fields");
+            toast.error("Please fill all fields");
             return;
         }
 
         try {
             setLoading(true);
 
-            const response = await fetch("http://localhost:8000/admin/login", {
+            const response = await fetch(`${API_BASE_URL}/admin/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,27 +32,27 @@ const AdminLogin: React.FC = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    role: "admin", // 👈 important (backend already supports this)
+                    role: "admin", 
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                alert(data.message || "Login failed");
+                toast.error(data.message || "Login failed");
                 return;
             }
 
             // Save token if you want
             localStorage.setItem("token", data.token);
 
-            alert("Admin Login Successful!");
+            toast.success("Admin Login Successful!");
 
             // Redirect to dashboard
             navigate("/admin-dashboard");
 
         } catch (error) {
-            alert("Something went wrong while logging in");
+            toast.error("Something went wrong while logging in");
         } finally {
             setLoading(false);
         }

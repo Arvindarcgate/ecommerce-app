@@ -13,7 +13,7 @@ export const createOrder = async (req: Request, res: Response) => {
         const [orderId] = await knex("orders").insert({
             email,
             total_amount: totalAmount,
-            created_at: new Date(), // ✅ add timestamp
+            created_at: new Date(), //  add timestamp
         });
 
         // 🛍️ Insert order items
@@ -29,11 +29,11 @@ export const createOrder = async (req: Request, res: Response) => {
         }
 
         res.status(201).json({
-            message: "✅ Order placed successfully",
+            message: " Order placed successfully",
             orderId,
         });
     } catch (error: any) {
-        console.error("❌ Error creating order:", error);
+        console.error("Error creating order:", error);
         res.status(500).json({
             message: "Server error while placing order",
             error: error.message,
@@ -90,7 +90,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
 
         res.json(orders);
     } catch (error) {
-        console.error("❌ Error fetching orders:", error);
+        console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Failed to fetch orders" });
     }
 };

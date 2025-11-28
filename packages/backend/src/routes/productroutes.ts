@@ -9,7 +9,7 @@ const router = express.Router();
 // 📁 Define upload folder
 const uploadDir = path.join(__dirname, '../../uploads');
 
-// ✅ Ensure folder exists before upload
+//  Ensure folder exists before upload
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// ✅ Routes
+//  Routes
 router.post('/add', upload.single('image'), addProduct);
 router.get('/all', getProducts);
 

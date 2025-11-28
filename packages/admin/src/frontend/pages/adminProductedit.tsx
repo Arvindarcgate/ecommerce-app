@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styles from "../pages/adminproductedit.module.css";
+import toast from "react-hot-toast";
+import ConfirmationModal from "./conformationModal";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
+
 
 interface Product {
     id: number;
@@ -9,144 +15,108 @@ interface Product {
     image: string;
 }
 
+
+
+
 const AdminProductEdit: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-    const [updatedImage, setUpdatedImage] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false);
+const [products, setProducts] = useState<Product[]>([]);
+const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+const [updatedImage, setUpdatedImage] = useState<File | null>(null);
+const [loading, setLoading] = useState(false);
 
 
-    const fetchProducts = async () => {
-        try {
-            const res = await fetch("http://localhost:8000/api/products/all");
-
-            if (!res.ok) {
-                console.error("❌ Failed to fetch products:", res.status);
-                return;
-            }
-
-            const data = await res.json();
-            setProducts(data);
-        } catch (error) {
-            console.error("❌ Error fetching products:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchProducts();
-    }, []);
+const [deleteId, setDeleteId] = useState<number | null>(null);
 
 
-    const handleEdit = (product: Product) => {
-        setEditingProduct(product);
-        setUpdatedImage(null);
-    };
+const fetchProducts = async () => {
+try {
+const res = await fetch(`${API_BASE_URL}/api/products/all`);
+if (!res.ok) return console.error("Failed to fetch products:", res.status);
+const data = await res.json();
+setProducts(data);
+} catch (error) {
+console.error("Error fetching products:", error);
+}
+};
 
 
-    const handleDelete = async (id: number) => {
-        if (!window.confirm("Are you sure?")) return;
-
-        try {
-            const res = await fetch(
-                `http://localhost:8000/api/products/delete/${id}`,
-                { method: "DELETE" }
-            );
-
-            if (!res.ok) {
-                const err = await res.text();
-                console.error(" Backend delete error:", err);
-                alert("Delete failed");
-                return;
-            }
-
-            alert("🗑️ Product deleted!");
-            fetchProducts();
-        } catch (error) {
-            console.error(" Error deleting product:", error);
-        }
-    };
+useEffect(() => {
+fetchProducts();
+}, []);
 
 
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!editingProduct) return;
-
-        setLoading(true);
-
-        const formData = new FormData();
-        formData.append("name", editingProduct.name);
-        formData.append("price", editingProduct.price.toString());
-        formData.append("size", editingProduct.size);
-        if (updatedImage) formData.append("image", updatedImage);
-
-        try {
-            const url = `http://localhost:8000/api/products/update/${editingProduct.id}`;
-
-            console.log("📡 PUT →", url);
-
-            const res = await fetch(url, {
-                method: "PUT",
-                body: formData,
-            });
-
-            const text = await res.text();
+const handleEdit = (product: Product) => {
+setEditingProduct(product);
+setUpdatedImage(null);
+};
 
 
-            console.log("🔍 Raw backend response:", text);
+const confirmDelete = async () => {
+if (deleteId === null) return;
 
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                console.error(" Backend returned HTML instead of JSON");
-                alert("Update failed — check backend route");
-                return;
-            }
 
-            if (res.ok) {
-                alert("✅ Product updated!");
-                setEditingProduct(null);
-                setUpdatedImage(null);
-                fetchProducts();
-            } else {
-                alert(` Error: ${data.message}`);
-            }
-        } catch (error) {
-            console.error("Error updating product:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+try {
+const res = await fetch(`${API_BASE_URL}/api/products/delete/${deleteId}`, {
+method: "DELETE",
+});
+
+
+if (!res.ok) {
+const err = await res.text();
+console.error("Backend delete error:", err);
+toast.error("Delete failed");
+return;
+}
+
+
+toast.success("Product deleted!");
+fetchProducts();
+} catch (error) {
+console.error("Error deleting product:", error);
+} finally {
+setDeleteId(null);
+}
+};
+
+const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    setLoading(true);
+};
+
 
 
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>🛠️ Manage Products</h2>
+            <h2 className={styles.title}>Manage Products</h2>
 
             <div className={styles.grid}>
                 {products.map((product) => (
                     <div key={product.id} className={styles.card}>
                         <img
-                            src={`http://localhost:8000${product.image}`}
+                            src={`${API_BASE_URL}${product.image}`}
                             alt={product.name}
                             className={styles.image}
                         />
                         <h3>{product.name}</h3>
-                        <p>💰 ₹{product.price}</p>
-                        <p>📏 Size: {product.size}</p>
+                        <p>₹{product.price}</p>
+                        <p> Size: {product.size}</p>
 
                         <div className={styles.actions}>
                             <button
                                 onClick={() => handleEdit(product)}
                                 className={styles.editBtn}
                             >
-                                ✏️ Edit
+                                 Edit
                             </button>
+
+
                             <button
                                 onClick={() => handleDelete(product.id)}
                                 className={styles.deleteBtn}
                             >
-                                🗑️ Delete
+                                 Delete
                             </button>
                         </div>
                     </div>

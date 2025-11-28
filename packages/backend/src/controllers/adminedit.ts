@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 import { Product } from "../models/adminproduct";
 
-// ✅ Update Product
+//  Update Product
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -23,15 +23,15 @@ export const updateProduct = async (req: Request, res: Response) => {
             .returning("*");
 
         if (!updatedProduct) {
-            return res.status(404).json({ message: "❌ Product not found" });
+            return res.status(404).json({ message: "Product not found" });
         }
 
         res.status(200).json({
-            message: "✅ Product updated successfully",
+            message: " Product updated successfully",
             product: updatedProduct,
         });
     } catch (error: any) {
-        console.error("❌ Error updating product:", error);
+        console.error("Error updating product:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
@@ -43,12 +43,12 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
         const deleted = await Product.query().deleteById(id);
         if (!deleted) {
-            return res.status(404).json({ message: "❌ Product not found" });
+            return res.status(404).json({ message: "Product not found" });
         }
 
         res.status(200).json({ message: "🗑️ Product deleted successfully" });
     } catch (error: any) {
-        console.error("❌ Error deleting product:", error);
+        console.error("Error deleting product:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "../style/pages/product.module.css";
 // import { Button } from '../../../uilibrary/src/component/Button';
 import { Button } from '@ecommerce/uilibrary';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 interface Product {
   id: number;
@@ -18,7 +20,7 @@ const ProductPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/products/all")
+    fetch(`${API_BASE_URL}/api/products/all`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
@@ -36,7 +38,7 @@ const ProductPage: React.FC = () => {
     setQuantities((prev) => ({ ...prev, [id]: value }));
   };
   const handleBuyNow = (product: Product) => {
-    // const quantity = quantities[product.id];
+
     const quantity = quantities[product.id];
     const totalPrice = product.price * quantity;
 
@@ -60,7 +62,7 @@ const ProductPage: React.FC = () => {
             <div className={styles.productCard} key={product.id}>
               <div className={styles.imageWrapper}>
                 <img
-                  src={`http://localhost:8000${product.image}`}
+                  src={`${API_BASE_URL}${product.image}`}
                   alt={product.name}
                   className={styles.productImage}
                 />
@@ -71,7 +73,7 @@ const ProductPage: React.FC = () => {
               <div className={styles.productDetails}>
                 <h3 className={styles.productName}>{product.name}</h3>
                 <p className={styles.productSize}>Size: {product.size}</p>
-                <p className={styles.productPrice}>💰 Price: ₹{product.price}</p>
+                <p className={styles.productPrice}>Price: ₹{product.price}</p>
 
                 <div className={styles.quantityContainer}>
                   <label htmlFor={`qty-${product.id}`}>Qty:</label>
@@ -88,7 +90,7 @@ const ProductPage: React.FC = () => {
                   />
                 </div>
 
-                {/* ✅ Dynamic total price */}
+                {/*  Dynamic total price */}
                 <p className={styles.updatedPrice}>
                   Total: <strong>₹{totalPrice.toFixed(2)}</strong>
                 </p>

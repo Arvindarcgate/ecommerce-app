@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "../style/pages/cart.module.css";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Product {
     id: number;
@@ -107,7 +108,7 @@ const CartPage: React.FC = () => {
         };
 
         try {
-            const res = await fetch("http://localhost:8000/api/orders/create", {
+            const res = await fetch(`${API_BASE_URL}/api/orders/create`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(orderData)
@@ -167,7 +168,7 @@ const CartPage: React.FC = () => {
                         {cartItems.map(item => (
                             <div key={item.id} className={styles.cartCard}>
                                 <img
-                                    src={`http://localhost:8000${item.image}`}
+                                    src={`${API_BASE_URL}${item.image}`}
                                     alt={item.name}
                                     className={styles.image}
                                 />
@@ -177,7 +178,7 @@ const CartPage: React.FC = () => {
                                     <p>Size: {item.size}</p>
                                     <p>Price: ₹{item.price}</p>
 
-                                    {/* --- UPDATED BLOCK WITH TEST IDs --- */}
+                                   
                                     <div className={styles.quantityRow}>
                                         <label>Qty:</label>
 
@@ -232,7 +233,7 @@ const CartPage: React.FC = () => {
                                     onClick={() => handleRemove(item.id)}
                                     className={styles.removeBtn}
                                 >
-                                    ❌ Remove
+                                    Remove
                                 </button>
                             </div>
                         ))}

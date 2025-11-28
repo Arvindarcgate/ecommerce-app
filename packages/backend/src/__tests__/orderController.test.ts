@@ -87,7 +87,7 @@ describe("Order Controller", () => {
         expect(mockKnex).toHaveBeenCalledWith("orders");
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith({
-            message: "✅ Order placed successfully",
+            message: " Order placed successfully",
             orderId: 10,
         });
     });
