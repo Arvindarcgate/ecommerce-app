@@ -1,7 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./Authcontext";
-import styles from "./login.module.css";
+// import styles from "./login.module.css";
+import styles from "./UnifiedAuth.module.css";
+
 const Login: React.FC = () => {
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();

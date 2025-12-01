@@ -25,7 +25,7 @@
 /* ===========================
    LEFT SIDE
 =========================== */
-.navLeft {
+.navleft {
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -107,6 +107,7 @@
 }
 
 .searchIcon {
+ 
   color: #6b7280;
   margin-right: 0.5rem;
 }

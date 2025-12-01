@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./Authcontext";
-import styles from "./signup.module.css";
+// import styles from "./signup.module.css";
+import styles from "./UnifiedAuth.module.css";
 
 
 const Signup: React.FC = () => {

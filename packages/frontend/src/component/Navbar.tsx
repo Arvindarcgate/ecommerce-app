@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
 
   const navigation = [
-    { name: "Home", href: "/Home" },
+    { name: "Home", href: "/" },
     { name: "Products", href: "/productpage" },
     { name: "Contact", href: "/contact" },
     { name: "Cart", href: "/cart" },
@@ -50,8 +50,8 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className={styles.navright}>
-            {/* Search */}
+          <div className={styles.navRight}>
+            
             <div className={styles.searchBar}>
               <Search className={styles.searchIcon} />
               <input
@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
               />
             </div>
 
-            {/* User / Auth Section */}
+           
             <div className={styles.profileSection}>
               {user ? (
                 <>
