@@ -1,8 +1,7 @@
-// src/components/Hero.tsx
-import React from "react";
-import { ArrowRight } from "lucide-react";
-import Container from "../../../style/component/ui/Container";
-import styles from "./hero.module.css";
+import React from 'react';
+import { ArrowRight } from 'lucide-react';
+import Container from '../../../style/component/ui/Container';
+import styles from './hero.module.css';
 
 const Hero: React.FC = () => {
   return (

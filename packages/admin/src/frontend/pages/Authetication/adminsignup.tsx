@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Adminsignup.module.css";
 import toast from "react-hot-toast";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../../../config/env';
 
 const AdminSignup: React.FC = () => {
     const [name, setName] = useState("");
@@ -20,7 +20,7 @@ const AdminSignup: React.FC = () => {
         toast.error("Please fill all fields");
             return;
         }
-
+                   
         try {
             setLoading(true);
 

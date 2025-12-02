@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../pages/adminproductedit.module.css";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./conformationModal";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../../config/env';
 
 interface Product {
   id: number;
@@ -19,7 +19,7 @@ const AdminProductEdit: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async () => { 
     try {
       const res = await fetch(`${API_BASE_URL}/api/products/all`);
       if (!res.ok) return;

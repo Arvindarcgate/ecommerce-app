@@ -17,12 +17,12 @@ const App: React.FC = () => {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         
         <Navbar />
- <Toaster position="top-right" />
+         <Toaster position="top-right" />
        
         <div style={{ flex: 1, padding: '20px' }}>
           <Routes>
            
-            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/" element={<AdminLogin />} />
             <Route path="/admin-signup" element={<AdminSignup />} />
             <Route path="/add-product" element={<ProductPage />} />
             <Route path="/product-edit" element={<AdminProductedit />} />

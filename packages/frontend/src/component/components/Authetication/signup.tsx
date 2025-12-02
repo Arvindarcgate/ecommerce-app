@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./Authcontext";
-// import styles from "./signup.module.css";
 import styles from "./UnifiedAuth.module.css";
 
 
@@ -31,11 +30,11 @@ const Signup: React.FC = () => {
         alert("Account created successfully!");
         navigate("/login");
       } else {
-        console.error("Signup Error:", res); // 🔥 SHOW ERROR IN CONSOLE
+        console.error("Signup Error:", res); 
         alert(res.message || "Signup failed");
       }
     } catch (error) {
-      console.error("Signup Exception:", error); // 🔥 EXCEPTION ERROR
+      console.error("Signup Exception:", error); 
       alert("Something went wrong!");
     }
   };

@@ -1,8 +1,7 @@
-// src/components/FeaturedProducts.tsx
-import React from "react";
-import { ShoppingCart, MoveRight } from "lucide-react";
-import Container from "../../../style/component/ui/Container";
-import styles from "./product.module.css"; // adjust path
+import React from 'react';
+import { ShoppingCart, MoveRight } from 'lucide-react';
+import Container from '../../../style/component/ui/Container';
+import styles from './product.module.css';
 
 type Product = {
   id: number;
@@ -18,45 +17,45 @@ type Product = {
 const products: Product[] = [
   {
     id: 1,
-    name: "Premium Wireless Headphones",
+    name: 'Premium Wireless Headphones',
     price: 299.99,
     originalPrice: 399.99,
     image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
     rating: 4.8,
     reviews: 124,
-    badge: "Best Seller",
+    badge: 'Best Seller',
   },
   {
     id: 2,
-    name: "Smart Fitness Watch",
+    name: 'Smart Fitness Watch',
     price: 199.99,
     image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop',
     rating: 4.6,
     reviews: 89,
-    badge: "New",
+    badge: 'New',
   },
   {
     id: 3,
-    name: "Professional Camera Lens",
+    name: 'Professional Camera Lens',
     price: 849.99,
     image:
-      "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500&h=500&fit=crop",
+      'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=500&h=500&fit=crop',
     rating: 4.9,
     reviews: 67,
-    badge: "Pro Choice",
+    badge: 'Pro Choice',
   },
   {
     id: 4,
-    name: "Ergonomic Office Chair",
+    name: 'Ergonomic Office Chair',
     price: 449.99,
     originalPrice: 599.99,
     image:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&h=500&fit=crop",
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&h=500&fit=crop',
     rating: 4.7,
     reviews: 156,
-    badge: "Sale",
+    badge: 'Sale',
   },
 ];
 
@@ -70,7 +69,6 @@ const FeaturedProducts: React.FC = () => {
           customers <br /> love most
         </p>
 
-        {/* Product Cards */}
         <div className={styles.productCards}>
           {products.map((product) => (
             <div className={styles.card} key={product.id}>
@@ -107,10 +105,10 @@ const FeaturedProducts: React.FC = () => {
 
         <div
           style={{
-            display: "Flex",
-            alignItems: "center",
-            justifyContent: "center",
-            paddingTop: "24px",
+            display: 'Flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingTop: '24px',
           }}
         >
           <button className={styles.bottomproduct}>

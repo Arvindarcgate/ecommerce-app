@@ -1,84 +1,56 @@
-
-import express, { Request, Response } from "express";
-import newsletterRoute from "./routes/newsletter.route";
-import cors from "cors";
-import authRoute from "./routes/auth";
-import { db } from "./db/db";
+import express, { Request, Response } from 'express';
+import newsletterRoute from './routes/newsletter.route';
+import cors from 'cors';
+import authRoute from './routes/auth';
+import { db } from './db/db';
 import productRoutes from './routes/productroutes';
-import path from "path";
-import adminEditRoutes from "./routes/admineditroutes"
-import orderRoutes from "./routes/orderroutes";
+import path from 'path';
+import adminEditRoutes from './routes/admineditroutes';
+import orderRoutes from './routes/orderroutes';
 
 const app = express();
 const PORT: number = 8000;
 
-
-
 app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || origin.startsWith("http://localhost")) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        credentials: true,
-    })
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || origin.startsWith('http://localhost')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
 );
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-app.use("/api", newsletterRoute);
-app.use("/api/auth", authRoute);
+app.use('/api', newsletterRoute);
+app.use('/api/auth', authRoute);
 app.use('/api/products', productRoutes);
-app.get("/", (_req: Request, res: Response): void => {
-    res.send("Server is running");
+app.get('/', (_req: Request, res: Response): void => {
+  res.send('Server is running');
 });
 
-app.use("/api/products", adminEditRoutes);
+app.use('/api/products', adminEditRoutes);
 
-
-
-app.use("/api/orders", orderRoutes);
-
+app.use('/api/orders', orderRoutes);
 
 (async () => {
-    try {
-        await db.raw("SELECT 1");
-        console.log(" MySQL Database connected successfully");
-    } catch (error) {
-        console.error("Database connection failed:", error);
-    }
+  try {
+    await db.raw('SELECT 1');
+    console.log(' MySQL Database connected successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+  }
 })();
 
-
-
-
-if (process.env.NODE_ENV !== "test") {
-    app.listen(PORT, (): void => {
-        console.log(` Server is running on http://localhost:${PORT}`);
-    });
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, (): void => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 }
 
 export default app;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

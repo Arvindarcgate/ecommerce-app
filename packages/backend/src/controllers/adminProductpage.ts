@@ -1,4 +1,3 @@
-// packages/backend/src/controllers/adminProductpage.ts
 import { Request, Response } from 'express';
 import { Product } from '../models/adminproduct';
 

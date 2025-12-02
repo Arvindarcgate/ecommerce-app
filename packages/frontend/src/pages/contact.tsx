@@ -9,7 +9,7 @@ const Contact: React.FC = () => {
     message: "",
   });
 
-  // handle input change
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -17,7 +17,7 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // handle form submit
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form Submitted ", formData);
@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
       </div>
 
       <div className={styles.contactContainer}>
-        {/* Left Side: Form */}
+
         <div className={styles.formContainer}>
           <h4>Send us a message</h4>
           <p>
@@ -94,7 +94,7 @@ const Contact: React.FC = () => {
           </form>
         </div>
 
-        {/* Right Side: Contact Info + FAQ */}
+       
         <div className={styles.contactInfo}>
           <h3>Contact Information</h3>
           <div className={styles.infoItem}>
@@ -125,7 +125,7 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          {/* FAQ */}
+          
           <div className={styles.faq}>
             <h3>Frequently Asked Questions</h3>
 

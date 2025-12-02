@@ -1,11 +1,10 @@
-// src/components/Newsletter.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Newsletter from "./NewsLetter";
 import { useSubscribeNewsletter } from "../../../hook/useSubscribeNewsletter";
 import { toast } from "react-hot-toast";
 
-// --- Mock external modules ---
+
 jest.mock("../../../hook/useSubscribeNewsletter");
 jest.mock("react-hot-toast", () => ({
   toast: {
