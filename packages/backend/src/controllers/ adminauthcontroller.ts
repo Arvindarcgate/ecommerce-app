@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../db/Knex'; // your knex or db connection
+import db from '../db/Knex';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
@@ -10,7 +10,6 @@ export const registerAdmin = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
 
-        // check if admin exists
         const existingAdmin = await db('admins').where({ email }).first();
         if (existingAdmin) {
             return res.status(400).json({ message: 'Admin already exists' });

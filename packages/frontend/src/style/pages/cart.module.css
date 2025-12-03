@@ -55,14 +55,15 @@
 
 .addMoreBtn {
     background: #28a745;
+    width: fit-content;
     color: #fff;
     border: none;
-    padding: 8px 16px;
+    padding: 8px 8px;
     border-radius: 8px;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 600px;
     transition: background 0.3s, transform 0.2s;
 }
 
@@ -97,10 +98,12 @@
 }
 
 .quantityRow {
+    width: fit-content;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 8px 0;
+    gap: 4px;
+    margin: 4px 0;
+    height: fit-content;
 }
 
 .quantityRow label {
@@ -110,7 +113,7 @@
 
 .quantityInput {
     width: 60px;
-    padding: 5px;
+    padding: 2px;
     border-radius: 6px;
     border: 1px solid #ccc;
     text-align: center;
@@ -126,6 +129,7 @@
 .removeBtn {
     background: #ff4d4d;
     border: none;
+    width: 120px;
     color: #fff;
     padding: 8px 12px;
     border-radius: 8px;
@@ -156,6 +160,7 @@
 .finalBtn {
     background: linear-gradient(90deg, #007bff, #0056d6);
     color: #fff;
+    width: fit-content;
     border: none;
     padding: 12px 25px;
     border-radius: 10px;
@@ -169,6 +174,9 @@
     transform: translateY(-2px);
     background: linear-gradient(90deg, #0056d6, #0041b3);
 }
+
+
+
 
 /* 📱 Responsive Styles */
 @media (max-width: 768px) {

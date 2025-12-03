@@ -1,4 +1,3 @@
-// packages/backend/src/controllers/adminProductpage.ts
 import { Request, Response } from 'express';
 import { Product } from '../models/adminproduct';
 
@@ -20,11 +19,11 @@ export const addProduct = async (req: Request, res: Response) => {
             image: imagePath,
         });
         res.status(201).json({
-            message: '✅ Product added successfully',
+            message: ' Product added successfully',
             product,
         });
     } catch (error: any) {
-        console.error('❌ Error adding product:', error);
+        console.error('Error adding product:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
@@ -41,7 +40,7 @@ export const getProducts = async (req: Request, res: Response) => {
         const products = await Product.query();
         res.status(200).json(products);
     } catch (error: any) {
-        console.error('❌ Error fetching products:', error);
+        console.error('Error fetching products:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };

@@ -1,44 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const VerifyEmailPage: React.FC = () => {
-    const [searchParams] = useSearchParams();
-    const [message, setMessage] = useState<string | null>(null);
-    const [verificationUrl, setVerificationUrl] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = searchParams.get("token");
-        if (token) {
-            setVerificationUrl(`http://localhost:8000/api/auth/verify?token=${token}`);
-        }
-    }, [searchParams]);
+  useEffect(() => {
+    const token = searchParams.get('token');
 
-    const handleClick = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        e.preventDefault();
-        if (!verificationUrl) return;
+    if (!token) {
+      setMessage('Invalid or missing verification token.');
+      return;
+    }
 
-        try {
-            const res = await fetch(verificationUrl);
-            const data = await res.json();
-            setMessage(data.message);
-        } catch (err) {
-            console.error(err);
-            setMessage("Verification failed!");
-        }
+    const verifyEmail = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/auth/verify?token=${token}`
+        );
+        const data = await res.json();
+        setMessage(data.message);
+
+        setTimeout(() => navigate('/login'), 2000);
+      } catch (err) {
+        setMessage('Verification failed');
+      }
     };
 
-    return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-            <h2>Email Verification</h2>
-            {message ? (
-                <p>{message}</p>
-            ) : (
-                <a href={verificationUrl || "#"} onClick={handleClick}>
-                    Click here to verify your email
-                </a>
-            )}
-        </div>
-    );
+    verifyEmail();
+  }, [searchParams, navigate]);
+
+  return (
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>Email Verification</h2>
+      <p>{message || 'Verifying your email...'}</p>
+    </div>
+  );
 };
 
 export default VerifyEmailPage;

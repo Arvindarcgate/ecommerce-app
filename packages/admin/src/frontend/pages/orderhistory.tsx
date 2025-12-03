@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 interface OrderItem {
     product: string;
@@ -25,13 +27,12 @@ const OrderHistory: React.FC = () => {
     const fetchOrders = async () => {
         try {
             const url = filterEmail
-                ? `http://localhost:8000/api/orders/all?email=${filterEmail}`
-                : `http://localhost:8000/api/orders/all`;
+                ? `${API_BASE_URL}/api/orders/all?email=${filterEmail}`
+                : `${API_BASE_URL}/api/orders/all`;
 
             const res = await fetch(url);
             const data = await res.json();
 
-            // 🕒 Sort by created_at (latest first)
             const sortedData = data.sort(
                 (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
@@ -65,7 +66,7 @@ const OrderHistory: React.FC = () => {
                 </button>
             </div>
 
-            {/* 📋 Orders Table */}
+           
             <table border={1} cellPadding={8} cellSpacing={0} width="100%">
                 <thead>
                     <tr>

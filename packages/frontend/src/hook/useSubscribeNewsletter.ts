@@ -5,7 +5,7 @@ export function useSubscribeNewsletter() {
 
     return useMutation({
         mutationFn: async (email: string) => {
-            const response = await fetch("http://localhost:8000/api/subscribe", {
+            const response = await fetch("${Backend_URL}/api/subscribe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

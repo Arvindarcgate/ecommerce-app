@@ -3,24 +3,26 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './frontend/component/Navbar';
 import AdminLogin from './frontend/pages/Authetication/AdminLogin';
 import AdminSignup from './frontend/pages/Authetication/adminsignup';
-import ProductPage from './frontend/pages/productpages'; // ✅ import your product page
+import ProductPage from './frontend/pages/productpages'; //  import your product page
 
 import AdminProductedit from './frontend/pages/adminProductedit';
 import OrderHistory from './frontend/pages/orderhistory';
-import GetReady from './frontend/pages/getReady'
+import GetReady from './frontend/pages/getReady';
+import { Toaster } from "react-hot-toast";
 
 
 const App: React.FC = () => {
   return (
     <Router>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Navbar on top */}
+        
         <Navbar />
-
-        {/* Page content below */}
+         <Toaster position="top-right" />
+       
         <div style={{ flex: 1, padding: '20px' }}>
           <Routes>
-            <Route path="/admin-login" element={<AdminLogin />} />
+           
+            <Route path="/" element={<AdminLogin />} />
             <Route path="/admin-signup" element={<AdminSignup />} />
             <Route path="/add-product" element={<ProductPage />} />
             <Route path="/product-edit" element={<AdminProductedit />} />

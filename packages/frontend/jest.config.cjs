@@ -13,22 +13,22 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
 
-  // ✅ Map CSS imports (so Jest doesn't break when seeing .css files)
+  //  Map CSS imports (so Jest doesn't break when seeing .css files)
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
 
-  // ✅ Run setup file before tests (if you have one)
+  //  Run setup file before tests (if you have one)
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 
-  // ✅ Enable code coverage
+  //  Enable code coverage
   collectCoverage: true,
   coverageDirectory: '<rootDir>/coverage', // where reports will be saved
 
-  // ✅ Choose output formats
+  //  Choose output formats
   coverageReporters: ['text', 'lcov', 'html'],
 
-  // ✅ Optional: make tests fail if coverage drops below threshold
+  //  Optional: make tests fail if coverage drops below threshold
   coverageThreshold: {
     global: {
       branches: 80,

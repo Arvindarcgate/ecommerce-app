@@ -38,7 +38,7 @@ describe("Product Controller Tests", () => {
     // ============================================================
     // 🟦 UPDATE PRODUCT TESTS
     // ============================================================
-    test("✅ Should update product successfully", async () => {
+    test(" Should update product successfully", async () => {
         const updatedProductMock = {
             id: 1,
             name: "New Name",
@@ -58,11 +58,11 @@ describe("Product Controller Tests", () => {
             });
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe("✅ Product updated successfully");
+        expect(response.body.message).toBe(" Product updated successfully");
         expect(response.body.product).toEqual(updatedProductMock);
     });
 
-    test("❌ Should return 404 when product not found", async () => {
+    test("Should return 404 when product not found", async () => {
         mockQuery.returning.mockResolvedValue(null);
 
         const response = await request(app)
@@ -74,10 +74,10 @@ describe("Product Controller Tests", () => {
             });
 
         expect(response.status).toBe(404);
-        expect(response.body.message).toBe("❌ Product not found");
+        expect(response.body.message).toBe("Product not found");
     });
 
-    test("❌ Should return 500 on update error", async () => {
+    test("Should return 500 on update error", async () => {
         mockQuery.returning.mockRejectedValue(new Error("DB Error"));
 
         const response = await request(app)
@@ -105,16 +105,16 @@ describe("Product Controller Tests", () => {
         expect(response.body.message).toBe("🗑️ Product deleted successfully");
     });
 
-    test("❌ Should return 404 when deleting non-existing product", async () => {
+    test("Should return 404 when deleting non-existing product", async () => {
         mockQuery.deleteById.mockResolvedValue(0);
 
         const response = await request(app).delete("/product/999");
 
         expect(response.status).toBe(404);
-        expect(response.body.message).toBe("❌ Product not found");
+        expect(response.body.message).toBe("Product not found");
     });
 
-    test("❌ Should return 500 on delete error", async () => {
+    test("Should return 500 on delete error", async () => {
         mockQuery.deleteById.mockRejectedValue(new Error("Delete Failed"));
 
         const response = await request(app).delete("/product/1");

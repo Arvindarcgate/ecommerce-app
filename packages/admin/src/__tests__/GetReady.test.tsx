@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import GetReadyPage from "../frontend/pages/getReady";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // --- Mock useNavigate ---
 const mockNavigate = jest.fn();
@@ -127,8 +128,7 @@ describe("GetReadyPage Component", () => {
         setMockLocalStorage(queue);
         (window as any).confirm = jest.fn(() => true);
 
-        // 1st fetch -> image fetch that returns a Response-like object with blob()
-        // 2nd fetch -> actual POST to backend
+       
         fetchMock
             .mockResolvedValueOnce({
                 ok: true,
@@ -157,7 +157,7 @@ describe("GetReadyPage Component", () => {
 
             expect(apiCalls.length).toBeGreaterThan(0);
             // first argument of the API call should be the URL
-            expect(apiCalls[0][0]).toBe("http://localhost:8000/api/products/add");
+            expect(apiCalls[0][0]).toBe(`${API_BASE_URL}}/api/products/add`);
             expect(apiCalls[0][1]).toEqual(expect.objectContaining({ method: "POST" }));
 
             expect(window.alert).toHaveBeenCalledWith(

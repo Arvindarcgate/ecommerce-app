@@ -13,6 +13,8 @@ import VerifyEmailPage from "./component/components/Authetication/VerifyEmailPag
 import ProductPage from "./pages/product";
 import CartPage from "./pages/cartpage";
 import AuthLogin from "./pages/AuthLogin";
+import { Toaster } from "react-hot-toast";
+
 
 const queryClient = new QueryClient();
 const App: React.FC = () => {
@@ -21,11 +23,12 @@ const App: React.FC = () => {
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>  
       <Navbar />
+       <Toaster position="top-center" />
       <Routes>
-        <Route path="/" element={<AuthLogin />} />
-        <Route path="/Home" element={<Home />} />
+        <Route path="/AuthLogin" element={<AuthLogin />} />
+        <Route path="/" element={<Home />} />
         <Route path="/productPage" element={<ProductPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />

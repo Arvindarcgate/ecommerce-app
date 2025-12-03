@@ -1,22 +1,22 @@
-import React, { useState, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { User, Search, LogOut } from "lucide-react";
-import styles from "../style/component/Navbar.module.css";
-import Container from "../style/component/ui/Container";
-import { AuthContext } from "./components/Authetication/Authcontext";
+import React, { useState, useContext } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { User, Search, LogOut } from 'lucide-react';
+import styles from '../style/component/Navbar.module.css';
+import Container from '../style/component/ui/Container';
+import { AuthContext } from './components/Authetication/Authcontext';
 
 const Navbar: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
 
   const { user, logout } = useContext(AuthContext);
 
   const navigation = [
-    { name: "Home", href: "/Home" },
-    { name: "Products", href: "/productpage" },
-    { name: "Contact", href: "/contact" },
-    { name: "Cart", href: "/cart" },
+    { name: 'Home', href: '/' },
+    { name: 'Products', href: '/productpage' },
+    { name: 'Contact', href: '/contact' },
+    { name: 'Cart', href: '/cart' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -28,7 +28,6 @@ const Navbar: React.FC = () => {
     <nav className={styles.navbar}>
       <Container>
         <div className={styles.navContainer}>
-          {/* LEFT: Logo + Navigation Links */}
           <div className={styles.navleft}>
             <Link to="/" className={styles.logo}>
               <div className={styles.logoIcon}>E</div>
@@ -40,8 +39,9 @@ const Navbar: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`${styles.navLink} ${isActive(item.href) ? styles.active : ""
-                    }`}
+                  className={`${styles.navLink} ${
+                    isActive(item.href) ? styles.active : ''
+                  }`}
                 >
                   {item.name}
                 </Link>
@@ -49,9 +49,7 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT SECTION */}
-          <div className={styles.navright}>
-            {/* Search */}
+          <div className={styles.navRight}>
             <div className={styles.searchBar}>
               <Search className={styles.searchIcon} />
               <input
@@ -63,16 +61,15 @@ const Navbar: React.FC = () => {
               />
             </div>
 
-            {/* User / Auth Section */}
             <div className={styles.profileSection}>
               {user ? (
                 <>
                   <span
                     className={styles.userText}
                     onClick={toggleDropdown}
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                   >
-                    Welcome, {user.email.split("@")[0]} ▼
+                    Welcome, {user.email.split('@')[0]} ▼
                   </span>
 
                   {isDropdownOpen && (

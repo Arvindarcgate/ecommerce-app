@@ -1,8 +1,6 @@
-import React from "react";
-import styles from "../style/component/Footer.module.css";
-import Container from "../style/component/ui/Container";
-
-
+import React from 'react';
+import styles from '../style/component/Footer.module.css';
+import Container from '../style/component/ui/Container';
 
 import {
   MapPin,
@@ -12,11 +10,11 @@ import {
   Instagram,
   Youtube,
   Mail,
-} from "lucide-react";
+} from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer style={{ backgroundColor: "black", display: "flex" }}>
+    <footer style={{ backgroundColor: 'black', display: 'flex' }}>
       <Container>
         <div className={styles.divone}>
           <div className={styles.divhorizontal}>

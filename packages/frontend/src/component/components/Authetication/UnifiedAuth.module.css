@@ -1,0 +1,170 @@
+:root {
+    --primary-color: #6a9955;
+    --primary-hover-color: #557a44;
+    --background-lightest: #f5fff8;
+    --card-background: #ffffff;
+    --text-dark: #3c4043;
+    --text-subtle: #7a8288;
+    --border-color: #d8e0e5;
+    --focus-ring-color: rgba(106, 153, 85, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Open Sans', Arial, sans-serif;
+}
+
+/* Global Layout */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--background-lightest), #e8f5f8); 
+    padding: 2rem;
+}
+
+/* Main Card */
+.card {
+    background: var(--card-background);
+    padding: 3rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+    animation: fadeIn 0.8s ease-out;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Text Hierarchy */
+.title {
+    font-size: 2rem;
+    font-weight: 600; 
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-subtle);
+    font-size: 1rem;
+    margin-bottom: 2rem; 
+    line-height: 1.5;
+}
+
+/* Form Structure */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Input Fields */
+.input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text-dark);
+    background-color: #fcfcfc;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+/* Password Visibility Container */
+.passwordContainer {
+    position: relative;
+    width: 100%;
+}
+
+.passwordIcon {
+    position: absolute; 
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-subtle);
+    font-size: 1.1rem;
+    transition: 0.2s ease;
+}
+
+.passwordIcon:hover {
+    color: var(--primary-color);
+}
+
+/* Action Button */
+.button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.button:hover {
+    background-color: var(--primary-hover-color);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Footer Links */
+.footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-subtle);
+}
+
+.link {
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.link:hover {
+    color: var(--primary-hover-color);
+    text-decoration: underline;
+}
+
+/* Entrance Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+    .card {
+        padding: 2rem 1.5rem;
+    }
+    .title {
+        font-size: 1.75rem;
+    }
+}
