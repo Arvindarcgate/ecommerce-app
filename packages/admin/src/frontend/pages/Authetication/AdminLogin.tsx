@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './AdminLogin.module.css';
 import toast from 'react-hot-toast';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../../../config/env';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ const AdminLogin: React.FC = () => {
 
     if (!email || !password) {
       toast.error('Please fill all fields');
-      return;
+      return; 
     }
 
     try {
@@ -45,7 +45,7 @@ const AdminLogin: React.FC = () => {
 
       toast.success('Admin Login Successful!');
 
-      navigate('/admin-dashboard');
+      navigate('/admin/orders');
     } catch (error) {
       toast.error('Something went wrong while logging in');
     } finally {

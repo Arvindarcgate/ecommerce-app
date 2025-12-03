@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./getready.module.css";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../../config/env';
 import toast from "react-hot-toast";
 import ConfirmationModal from "./conformationModal";
 

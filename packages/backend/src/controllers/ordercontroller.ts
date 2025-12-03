@@ -43,10 +43,10 @@ export const createOrder = async (req: Request, res: Response) => {
 
 export const getAllOrders = async (req: Request, res: Response) => {
     try {
-        const { email } = req.query;
+        const email = req.query.email?.toString().trim() || null;
 
-      
         let query = knex("orders as o")
+            .leftJoin("order_items as oi", "o.id", "oi.order_id")
             .select(
                 "o.id",
                 "o.email",
@@ -56,16 +56,16 @@ export const getAllOrders = async (req: Request, res: Response) => {
                 "oi.quantity",
                 "oi.total as item_total"
             )
-            .leftJoin("order_items as oi", "o.id", "oi.order_id")
             .orderBy("o.created_at", "desc");
 
-        if (email) {
-            query = query.where("o.email", email.toString());
+      
+        if (email && email.length > 0) {
+            query = query.where("o.email", "=", email);
         }
 
         const rows = await query;
 
-        
+
         const ordersMap: Record<number, any> = {};
 
         for (const row of rows) {
@@ -78,7 +78,6 @@ export const getAllOrders = async (req: Request, res: Response) => {
                     items: [],
                 };
             }
-
             ordersMap[row.id].items.push({
                 product: row.product,
                 quantity: row.quantity,
@@ -86,12 +85,12 @@ export const getAllOrders = async (req: Request, res: Response) => {
             });
         }
 
-        const orders = Object.values(ordersMap);
-
-        res.json(orders);
+        res.json(Object.values(ordersMap));
     } catch (error) {
         console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Failed to fetch orders" });
     }
 };
+
+
 
