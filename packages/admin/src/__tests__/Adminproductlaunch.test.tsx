@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import GetReadyPage from "../frontend/pages/getReady";
+import GetReadyPage from "../pages/adminproductlaunch";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // --- Mock useNavigate ---

@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-import styles from "../style/pages/contact.module.css";
+import React, { useState } from 'react';
+import styles from '../style/pages/contact.module.css';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
-    fullname: "",
-    email: "",
-    subject: "",
-    message: "",
+    fullname: '',
+    email: '',
+    subject: '',
+    message: '',
   });
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -17,10 +16,9 @@ const Contact: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted ", formData);
+    console.log('Form Submitted ', formData);
   };
 
   return (
@@ -33,7 +31,6 @@ const Contact: React.FC = () => {
       </div>
 
       <div className={styles.contactContainer}>
-
         <div className={styles.formContainer}>
           <h4>Send us a message</h4>
           <p>
@@ -94,7 +91,6 @@ const Contact: React.FC = () => {
           </form>
         </div>
 
-       
         <div className={styles.contactInfo}>
           <h3>Contact Information</h3>
           <div className={styles.infoItem}>
@@ -125,15 +121,14 @@ const Contact: React.FC = () => {
             </p>
           </div>
 
-          
           <div className={styles.faq}>
             <h3>Frequently Asked Questions</h3>
 
             <div className={styles.faqItem}>
               <h4>How long does shipping take?</h4>
               <p>
-                Standard shipping takes 3-5 business days, while express shipping
-                takes 1-2 business days.
+                Standard shipping takes 3-5 business days, while express
+                shipping takes 1-2 business days.
               </p>
             </div>
 

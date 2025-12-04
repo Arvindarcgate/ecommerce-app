@@ -1,53 +1,55 @@
+// src/pages/Authentication/AdminSignup.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './AdminLogin.module.css';
+import styles from './Adminsignup.module.css';
 import toast from 'react-hot-toast';
-import { API_BASE_URL } from '../../../config/env';
+import { API_BASE_URL } from '../../config/env';
 
-const AdminLogin: React.FC = () => {
+const AdminSignup: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       toast.error('Please fill all fields');
-      return; 
+      return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      const response = await fetch(`${API_BASE_URL}/admin/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          name,
           email,
           password,
-          role: 'admin',
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.message || 'Login failed');
+        toast.error(data.message || 'Signup failed');
         return;
       }
 
+      toast.success('Admin Account Created Successfully!');
+
       localStorage.setItem('token', data.token);
 
-      toast.success('Admin Login Successful!');
-
-      navigate('/admin/orders');
+      navigate('/');
     } catch (error) {
-      toast.error('Something went wrong while logging in');
+      toast.error('Something went wrong while signing up');
     } finally {
       setLoading(false);
     }
@@ -56,8 +58,18 @@ const AdminLogin: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2>Admin Login</h2>
-        <form onSubmit={handleLogin} className={styles.form} role="form">
+        <h2>Admin Signup</h2>
+
+        <form onSubmit={handleSignup} className={styles.form} role="form">
+          <input
+            type="text"
+            placeholder="Enter Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className={styles.input}
+          />
+
           <input
             type="email"
             placeholder="Enter Email"
@@ -77,17 +89,14 @@ const AdminLogin: React.FC = () => {
           />
 
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Please wait...' : 'Login'}
+            {loading ? 'Creating...' : 'Create Account'}
           </button>
         </form>
 
         <p className={styles.signupText}>
-          New here?{' '}
-          <span
-            onClick={() => navigate('/admin-signup')}
-            className={styles.link}
-          >
-            Create New Account
+          Already have an account?{' '}
+          <span onClick={() => navigate('/')} className={styles.link}>
+            Login Here
           </span>
         </p>
       </div>
@@ -95,4 +104,4 @@ const AdminLogin: React.FC = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminSignup;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./getready.module.css";
-import { API_BASE_URL } from '../../config/env';
+import styles from "./adminproductlaunch.module.css";
+import { API_BASE_URL } from '../config/env';
 import toast from "react-hot-toast";
 import ConfirmationModal from "./conformationModal";
 

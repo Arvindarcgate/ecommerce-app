@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "../db/Knex";
+import {db} from "../db/db";
 
 export const subscribe = async (req: Request, res: Response) => {
     const { email } = req.body;
