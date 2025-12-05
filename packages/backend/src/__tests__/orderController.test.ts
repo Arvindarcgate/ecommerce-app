@@ -12,7 +12,7 @@ const mockQueryBuilder = {
 
 const mockKnex = jest.fn(() => mockQueryBuilder);
 
-jest.mock("../db/Knex", () => ({
+jest.mock("../db/db", () => ({
     __esModule: true,
     default: mockKnex,
 }));

@@ -1,28 +1,29 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../admin/src/config/env';
 
 export function useSubscribeNewsletter() {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async (email: string) => {
-            const response = await fetch("${Backend_URL}/api/subscribe", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || "Subscription failed");
-            }
-
-            return data;
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const response = await fetch(`${API_BASE_URL}/api/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["subscribers"] });
-        },
-    });
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Subscription failed');
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscribers'] });
+    },
+  });
 }

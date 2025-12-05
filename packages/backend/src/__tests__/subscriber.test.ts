@@ -2,10 +2,10 @@
 import request from "supertest";
 import express from "express";
 import { subscribe } from "../controllers/newsletter.controller";
-import db from "../db/Knex";
+import { db } from '../db/db';
 
 // Mock DB
-jest.mock("../db/Knex", () => ({
+jest.mock("../db/db", () => ({
     __esModule: true,
     default: jest.fn(() => { }),
     insert: jest.fn(),

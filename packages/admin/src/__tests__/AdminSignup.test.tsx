@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import AdminSignup from "../frontend/pages/Authetication/adminsignup";
+import AdminSignup from "../pages/Authetication/adminsignup";
 
 // Mock useNavigate
 const mockedNavigate = jest.fn();

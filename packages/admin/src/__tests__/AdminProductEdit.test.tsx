@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import AdminProductEdit from "../frontend/pages/adminProductedit";
+import AdminProductEdit from "../pages/adminProductedit";
 
 // GLOBAL MOCKS
 const mockFetch = jest.fn();

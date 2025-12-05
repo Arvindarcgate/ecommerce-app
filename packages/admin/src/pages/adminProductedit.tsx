@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../pages/adminproductedit.module.css";
 import toast from "react-hot-toast";
 import ConfirmationModal from "./conformationModal";
-import { API_BASE_URL } from '../../config/env';
+import { API_BASE_URL } from '../config/env';
 
 interface Product {
   id: number;
