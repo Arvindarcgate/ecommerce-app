@@ -4,7 +4,7 @@ import express from "express";
 import { subscribe } from "../controllers/newsletter.controller";
 import { db } from '../db/db';
 
-// Mock DB
+
 jest.mock("../db/db", () => ({
     __esModule: true,
     default: jest.fn(() => { }),
@@ -14,7 +14,7 @@ jest.mock("../db/db", () => ({
 const app = express();
 app.use(express.json());
 
-// Fake auth middleware for test
+
 app.post("/subscribe", (req: any, res, next) => {
     req.user = req.headers["user-id"] ? { id: req.headers["user-id"] } : null;
     next();
@@ -26,7 +26,7 @@ describe("POST /subscribe", () => {
         jest.clearAllMocks();
     });
 
-    // ----------------------------------------------------
+   
     test("Should return 400 if email is missing", async () => {
         const response = await request(app)
             .post("/subscribe")
@@ -37,7 +37,7 @@ describe("POST /subscribe", () => {
         expect(response.body.error).toBe("Email is required");
     });
 
-    // ----------------------------------------------------
+    
     test("Should return 401 if user is unauthorized", async () => {
         const response = await request(app)
             .post("/subscribe")
@@ -47,7 +47,7 @@ describe("POST /subscribe", () => {
         expect(response.body.error).toBe("Unauthorized");
     });
 
-    // ----------------------------------------------------
+    
     test(" Should subscribe user successfully", async () => {
         (db as any).mockReturnValueOnce({
             insert: jest.fn().mockResolvedValueOnce([1])
@@ -64,7 +64,7 @@ describe("POST /subscribe", () => {
         expect(db).toHaveBeenCalledWith("subscribers");
     });
 
-    // ----------------------------------------------------
+   
     test("Should return 500 on database error", async () => {
         (db as any).mockReturnValueOnce({
             insert: jest.fn().mockRejectedValueOnce(new Error("DB Error"))

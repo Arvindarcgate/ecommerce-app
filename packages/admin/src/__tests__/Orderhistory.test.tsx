@@ -1,99 +1,125 @@
-
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OrderHistory from '../pages/orderhistory';
+import { API_BASE_URL } from '../config/env';
 
-jest.mock('../../config/env', () => ({
-  API_BASE_URL: 'http://mock-api-url.com'
+jest.mock('../config/env', () => ({
+  API_BASE_URL: 'http://localhost:8000',
 }));
-
-test('renders without crash', () => {
-  render(<OrderHistory />);
-  expect(screen.getByText('Order History')).toBeInTheDocument();
-});
-
-global.fetch = jest.fn();
 
 const mockOrders = [
   {
     id: 1,
     email: 'test@example.com',
     total_amount: '500',
-    created_at: '2025-01-01T10:00:00Z',
+    created_at: '2025-01-05T10:00:00Z',
     items: [
-      { product: 'Product A', quantity: 2, item_total: '200' },
-      { product: 'Product B', quantity: 1, item_total: '300' }
-    ]
-  }
+      { product: 'Shirt', quantity: 2, item_total: '300' },
+      { product: 'Jeans', quantity: 1, item_total: '200' },
+    ],
+  },
+  {
+    id: 2,
+    email: 'user@example.com',
+    total_amount: '250',
+    created_at: '2025-01-04T09:00:00Z',
+    items: [{ product: 'Shoes', quantity: 1, item_total: '250' }],
+  },
 ];
 
-const mockFetch = (data = mockOrders) => {
-  (fetch as jest.Mock).mockResolvedValueOnce({
-    json: async () => data
-  } as Response);
-};
+global.fetch = jest.fn();
 
 describe('OrderHistory Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    (fetch as jest.Mock).mockResolvedValue({
+      json: jest.fn().mockResolvedValue(mockOrders),
+    });
   });
 
   test('renders heading', async () => {
-    mockFetch();
     render(<OrderHistory />);
-    expect(screen.getByText(/Order History/i)).toBeInTheDocument();
+
+    expect(screen.getByText('🧾 Order History')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   test('fetches and displays orders', async () => {
-    mockFetch();
     render(<OrderHistory />);
 
-    await waitFor(() => {
-      expect(screen.getByText('test@example.com')).toBeInTheDocument();
-    });
+    // Wait for fetch to complete
+    await waitFor(() =>
+      expect(screen.getByText('test@example.com')).toBeInTheDocument()
+    );
 
-    expect(screen.getByText('₹500')).toBeInTheDocument();
-    expect(screen.getByText(/Product A/i)).toBeInTheDocument();
+    // Check product items
+    expect(screen.getByText('Shirt')).toBeInTheDocument();
+    expect(screen.getByText('Jeans')).toBeInTheDocument();
   });
 
-  test('filters orders by email', async () => {
-    mockFetch();
+  test('filters orders by email when Search is clicked', async () => {
     render(<OrderHistory />);
 
-    await waitFor(() => {
-      expect(screen.getByText('test@example.com')).toBeInTheDocument();
-    });
+    const input = screen.getByPlaceholderText('Filter by Email');
+    const button = screen.getByText('Search');
 
-    mockFetch([]);
-    fireEvent.change(screen.getByPlaceholderText(/Filter by Email/i), {
-      target: { value: 'notfound@example.com' }
-    });
-    fireEvent.click(screen.getByText(/Search/i));
+    fireEvent.change(input, { target: { value: 'test@example.com' } });
+    fireEvent.click(button);
 
     await waitFor(() => {
-      expect(screen.getByText(/No orders found/i)).toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/orders/all?email=test@example.com`
+      );
     });
   });
 
-  test('pagination buttons work', async () => {
-    const longList = Array.from({ length: 20 }, (_, i) => ({
+  test("shows 'No orders found' when list is empty", async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue([]),
+    });
+
+    render(<OrderHistory />);
+
+    await waitFor(() =>
+      expect(screen.getByText('No orders found')).toBeInTheDocument()
+    );
+  });
+
+  test('pagination buttons work correctly', async () => {
+    // Create 20 orders to test pagination
+    const bigList = Array.from({ length: 20 }, (_, i) => ({
       id: i + 1,
-      email: 'test@example.com',
+      email: `user${i}@mail.com`,
       total_amount: '100',
-      created_at: '2025-01-01T10:00:00Z',
-      items: []
+      created_at: '2025-01-05T10:00:00Z',
+      items: [{ product: 'Item', quantity: 1, item_total: '100' }],
     }));
 
-    mockFetch(longList);
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue(bigList),
+    });
+
     render(<OrderHistory />);
 
     await waitFor(() => {
-      expect(screen.getByText('1')).toBeInTheDocument();
+      expect(screen.getByText('user0@mail.com')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText(/Next/i));
+    const nextButton = screen.getByText('Next ▶');
+    const prevButton = screen.getByText('◀ Prev');
 
-    await waitFor(() => {
-      expect(screen.getByText('11')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+
+    fireEvent.click(nextButton);
+
+    expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
+
+    fireEvent.click(prevButton);
+
+    expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
   });
 });

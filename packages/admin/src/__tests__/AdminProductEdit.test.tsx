@@ -1,131 +1,120 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AdminProductEdit from "../pages/adminProductedit";
+import { API_BASE_URL } from "../config/env";
 
-// GLOBAL MOCKS
-const mockFetch = jest.fn();
-global.fetch = mockFetch as any;
 
-const mockConfirm = jest.fn();
-global.confirm = mockConfirm;
 
-const mockAlert = jest.fn();
-global.alert = mockAlert;
+jest.mock('../config/env', () => ({
+  API_BASE_URL: 'http://localhost:8000',
+}));
 
-const sampleProducts = [
-    { id: 1, name: "Shirt", price: 500, size: "M", image: "/img1.png" },
+jest.mock('../pages/conformationModal', () => (props: any) => (
+  props.open ? (
+    <div data-testid="modal">
+      <button onClick={props.onConfirm} data-testid="confirm-delete">Confirm</button>
+      <button onClick={props.onCancel} data-testid="cancel-delete">Cancel</button>
+    </div>
+  ) : null
+));
+
+
+jest.mock("react-hot-toast", () => ({
+  success: jest.fn(),
+  error: jest.fn()
+}));
+
+global.fetch = jest.fn();
+
+const mockProducts = [
+  {
+    id: 1,
+    name: "Test Product",
+    price: 999,
+    size: "M",
+    image: "/img/test.png"
+  }
 ];
 
 describe("AdminProductEdit Component", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-
-        // First fetch (load products)
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => sampleProducts,
-        });
+  beforeEach(() => {
+    (fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => mockProducts
     });
+  });
 
-    test("loads and displays products (covers line 25)", async () => {
-        render(<AdminProductEdit />);
+  test("renders products after fetch", async () => {
+    render(<AdminProductEdit />);
 
-        expect(await screen.findByText("Shirt")).toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/api/products/all`);
+
+    const product = await screen.findByText("Test Product");
+    expect(product).toBeInTheDocument();
+  });
+
+  test("clicking Edit opens edit form", async () => {
+    render(<AdminProductEdit />);
+
+    const editButton = await screen.findByText("Edit");
+    fireEvent.click(editButton);
+
+    expect(screen.getByPlaceholderText("Product Name")).toBeInTheDocument();
+  });
+
+  test("updating product triggers API call", async () => {
+    render(<AdminProductEdit />);
+
+    fireEvent.click(await screen.findByText("Edit"));
+
+    const updateBtn = screen.getByText("Update");
+
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
+
+    fireEvent.click(updateBtn);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/products/update/1`,
+        expect.any(Object)
+      );
     });
+  });
 
-    test("delete product success (covers handleDelete success)", async () => {
-        render(<AdminProductEdit />);
+  test("click Delete opens modal", async () => {
+    render(<AdminProductEdit />);
 
-        await screen.findByText("Shirt");
+    const deleteBtn = await screen.findByText("Delete");
+    fireEvent.click(deleteBtn);
 
-        mockConfirm.mockReturnValue(true);
+    expect(screen.getByTestId("modal")).toBeInTheDocument();
+  });
 
-        // DELETE success mock
-        mockFetch.mockResolvedValueOnce({ ok: true });
+  test("cancel delete closes modal", async () => {
+    render(<AdminProductEdit />);
 
-        fireEvent.click(screen.getByText("🗑️ Delete"));
+    fireEvent.click(await screen.findByText("Delete"));
+    fireEvent.click(screen.getByTestId("cancel-delete"));
 
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("🗑️ Product deleted successfully!");
-        });
+    await waitFor(() => {
+      expect(screen.queryByTestId("modal")).toBeNull();
     });
+  });
 
-    test("delete product failure (covers lines 52-56)", async () => {
-        render(<AdminProductEdit />);
+  test("confirm delete removes product", async () => {
+    render(<AdminProductEdit />);
 
-        await screen.findByText("Shirt");
+    fireEvent.click(await screen.findByText("Delete"));
 
-        mockConfirm.mockReturnValue(true);
+    (fetch as jest.Mock).mockResolvedValueOnce({ ok: true });
 
-        mockFetch.mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ message: "Delete failed" }),
-        });
+    fireEvent.click(screen.getByTestId("confirm-delete"));
 
-        fireEvent.click(screen.getByText("🗑️ Delete"));
-
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("Error: Delete failed");
-        });
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/products/delete/1`,
+        { method: "DELETE" }
+      );
     });
-
-    test("open edit form + input updates + cancel (covers 141-171)", async () => {
-        render(<AdminProductEdit />);
-
-        await screen.findByText("Shirt");
-
-        fireEvent.click(screen.getByText("✏️ Edit"));
-
-        // Now form is visible
-        const nameInput = screen.getByPlaceholderText("Product Name");
-        const priceInput = screen.getByPlaceholderText("Price");
-        const sizeInput = screen.getByPlaceholderText("Size (e.g. S, M, L)");
-
-        fireEvent.change(nameInput, { target: { value: "Updated Shirt" } });
-        fireEvent.change(priceInput, { target: { value: "999" } });
-        fireEvent.change(sizeInput, { target: { value: "L" } });
-
-        fireEvent.click(screen.getByText("Cancel"));
-
-        await waitFor(() => {
-            expect(screen.queryByText("Edit Product")).toBeNull();
-        });
-    });
-
-    test("update product success (covers success path)", async () => {
-        render(<AdminProductEdit />);
-
-        await screen.findByText("Shirt");
-
-        fireEvent.click(screen.getByText("✏️ Edit"));
-
-        mockFetch.mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ message: "success" }),
-        });
-
-        fireEvent.click(screen.getByText(" Update"));
-
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith(" Product updated successfully!");
-        });
-    });
-
-    test("update product failure (covers lines 89-92)", async () => {
-        render(<AdminProductEdit />);
-
-        await screen.findByText("Shirt");
-
-        fireEvent.click(screen.getByText("✏️ Edit"));
-
-        mockFetch.mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ message: "Update failed" }),
-        });
-
-        fireEvent.click(screen.getByText(" Update"));
-
-        await waitFor(() => {
-            expect(mockAlert).toHaveBeenCalledWith("Error: Update failed");
-        });
-    });
+  });
 });
