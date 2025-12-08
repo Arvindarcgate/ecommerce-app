@@ -41,7 +41,7 @@ describe('OrderHistory Component', () => {
   test('renders heading', async () => {
     render(<OrderHistory />);
 
-    expect(screen.getByText('🧾 Order History')).toBeInTheDocument();
+    expect(screen.getByText('Order History')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
