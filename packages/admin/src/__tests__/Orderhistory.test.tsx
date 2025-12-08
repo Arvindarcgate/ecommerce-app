@@ -12,7 +12,7 @@ const mockOrders = [
     id: 1,
     email: 'test@example.com',
     total_amount: '500',
-    created_at: '2025-01-05T10:00:00Z',
+    created_at: new Date().toISOString(),
     items: [
       { product: 'Shirt', quantity: 2, item_total: '300' },
       { product: 'Jeans', quantity: 1, item_total: '200' },
