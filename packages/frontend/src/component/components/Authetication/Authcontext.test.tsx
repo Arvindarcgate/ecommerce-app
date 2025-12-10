@@ -6,18 +6,27 @@ const TestConsumer = () => (
     <AuthContext.Consumer>
         {(value) => (
             <div>
-                <span data-testid="user">{value.user ? value.user.email : "null"}</span>
-                <button onClick={() => value.logout()} data-testid="logout-btn">Logout</button>
-                <button onClick={() => value.login("test@example.com", "1234")} data-testid="login-btn">
+                <span data-testid="user">
+                    {value.user ? value.user.email : "null"}
+                </span>
+
+                <button data-testid="login-btn" onClick={() => value.login("test@example.com", "1234")}>
                     Login
                 </button>
-                <button onClick={() => value.signup("new@example.com", "1234")} data-testid="signup-btn">
+
+                <button data-testid="signup-btn" onClick={() => value.signup("new@example.com", "1234")}>
                     Signup
                 </button>
-                <button onClick={() => value.login("", "")} data-testid="login-fail-btn">
+
+                <button data-testid="logout-btn" onClick={value.logout}>
+                    Logout
+                </button>
+
+                <button data-testid="login-fail-btn" onClick={() => value.login("", "")}>
                     Login Fail
                 </button>
-                <button onClick={() => value.signup("", "")} data-testid="signup-fail-btn">
+
+                <button data-testid="signup-fail-btn" onClick={() => value.signup("", "")}>
                     Signup Fail
                 </button>
             </div>
@@ -28,13 +37,13 @@ const TestConsumer = () => (
 describe("AuthContext – 100% Coverage", () => {
     beforeEach(() => {
         localStorage.clear();
-        jest.clearAllMocks();
+        jest.restoreAllMocks();
     });
 
-    test("loads user from localStorage & covers catch block", () => {
-        // Force parse error and spy
-        localStorage.setItem("user", "{ bad json }"); // invalid JSON
-        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+    test("loads user from localStorage & handles JSON.parse error", () => {
+     
+        localStorage.setItem("user", "{ invalid json }");
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
         render(
             <AuthProvider>
@@ -42,16 +51,11 @@ describe("AuthContext – 100% Coverage", () => {
             </AuthProvider>
         );
 
-        // User should be null after failed parse
         expect(screen.getByTestId("user").textContent).toBe("null");
-
-        // Ensure catch block ran
         expect(consoleSpy).toHaveBeenCalled();
-
-        consoleSpy.mockRestore();
     });
 
-    test("login updates user & localStorage", async () => {
+    test("login updates user and localStorage", async () => {
         render(
             <AuthProvider>
                 <TestConsumer />
@@ -66,7 +70,7 @@ describe("AuthContext – 100% Coverage", () => {
         expect(JSON.parse(localStorage.getItem("user")!)).toEqual({ email: "test@example.com" });
     });
 
-    test("login fails with invalid credentials", async () => {
+    test("login fails with empty credentials", async () => {
         render(
             <AuthProvider>
                 <TestConsumer />
@@ -80,7 +84,7 @@ describe("AuthContext – 100% Coverage", () => {
         expect(screen.getByTestId("user").textContent).toBe("null");
     });
 
-    test("signup updates user & localStorage", async () => {
+    test("signup updates user and localStorage", async () => {
         render(
             <AuthProvider>
                 <TestConsumer />
@@ -95,7 +99,7 @@ describe("AuthContext – 100% Coverage", () => {
         expect(JSON.parse(localStorage.getItem("user")!)).toEqual({ email: "new@example.com" });
     });
 
-    test("signup fails with invalid credentials", async () => {
+    test("signup fails with empty credentials", async () => {
         render(
             <AuthProvider>
                 <TestConsumer />
@@ -109,7 +113,7 @@ describe("AuthContext – 100% Coverage", () => {
         expect(screen.getByTestId("user").textContent).toBe("null");
     });
 
-    test("logout clears user & localStorage", async () => {
+    test("logout clears user and localStorage", async () => {
         localStorage.setItem("user", JSON.stringify({ email: "already@example.com" }));
 
         render(

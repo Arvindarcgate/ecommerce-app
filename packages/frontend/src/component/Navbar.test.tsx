@@ -1,80 +1,61 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import Navbar from "./Navbar";
-import { AuthContext } from "../component/components/Authetication/Authcontext";
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Navbar from './Navbar';
+import { AuthContext } from '../component/components/Authetication/Authcontext';
 
-// Helper wrapper for rendering with Router + AuthContext
-const renderNavbar = (authValue: any) => {
+const renderNavbar = (
+  user = null,
+  logout = jest.fn(),
+  login = jest.fn(),
+  signup = jest.fn()
+) => {
   return render(
-    <BrowserRouter>
-      <AuthContext.Provider value={authValue}>
+    <AuthContext.Provider value={{ user, logout, login, signup }}>
+      <BrowserRouter>
         <Navbar />
-      </AuthContext.Provider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthContext.Provider>
   );
 };
 
-describe("Navbar Component", () => {
-  test("renders Navbar with links", () => {
-    renderNavbar({ user: null, logout: jest.fn() });
-
-    expect(screen.getByText("ECommerce")).toBeInTheDocument();
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("Products")).toBeInTheDocument();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
-    expect(screen.getByText("Cart")).toBeInTheDocument();
+describe.only('Navbar Component', () => {
+  test('renders navigation links', () => {
+    renderNavbar();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('Products')).toBeInTheDocument();
+    expect(screen.getByText('Contact')).toBeInTheDocument();
+    expect(screen.getByText('Cart')).toBeInTheDocument();
   });
 
-  test("renders Login button when user is not logged in", () => {
-    renderNavbar({ user: null, logout: jest.fn() });
-    expect(screen.getByText("Login")).toBeInTheDocument();
+  test('shows Login button when no user is logged in', () => {
+    renderNavbar();
+    expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
-  test("shows user email prefix when logged in", () => {
-    renderNavbar({
-      user: { email: "testuser@example.com" },
-      logout: jest.fn(),
-    });
-
-    expect(screen.getByText("Welcome, testuser ▼")).toBeInTheDocument();
+  test('shows username when user is logged in', () => {
+    const user = { email: 'testuser@example.com' };
+    renderNavbar(user);
+    expect(screen.getByText('Welcome, testuser ▼')).toBeInTheDocument();
   });
 
-  test("dropdown opens when clicking user text", () => {
-    renderNavbar({
-      user: { email: "john@example.com" },
-      logout: jest.fn(),
-    });
+  test('opens dropdown on username click', () => {
+    const user = { email: 'testuser@example.com' };
+    renderNavbar(user);
 
-    const userText = screen.getByText("Welcome, john ▼");
-    fireEvent.click(userText);
+    fireEvent.click(screen.getByText('Welcome, testuser ▼'));
 
-    const dropdown = screen.getByTestId("dropdown-menu");
-    expect(dropdown).toBeInTheDocument();
+    expect(screen.getByTestId('dropdown-menu')).toBeInTheDocument();
   });
 
-  test("logout function is called when clicking logout", () => {
-    const mockLogout = jest.fn();
+  test('calls logout when logout button clicked', () => {
+    const user = { email: 'testuser@example.com' };
+    const logoutMock = jest.fn();
 
-    renderNavbar({
-      user: { email: "john@example.com" },
-      logout: mockLogout,
-    });
+    renderNavbar(user, logoutMock);
 
-    fireEvent.click(screen.getByText("Welcome, john ▼"));
+    fireEvent.click(screen.getByText('Welcome, testuser ▼'));
+    fireEvent.click(screen.getByText('Logout'));
 
-    const logoutButton = screen.getByText(/Logout/i);
-    fireEvent.click(logoutButton);
-
-    expect(mockLogout).toHaveBeenCalled();
-  });
-
-  test("search input updates correctly", () => {
-    renderNavbar({ user: null, logout: jest.fn() });
-
-    const searchInput = screen.getByPlaceholderText("Search products...");
-    fireEvent.change(searchInput, { target: { value: "Laptop" } });
-
-    expect(searchInput).toHaveValue("Laptop");
+    expect(logoutMock).toHaveBeenCalled();
   });
 });

@@ -2,7 +2,7 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useSubscribeNewsletter } from "./useSubscribeNewsletter";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from '../config/env';
 
 const createWrapper = () => {
     const queryClient = new QueryClient();
@@ -29,7 +29,7 @@ describe("useSubscribeNewsletter", () => {
             wrapper: createWrapper(),
         });
 
-        // Perform mutation
+       
         await result.current.mutateAsync("test@example.com");
 
         // Assertions

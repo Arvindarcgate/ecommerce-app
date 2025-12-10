@@ -1,22 +1,11 @@
-/**
- * @file adminProductpage.test.ts
- * Full test coverage for addProduct & getProducts
- */
+
 
 import { Request, Response } from "express";
 
-/* ---------------------------
-   MOCK Product.query()
----------------------------- */
-
-// mockInsert → used for addProduct
 const mockInsert = jest.fn();
 
-// mockQuery → must return an object with insert()
-// BUT for getProducts, it must return an array
 const mockQuery = jest.fn();
 
-// When Product.query() is called, return an object that contains insert()
 mockQuery.mockImplementation(() => ({
     insert: mockInsert,
 }));
@@ -28,12 +17,9 @@ jest.mock("../models/adminproduct", () => ({
     },
 }));
 
-// After mocking → import controllers
 import { addProduct, getProducts } from "../controllers/adminProductpage";
 
-/* ---------------------------
-   Mock Response Object
----------------------------- */
+
 const mockResponse = () => {
     const res = {} as Response;
     res.status = jest.fn().mockReturnValue(res);
@@ -41,17 +27,12 @@ const mockResponse = () => {
     return res;
 };
 
-/* ---------------------------
-   TEST SUITE
----------------------------- */
+
 describe("Admin Product Controller", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    /* ---------------------------
-       1) ADD PRODUCT → 400
-    ---------------------------- */
     test("should return 400 if required fields are missing", async () => {
         const req = {
             body: {
@@ -72,9 +53,7 @@ describe("Admin Product Controller", () => {
         });
     });
 
-    /* ---------------------------
-       2) ADD PRODUCT → SUCCESS
-    ---------------------------- */
+
     test("should add product successfully", async () => {
         const fakeProduct = {
             id: 1,
@@ -95,7 +74,7 @@ describe("Admin Product Controller", () => {
 
         const res = mockResponse();
 
-        // insert() returns product
+
         mockInsert.mockResolvedValueOnce(fakeProduct);
 
         await addProduct(req, res);
@@ -114,9 +93,7 @@ describe("Admin Product Controller", () => {
         });
     });
 
-    /* ---------------------------
-       3) ADD PRODUCT → ERROR (500)
-    ---------------------------- */
+
     test("should return 500 on addProduct failure", async () => {
         const req = {
             body: {
@@ -140,9 +117,7 @@ describe("Admin Product Controller", () => {
         });
     });
 
-    /* ---------------------------
-       4) GET PRODUCTS → SUCCESS
-    ---------------------------- */
+
     test("should return all products", async () => {
         const fakeProducts = [
             { id: 1, name: "Shirt", price: 200, size: "M" },
@@ -152,7 +127,7 @@ describe("Admin Product Controller", () => {
         const req = {} as Request;
         const res = mockResponse();
 
-        // For getProducts → Product.query() returns array, not insert()
+
         mockQuery.mockResolvedValueOnce(fakeProducts);
 
         await getProducts(req, res);
@@ -161,9 +136,6 @@ describe("Admin Product Controller", () => {
         expect(res.json).toHaveBeenCalledWith(fakeProducts);
     });
 
-    /* ---------------------------
-       5) GET PRODUCTS → ERROR
-    ---------------------------- */
     test("should return 500 when getProducts fails", async () => {
         const req = {} as Request;
         const res = mockResponse();

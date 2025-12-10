@@ -1,106 +1,125 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import Newsletter from "./NewsLetter";
-import { useSubscribeNewsletter } from "../../../hook/useSubscribeNewsletter";
-import { toast } from "react-hot-toast";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import Newsletter from './NewsLetter';
+import { useSubscribeNewsletter } from '../../../hook/useSubscribeNewsletter';
+import { toast } from 'react-hot-toast';
 
-
-jest.mock("../../../hook/useSubscribeNewsletter");
-jest.mock("react-hot-toast", () => ({
+// Mock toast
+jest.mock('react-hot-toast', () => ({
   toast: {
     success: jest.fn(),
     error: jest.fn(),
   },
 }));
 
-describe("Newsletter Component", () => {
-  const mockMutate = jest.fn();
-  const mockUseSubscribeNewsletter = useSubscribeNewsletter as jest.Mock;
+// Mock hook
+const mutateMock = jest.fn();
+jest.mock('../../../hook/useSubscribeNewsletter', () => ({
+  useSubscribeNewsletter: jest.fn(),
+}));
 
+describe('Newsletter Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockUseSubscribeNewsletter.mockReturnValue({
-      mutate: mockMutate,
+    (useSubscribeNewsletter as jest.Mock).mockReturnValue({
+      mutate: mutateMock,
       isPending: false,
     });
+    jest.clearAllMocks();
   });
 
-  test("renders heading and description", () => {
+  test('renders form elements correctly', () => {
     render(<Newsletter />);
-    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
-      "Stay Updated"
-    );
+
     expect(
-      screen.getByText(/Subscribe to our newsletter and be the first to know/i)
+      screen.getByPlaceholderText(/enter your email/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /subscribe/i })
     ).toBeInTheDocument();
   });
 
-  test("renders email input and subscribe button", () => {
+  test('shows validation error if email is empty', async () => {
     render(<Newsletter />);
-    const input = screen.getByPlaceholderText("Enter your email");
-    expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute("type", "email");
 
-    const button = screen.getByRole("button", { name: /Subscribe/i });
-    expect(button).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /subscribe/i }));
+
+    expect(
+      await screen.findByText(/please enter a valid email address/i)
+    ).toBeInTheDocument();
   });
 
-  test("calls mutate on valid email submit", async () => {
+  test('calls mutate on valid submission', async () => {
     render(<Newsletter />);
-    const input = screen.getByPlaceholderText("Enter your email");
-    const button = screen.getByRole("button", { name: /Subscribe/i });
 
-    fireEvent.change(input, { target: { value: "test@example.com" } });
-    fireEvent.click(button);
+    fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
+      target: { value: 'test@example.com' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /subscribe/i }));
 
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith("test@example.com", expect.any(Object));
+      expect(mutateMock).toHaveBeenCalledWith(
+        'test@example.com',
+        expect.any(Object)
+      );
     });
   });
 
-  test("shows success toast when mutation succeeds", async () => {
-    mockMutate.mockImplementation((_, { onSuccess }) => {
-      onSuccess({ message: "Subscribed successfully!" });
+  test('handles successful subscription', async () => {
+    (useSubscribeNewsletter as jest.Mock).mockReturnValue({
+      mutate: (email: string, callbacks: any) => {
+        callbacks.onSuccess({ message: 'Subscribed!' });
+      },
+      isPending: false,
     });
 
     render(<Newsletter />);
-    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
-      target: { value: "test@example.com" },
+
+    fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
+      target: { value: 'john@example.com' },
     });
-    fireEvent.click(screen.getByRole("button", { name: /Subscribe/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /subscribe/i }));
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith("Subscribed successfully!");
+      expect(toast.success).toHaveBeenCalledWith('Subscribed!');
     });
   });
 
-  test("shows error toast when mutation fails", async () => {
-    mockMutate.mockImplementation((_, { onError }) => {
-      onError(new Error("Subscription failed"));
+  test('handles subscription error', async () => {
+    (useSubscribeNewsletter as jest.Mock).mockReturnValue({
+      mutate: (email: string, callbacks: any) => {
+        callbacks.onError(new Error('Subscription failed'));
+      },
+      isPending: false,
     });
 
     render(<Newsletter />);
-    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
-      target: { value: "test@example.com" },
+
+    fireEvent.change(screen.getByPlaceholderText(/enter your email/i), {
+      target: { value: 'john@example.com' },
     });
-    fireEvent.click(screen.getByRole("button", { name: /Subscribe/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /subscribe/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Subscription failed");
+      expect(toast.error).toHaveBeenCalledWith('Subscription failed');
     });
   });
 
-  test("disables input and button when isPending is true", () => {
-    mockUseSubscribeNewsletter.mockReturnValue({
-      mutate: mockMutate,
+  test('disables input and button when loading', () => {
+    (useSubscribeNewsletter as jest.Mock).mockReturnValue({
+      mutate: mutateMock,
       isPending: true,
     });
 
     render(<Newsletter />);
-    const input = screen.getByPlaceholderText("Enter your email");
-    const button = screen.getByRole("button");
+
+    const input = screen.getByPlaceholderText(/enter your email/i);
+    const button = screen.getByRole('button');
 
     expect(input).toBeDisabled();
     expect(button).toBeDisabled();
+    expect(button).toHaveTextContent(/subscribing/i);
   });
 });

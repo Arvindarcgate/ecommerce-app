@@ -25,7 +25,7 @@ const Login: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2>Welcome Back 👋</h2>
+        <h2>Welcome Back</h2>
         <p className={styles.subtitle}>Login to your account</p>
 
         <form onSubmit={handleLogin} className={styles.form}>
