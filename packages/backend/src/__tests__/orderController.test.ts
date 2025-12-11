@@ -1,207 +1,163 @@
-// ============================
-// 🔥 CHAINABLE KNEX MOCK SETUP
-// ============================
-const mockQueryBuilder = {
-    insert: jest.fn().mockReturnThis(),
-    select: jest.fn().mockReturnThis(),
-    leftJoin: jest.fn().mockReturnThis(),
-    orderBy: jest.fn().mockReturnThis(),
-    where: jest.fn().mockReturnThis(),
-    returning: jest.fn().mockReturnThis(),
-};
+import request from 'supertest';
+import express from 'express';
+import { createOrder, getAllOrders } from '../controllers/ordercontroller';
+import { db } from '../db/db';
 
-const mockKnex = jest.fn(() => mockQueryBuilder);
-
-jest.mock("../db/db", () => ({
-    __esModule: true,
-    default: mockKnex,
+jest.mock('../db/db', () => ({
+  db: jest.fn(),
 }));
 
-// Must be AFTER mocks
-import { Request, Response } from "express";
-import { createOrder, getAllOrders } from "../controllers/ordercontroller";
+const app = express();
+app.use(express.json());
 
-// ============================
-// 🔥 MOCK RESPONSE HELPER
-// ============================
-const mockResponse = () => {
-    const res = {} as Response;
-    res.status = jest.fn().mockReturnValue(res);
-    res.json = jest.fn().mockReturnValue(res);
-    return res;
-};
+app.post('/orders', createOrder);
+app.get('/orders', getAllOrders);
 
-// ============================
-// 🔥 TEST SUITE
-// ============================
-describe("Order Controller", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+describe('Order Controller Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return 400 for invalid order body', async () => {
+    const res = await request(app).post('/orders').send({});
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ message: 'Invalid order data' });
+  });
+
+  it('should create order successfully', async () => {
+    const mockInsertOrder = jest.fn().mockResolvedValue([1]);
+    const mockInsertItems = jest.fn().mockResolvedValue([1]);
+
+    (db as any).mockImplementation((table: string) => {
+      if (table === 'orders') return { insert: mockInsertOrder };
+      if (table === 'order_items') return { insert: mockInsertItems };
+      return { insert: jest.fn() };
     });
 
-    // ========================================
-    // 1) INVALID ORDER (400)
-    // ========================================
-    test("should return 400 for invalid order data", async () => {
-        const req = { body: {} } as Request;
-        const res = mockResponse();
+    const res = await request(app)
+      .post('/orders')
+      .send({
+        email: 'test@example.com',
+        items: [
+          {
+            product_id: 1,
+            name: 'Product 1',
+            quantity: 2,
+            price: 100,
+            total: 200,
+          },
+        ],
+        totalAmount: 200,
+      });
 
-        await createOrder(req, res);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('message', ' Order placed successfully');
+    expect(res.body).toHaveProperty('orderId', 1);
+    expect(mockInsertOrder).toHaveBeenCalled();
+    expect(mockInsertItems).toHaveBeenCalled();
+  });
 
-        expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Invalid order data",
-        });
+  it('should return 500 if creating order fails', async () => {
+    const mockInsertOrder = jest.fn().mockRejectedValue(new Error('DB error'));
+
+    (db as any).mockImplementation((table: string) => {
+      if (table === 'orders') return { insert: mockInsertOrder };
+      return { insert: jest.fn() };
     });
 
-    // ========================================
-    // 2) CREATE ORDER SUCCESS
-    // ========================================
-    test("should create an order successfully", async () => {
-        const req = {
-            body: {
-                email: "test@example.com",
-                totalAmount: 1000,
-                items: [
-                    {
-                        product_id: 1,
-                        name: "Shirt",
-                        quantity: 2,
-                        price: 500,
-                        total: 1000,
-                    },
-                ],
-            },
-        } as any;
+    const res = await request(app)
+      .post('/orders')
+      .send({
+        email: 'test@example.com',
+        items: [
+          {
+            product_id: 1,
+            name: 'Product 1',
+            quantity: 1,
+            price: 100,
+            total: 100,
+          },
+        ],
+        totalAmount: 100,
+      });
 
-        const res = mockResponse();
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty(
+      'message',
+      'Server error while placing order'
+    );
+  });
 
-        // Mock order insert returning ID
-        mockQueryBuilder.insert.mockResolvedValueOnce([10]);
+  it('should fetch all orders without filter', async () => {
+    const mockData = [
+      {
+        id: 1,
+        email: 'test@example.com',
+        total_amount: 200,
+        created_at: new Date(),
+        product: 'Product 1',
+        quantity: 2,
+        item_total: 200,
+      },
+    ];
 
-        // Mock item insert
-        mockQueryBuilder.insert.mockResolvedValueOnce({});
+    const chainMock = {
+      leftJoin: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      then: jest.fn((cb) => cb(mockData)),
+    };
 
-        await createOrder(req, res);
+    (db as any).mockReturnValue(chainMock);
 
-        expect(mockKnex).toHaveBeenCalledWith("orders");
-        expect(res.status).toHaveBeenCalledWith(201);
-        expect(res.json).toHaveBeenCalledWith({
-            message: " Order placed successfully",
-            orderId: 10,
-        });
+    const res = await request(app).get('/orders');
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].id).toBe(1);
+    expect(res.body[0].items[0].product).toBe('Product 1');
+  });
+
+  it('should fetch orders filtered by email', async () => {
+    const mockData = [
+      {
+        id: 2,
+        email: 'filter@example.com',
+        total_amount: 100,
+        created_at: new Date(),
+        product: 'Product A',
+        quantity: 1,
+        item_total: 100,
+      },
+    ];
+
+    const chainMock = {
+      leftJoin: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      then: jest.fn((cb) => cb(mockData)),
+    };
+
+    (db as any).mockReturnValue(chainMock);
+
+    const res = await request(app)
+      .get('/orders')
+      .query({ email: 'filter@example.com' });
+
+    expect(res.status).toBe(200);
+    expect(res.body[0].email).toBe('filter@example.com');
+  });
+
+  it('should return 500 when DB fails in getAllOrders', async () => {
+    (db as any).mockImplementation(() => {
+      throw new Error('DB failure');
     });
 
-    // ========================================
-    // 3) CREATE ORDER FAILS (500)
-    // ========================================
-    test("should return 500 if DB throws error", async () => {
-        const req = {
-            body: {
-                email: "x@test.com",
-                totalAmount: 500,
-                items: [{ product_id: 1 }],
-            },
-        } as any;
+    const res = await request(app).get('/orders');
 
-        const res = mockResponse();
-
-        mockQueryBuilder.insert.mockRejectedValueOnce(new Error("DB error"));
-
-        await createOrder(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Server error while placing order",
-            error: "DB error",
-        });
-    });
-
-    // ========================================
-    // 4) GET ALL ORDERS (SUCCESS)
-    // ========================================
-    test("should return all orders", async () => {
-        const req = { query: {} } as any;
-        const res = mockResponse();
-
-        const fakeRows = [
-            {
-                id: 1,
-                email: "user@test.com",
-                total_amount: 999,
-                created_at: "2025-01-01",
-                product: "Shirt",
-                quantity: 1,
-                item_total: 999,
-            },
-        ];
-
-        mockQueryBuilder.orderBy.mockResolvedValueOnce(fakeRows);
-
-        await getAllOrders(req, res);
-
-        expect(res.json).toHaveBeenCalledWith([
-            {
-                id: 1,
-                email: "user@test.com",
-                total_amount: 999,
-                created_at: "2025-01-01",
-                items: [
-                    {
-                        product: "Shirt",
-                        quantity: 1,
-                        item_total: 999,
-                    },
-                ],
-            },
-        ]);
-    });
-
-    // ========================================
-    // 5) FILTER BY EMAIL
-    // ========================================
-    test("should filter orders by email", async () => {
-        const req = { query: { email: "x@test.com" } } as any;
-        const res = mockResponse();
-
-        const rows = [
-            {
-                id: 2,
-                email: "x@test.com",
-                total_amount: 200,
-                created_at: "2025-01-02",
-                product: "Cap",
-                quantity: 1,
-                item_total: 200,
-            },
-        ];
-
-        mockQueryBuilder.where.mockResolvedValueOnce(rows);
-
-        await getAllOrders(req, res);
-
-        expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-            "o.email",
-            "x@test.com"
-        );
-    });
-
-    // ========================================
-    // 6) GET ALL ORDERS FAIL (500)
-    // ========================================
-    test("should return 500 when DB throws error while fetching", async () => {
-        const req = { query: {} } as any;
-        const res = mockResponse();
-
-        mockQueryBuilder.orderBy.mockRejectedValueOnce(
-            new Error("DB fetch error")
-        );
-
-        await getAllOrders(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(500);
-        expect(res.json).toHaveBeenCalledWith({
-            message: "Failed to fetch orders",
-        });
-    });
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('message', 'Failed to fetch orders');
+  });
 });

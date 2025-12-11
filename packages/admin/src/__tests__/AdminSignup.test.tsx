@@ -1,141 +1,180 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-import AdminSignup from "../pages/Authetication/adminsignup";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import AdminSignup from '../pages/Authetication/adminsignup';
 
-// Mock useNavigate
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: () => mockedNavigate,
+jest.mock('../config/env', () => ({
+  API_BASE_URL: 'http://localhost:8000',
 }));
 
-// Mock alert
-global.alert = jest.fn();
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
 
-// Mock fetch
+jest.mock('react-hot-toast', () => ({
+  __esModule: true,
+  default: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+  success: jest.fn(),
+  error: jest.fn(),
+}));
+
 global.fetch = jest.fn();
 
-describe("AdminSignup Component", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+describe('AdminSignup Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
+
+  test('renders signup form correctly', () => {
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Admin Signup')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Name')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Email')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Enter Password')).toBeInTheDocument();
+  });
+
+  test('shows error if fields are empty', async () => {
+    const toast = require('react-hot-toast').default;
+
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
+
+    fireEvent.submit(screen.getByRole('form'));
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Please fill all fields')
+    );
+  });
+
+  test('successful signup stores token and navigates', async () => {
+    const mockToken = 'mock-token';
+
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        token: mockToken,
+      }),
     });
 
-    test("renders Admin Signup title", () => {
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
+    const toast = require('react-hot-toast').default;
 
-        expect(screen.getByText("Admin Signup")).toBeInTheDocument();
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Name'), {
+      target: { value: 'John Doe' },
     });
 
-    test("shows alert if fields are empty", () => {
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
-
-        const form = screen.getByRole("form");
-        fireEvent.submit(form);
-
-        expect(global.alert).toHaveBeenCalledWith("Please fill all fields");
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'admin@example.com' },
     });
 
-    test("updates name, email and password inputs", () => {
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
-
-        const nameInput = screen.getByPlaceholderText("Enter Name");
-        const emailInput = screen.getByPlaceholderText("Enter Email");
-        const passwordInput = screen.getByPlaceholderText("Enter Password");
-
-        fireEvent.change(nameInput, { target: { value: "Admin User" } });
-        fireEvent.change(emailInput, { target: { value: "admin@test.com" } });
-        fireEvent.change(passwordInput, { target: { value: "123456" } });
-
-        expect(nameInput).toHaveValue("Admin User");
-        expect(emailInput).toHaveValue("admin@test.com");
-        expect(passwordInput).toHaveValue("123456");
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: 'password123' },
     });
 
-    test("successful signup navigates to admin login + saves token", async () => {
-        (global.fetch as jest.Mock).mockResolvedValueOnce({
-            ok: true,
-            json: async () => ({ token: "signup-token" }),
-        });
+    fireEvent.submit(screen.getByRole('form'));
 
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith(
+        'Admin Account Created Successfully!'
+      );
+      expect(localStorage.getItem('token')).toBe(mockToken);
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+  });
 
-        fireEvent.change(screen.getByPlaceholderText("Enter Name"), {
-            target: { value: "Admin User" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Email"), {
-            target: { value: "admin@test.com" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Password"), {
-            target: { value: "123456" },
-        });
-
-        const form = screen.getByRole("form");
-        fireEvent.submit(form);
-
-        await waitFor(() => {
-            expect(global.alert).toHaveBeenCalledWith(
-                "Admin Account Created Successfully!"
-            );
-            expect(localStorage.getItem("token")).toBe("signup-token");
-            expect(mockedNavigate).toHaveBeenCalledWith("/admin-login");
-        });
+  test('failed signup shows error message', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Signup failed' }),
     });
 
-    test("shows alert when signup fails", async () => {
-        (global.fetch as jest.Mock).mockResolvedValueOnce({
-            ok: false,
-            json: async () => ({ message: "Signup failed" }),
-        });
+    const toast = require('react-hot-toast').default;
 
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
 
-        fireEvent.change(screen.getByPlaceholderText("Enter Name"), {
-            target: { value: "Admin User" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Email"), {
-            target: { value: "admin@test.com" },
-        });
-        fireEvent.change(screen.getByPlaceholderText("Enter Password"), {
-            target: { value: "123456" },
-        });
-
-        const form = screen.getByRole("form");
-        fireEvent.submit(form);
-
-        await waitFor(() => {
-            expect(global.alert).toHaveBeenCalledWith("Signup failed");
-        });
+    fireEvent.change(screen.getByPlaceholderText('Enter Name'), {
+      target: { value: 'John Doe' },
     });
 
-    test("click on Login Here navigates to /admin-login", () => {
-        render(
-            <MemoryRouter>
-                <AdminSignup />
-            </MemoryRouter>
-        );
-
-        fireEvent.click(screen.getByText("Login Here"));
-        expect(mockedNavigate).toHaveBeenCalledWith("/admin-login");
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'wrong@example.com' },
     });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: 'wrongpass' },
+    });
+
+    fireEvent.submit(screen.getByRole('form'));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith('Signup failed');
+    });
+  });
+
+  test('handles network error gracefully', async () => {
+    (fetch as jest.Mock).mockRejectedValueOnce(new Error('Network Error'));
+
+    const toast = require('react-hot-toast').default;
+
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Name'), {
+      target: { value: 'John Doe' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Email'), {
+      target: { value: 'admin@example.com' },
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Enter Password'), {
+      target: { value: 'password123' },
+    });
+
+    fireEvent.submit(screen.getByRole('form'));
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        'Something went wrong while signing up'
+      )
+    );
+  });
+
+  test('navigates to login screen when link clicked', () => {
+    render(
+      <MemoryRouter>
+        <AdminSignup />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText('Login Here'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/');
+  });
 });

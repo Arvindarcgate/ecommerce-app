@@ -1,15 +1,13 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useSubscribeNewsletter } from "../../../hook/useSubscribeNewsletter";
-import { toast } from "react-hot-toast";
-import Container from "../../../style/component/ui/Container";
-import styles from "./newsletter.module.css";
-import { newsletterSchema } from "../../../schema/newsletterSchema";
-import type { z } from "zod";
-import { Loader } from "lucide-react";
-
-
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSubscribeNewsletter } from '../../../hook/useSubscribeNewsletter';
+import { toast } from 'react-hot-toast';
+import Container from '../../../style/component/ui/Container';
+import styles from './newsletter.module.css';
+import { newsletterSchema } from '../../../schema/newsletterSchema';
+import type { z } from 'zod';
+import { Loader } from 'lucide-react';
 
 type FormData = z.infer<typeof newsletterSchema>;
 
@@ -28,16 +26,14 @@ const Newsletter: React.FC = () => {
   const onSubmit = (data: FormData) => {
     mutate(data.email, {
       onSuccess: (res) => {
-        toast.success(res.message || "Subscribed successfully!");
-        resetField("email");
+        toast.success(res.message || 'Subscribed successfully!');
+        resetField('email');
       },
       onError: (err) => {
         toast.error((err as Error).message);
-
       },
     });
   };
-
 
   return (
     <div className={styles.newsletter}>
@@ -58,7 +54,7 @@ const Newsletter: React.FC = () => {
             type="email"
             placeholder="Enter your email"
             aria-invalid={!!errors.email}
-            {...register("email")}
+            {...register('email')}
             disabled={isPending}
           />
           {errors.email && (
@@ -71,7 +67,7 @@ const Newsletter: React.FC = () => {
             type="submit"
             className={styles.newsbutton}
             disabled={isPending}
-           >
+          >
             {isPending ? (
               <>
                 Subscribing...
@@ -82,10 +78,9 @@ const Newsletter: React.FC = () => {
                 />
               </>
             ) : (
-              "Subscribe"
+              'Subscribe'
             )}
           </button>
-
         </form>
       </Container>
     </div>

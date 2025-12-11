@@ -1,89 +1,120 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import ProductPages from "../pages/productpages";
-import { BrowserRouter } from "react-router-dom";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import ProductPages from '../pages/productpages'; // update path!!
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
-const mockNavigate = jest.fn();
-
-jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: () => mockNavigate,
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
 }));
 
-beforeAll(() => {
-    jest.spyOn(window, "alert").mockImplementation(() => { });
-});
+jest.mock('react-hot-toast', () => ({
+  error: jest.fn(),
+}));
 
-beforeEach(() => {
-    jest.clearAllMocks();
+describe('ProductPages Component', () => {
+  let mockNavigate: jest.Mock;
+
+  beforeEach(() => {
+    mockNavigate = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
     localStorage.clear();
-});
+    jest.clearAllMocks();
+  });
 
-const renderPage = () =>
+  const setup = () =>
     render(
-        <BrowserRouter>
-            <ProductPages />
-        </BrowserRouter>
+      <MemoryRouter>
+        <ProductPages />
+      </MemoryRouter>
     );
 
-const fillForm = () => {
-    fireEvent.change(screen.getByLabelText("Product Name"), {
-        target: { value: "Shirt" },
-    });
-    fireEvent.change(screen.getByLabelText("Product Price"), {
-        target: { value: "200" },
-    });
-    fireEvent.change(screen.getByLabelText("Product Size"), {
-        target: { value: "L" },
-    });
+  test('renders product page', () => {
+    setup();
+    expect(screen.getByTestId('product-page')).toBeInTheDocument();
+    expect(screen.getByText('Add New Product')).toBeInTheDocument();
+  });
 
-    const file = new File(["img"], "photo.png", { type: "image/png" });
+  test('updates input fields', () => {
+    setup();
 
-    fireEvent.change(screen.getByTestId("file-input"), {
-        target: { files: [file] },
-    });
-};
-
-describe("ProductPages", () => {
-    test("shows alert when fields are empty", () => {
-        renderPage();
-
-        fireEvent.submit(
-            screen.getByTestId("product-page").querySelector("form")!
-        );
-
-        expect(window.alert).toHaveBeenCalledWith(
-            "Please fill all fields before submitting."
-        );
+    fireEvent.change(screen.getByLabelText('Product Name'), {
+      target: { value: 'Shirt' },
     });
 
-    test("saves to localStorage and navigates on valid submit", () => {
-        renderPage();
-        fillForm();
-
-        fireEvent.submit(
-            screen.getByTestId("product-page").querySelector("form")!
-        );
-
-        expect(localStorage.getItem("productQueue")).not.toBeNull();
-        expect(mockNavigate).toHaveBeenCalledWith("/getReady");
+    fireEvent.change(screen.getByLabelText('Product Price'), {
+      target: { value: '999' },
     });
 
-    test("catch block runs when localStorage.setItem throws", () => {
-        renderPage();
-        fillForm();
-
-        jest.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-            throw new Error("Storage Error");
-        });
-
-        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
-
-        fireEvent.submit(
-            screen.getByTestId("product-page").querySelector("form")!
-        );
-
-        expect(consoleSpy).toHaveBeenCalled();
-        consoleSpy.mockRestore();
+    fireEvent.change(screen.getByLabelText('Product Size'), {
+      target: { value: 'L' },
     });
+
+    expect(screen.getByLabelText('Product Name')).toHaveValue('Shirt');
+    expect(screen.getByLabelText('Product Price')).toHaveValue(999);
+    expect(screen.getByLabelText('Product Size')).toHaveValue('L');
+  });
+
+  test('shows image preview when file is uploaded', () => {
+    setup();
+
+    const file = new File(['dummy'], 'product.png', { type: 'image/png' });
+
+    fireEvent.change(screen.getByTestId('file-input'), {
+      target: { files: [file] },
+    });
+
+    const img = screen.getByTestId('image-preview');
+
+    expect(img).toBeInTheDocument();
+
+    expect(img).toHaveAttribute('src', 'data:image/png;base64,dummy');
+  });
+
+  test('shows validation toast if fields are empty', () => {
+    setup();
+
+    fireEvent.submit(screen.getByRole('button', { name: 'Preview Product' }));
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'Please fill all fields before submitting.'
+    );
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  test('saves product to localStorage and navigates', () => {
+    setup();
+
+    fireEvent.change(screen.getByLabelText('Product Name'), {
+      target: { value: 'Shirt' },
+    });
+
+    fireEvent.change(screen.getByLabelText('Product Price'), {
+      target: { value: '999' },
+    });
+
+    fireEvent.change(screen.getByLabelText('Product Size'), {
+      target: { value: 'L' },
+    });
+
+    const file = new File(['dummy'], 'product.png', { type: 'image/png' });
+    fireEvent.change(screen.getByTestId('file-input'), {
+      target: { files: [file] },
+    });
+
+    fireEvent.submit(screen.getByRole('button', { name: 'Preview Product' }));
+
+    const stored = JSON.parse(localStorage.getItem('productQueue') || '[]');
+
+    expect(stored.length).toBe(1);
+    expect(stored[0]).toMatchObject({
+      productName: 'Shirt',
+      price: 999,
+      size: 'L',
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith('/getReady');
+  });
 });

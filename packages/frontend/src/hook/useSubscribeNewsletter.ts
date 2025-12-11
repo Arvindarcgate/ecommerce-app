@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_BASE_URL } from '../../../admin/src/config/env';
+import { API_BASE_URL } from '../config/env';
 
 export function useSubscribeNewsletter() {
   const queryClient = useQueryClient();
