@@ -1,0 +1,26 @@
+{
+  "name": "@ecommerce/coupon",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/coupon/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/coupon",
+        "main": "packages/coupon/src/index.ts",
+        "tsConfig": "packages/coupon/tsconfig.lib.json",
+        "assets": ["packages/coupon/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/coupon/jest.config.ts"
+      }
+    }
+  }
+}
