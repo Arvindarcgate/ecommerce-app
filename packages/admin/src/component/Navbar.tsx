@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
         <Link to="/admin/orders" className={styles.link}>
           Order History
         </Link>
-         <Link to="/coupon" className={styles.link}>
+        <Link to="/coupon" className={styles.link}>
           coupon
         </Link>
       </div>

@@ -8,6 +8,7 @@ import path from 'path';
 import adminEditRoutes from './routes/admineditroutes';
 import orderRoutes from './routes/orderroutes';
 import adminauthroutes from './routes/adminauthroutes';
+import couponRoutes from './routes/coupon.routes';
 
 const app = express();
 const PORT: number = 8000;
@@ -31,7 +32,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api', newsletterRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/products', productRoutes);
-app.use("/admin", adminauthroutes);
+app.use('/admin', adminauthroutes);
+app.use('/api', couponRoutes);
 
 app.get('/', (_req: Request, res: Response): void => {
   res.send('Server is running');
@@ -57,4 +59,3 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
-
