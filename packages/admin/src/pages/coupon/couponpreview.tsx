@@ -11,10 +11,10 @@ interface Props {
   onConfirm: (coupon: CouponFormValues) => void;
 }
 
-// Format ISO string -> yyyy-MM-dd for input[type="date"]
+
 const toInputDate = (iso?: string) => {
   if (!iso) return '';
-  return iso.split('T')[0]; // <-- only take date part
+  return iso.split('T')[0]; 
 };
 
 export default function CouponPreview({
@@ -57,8 +57,8 @@ export default function CouponPreview({
         minOrderAmount: Number(coupon.minOrderAmount),
         maxDiscount: Number(coupon.maxDiscount),
         usageLimitPerUser: Number(coupon.usageLimitPerUser),
-        startDate: coupon.startDate, // keep as YYYY-MM-DD
-        endDate: coupon.endDate,     // keep as YYYY-MM-DD
+        startDate: coupon.startDate,
+        endDate: coupon.endDate, 
       };
 
       const res = await fetch(`${API_BASE_URL}/api/admin/coupons`, {
