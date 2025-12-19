@@ -1,6 +1,4 @@
-type RuleResult =
-  | { valid: true }
-  | { valid: false; reason: string };
+type RuleResult = { valid: true } | { valid: false; reason: string };
 
 export function checkExpiry(
   startDate: string,
@@ -9,7 +7,6 @@ export function checkExpiry(
 ): RuleResult {
   const start = new Date(startDate);
   const end = new Date(endDate);
-
 
   start.setHours(0, 0, 0, 0);
   end.setHours(23, 59, 59, 999);

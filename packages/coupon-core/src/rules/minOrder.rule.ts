@@ -1,12 +1,9 @@
-type RuleResult =
-  | { valid: true }
-  | { valid: false; reason: string };
+type RuleResult = { valid: true } | { valid: false; reason: string };
 
 export function checkMinOrder(
   cartAmount: number,
   minOrderAmount?: number
 ): RuleResult {
-  // If no minimum order is defined, rule passes
   if (!minOrderAmount || minOrderAmount <= 0) {
     return { valid: true };
   }

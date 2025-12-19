@@ -8,7 +8,8 @@ import path from 'path';
 import adminEditRoutes from './routes/admineditroutes';
 import orderRoutes from './routes/orderroutes';
 import adminauthroutes from './routes/adminauthroutes';
-import couponRoutes from './routes/coupon.routes';
+import couponRoutes from './routes/admincoupon.routes';
+import precouponRoutes from './routes/precoupon.route';
 
 const app = express();
 const PORT: number = 8000;
@@ -42,6 +43,7 @@ app.get('/', (_req: Request, res: Response): void => {
 app.use('/api/products', adminEditRoutes);
 
 app.use('/api/orders', orderRoutes);
+app.use('/api/coupons', precouponRoutes);
 
 (async () => {
   try {

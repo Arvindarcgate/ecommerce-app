@@ -28,12 +28,10 @@ export function calculateDiscount({
     discountAmount = discountValue;
   }
 
-  // Apply max discount cap
   if (maxDiscount && discountAmount > maxDiscount) {
     discountAmount = maxDiscount;
   }
 
-  // Prevent negative final amount
   if (discountAmount > orderAmount) {
     discountAmount = orderAmount;
   }

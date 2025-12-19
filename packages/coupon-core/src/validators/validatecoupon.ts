@@ -3,8 +3,6 @@ import { checkMinOrder } from '../rules/minOrder.rule';
 import { checkUsage } from '../rules/usage.rule';
 import { calculateDiscount } from '../calculateDiscount/calculatediscount';
 
-
-
 export type Coupon = {
   id: number;
   code: string;
@@ -36,8 +34,6 @@ export type ValidateCouponResult =
       reason: string;
     };
 
-
-
 export function validateCoupon({
   coupon,
   cartAmount,
@@ -52,31 +48,30 @@ export function validateCoupon({
     coupon.end_date,
     currentDate
   );
-  if (!expiryCheck.valid) return expiryCheck;
+  if (!expiryCheck.valid) {
+    return { valid: false, reason: expiryCheck.reason };
+  }
 
-  const minOrderCheck = checkMinOrder(
-    cartAmount,
-    coupon.min_order_amount
-  );
-  if (!minOrderCheck.valid) return minOrderCheck;
+  const minOrderCheck = checkMinOrder(cartAmount, coupon.min_order_amount);
+  if (!minOrderCheck.valid) {
+    return { valid: false, reason: minOrderCheck.reason };
+  }
 
-  const usageCheck = checkUsage(
-    coupon.usage_limit,
-    coupon.usage_used
-  );
-  if (!usageCheck.valid) return usageCheck;
+  const usageCheck = checkUsage(coupon.usage_limit, coupon.usage_used);
+  if (!usageCheck.valid) {
+    return { valid: false, reason: usageCheck.reason };
+  }
 
-  const discountAmount = calculateDiscount({
+  const { discountAmount, finalAmount } = calculateDiscount({
+    orderAmount: cartAmount,
     discountType: coupon.discount_type,
     discountValue: coupon.discount_value,
-    cartAmount,
     maxDiscount: coupon.max_discount,
   });
 
   return {
     valid: true,
     discountAmount,
-    finalAmount: Math.max(cartAmount - discountAmount, 0),
+    finalAmount,
   };
 }
-
