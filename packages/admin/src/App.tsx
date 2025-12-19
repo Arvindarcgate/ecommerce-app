@@ -9,7 +9,8 @@ import AdminProductedit from './pages/adminProductedit';
 import OrderHistory from './pages/orderhistory';
 import AdminProductlaunch from './pages/adminproductlaunch';
 import { Toaster } from 'react-hot-toast';
-import CouponPage from './pages/coupon';
+import CouponPage from './pages/coupon/coupon';
+
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             <Route path="/admin/orders" element={<OrderHistory />} />
             <Route path="/adminproductlaunch" element={< AdminProductlaunch />} />
             <Route path = "/coupon" element = {<CouponPage />} />
+           
           </Routes>
         </div>
       </div>
