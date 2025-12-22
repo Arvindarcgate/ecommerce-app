@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/component/calculateDiscount/calculatediscount.ts","./src/component/calculateDiscount/discount.ts","./src/component/rules/expiry.rule.ts","./src/component/rules/minOrder.rule.ts","./src/component/rules/usage.rule.ts","./src/component/validators/validatecoupon.ts"],"version":"5.9.3"}

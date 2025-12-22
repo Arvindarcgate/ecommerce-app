@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from '../style/pages/cart.module.css';
 import toast from 'react-hot-toast';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface Product {
@@ -31,6 +32,10 @@ const CartPage: React.FC = () => {
   });
 
   const [user, setUser] = useState<{ email: string } | null>(null);
+
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
 
   useEffect(() => {
     try {
@@ -82,6 +87,44 @@ const CartPage: React.FC = () => {
     0
   );
 
+  const handleApplyCoupon = async () => {
+    if (!couponCode) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+
+    if (couponApplied) {
+      toast.error('Coupon already applied');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/coupons/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponCode,
+          cartAmount: total,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        toast.error(data.reason || 'Invalid coupon');
+        return;
+      }
+
+      setDiscount(data.discountAmount);
+      setCouponApplied(true);
+      toast.success('Coupon applied successfully 🎉');
+    } catch (error) {
+      toast.error('Failed to apply coupon');
+    }
+  };
+
+  const finalAmount = Math.max(total - discount, 0);
+
   const handleFinalOrder = async () => {
     if (cartItems.length === 0) {
       toast.error('Your cart is empty!');
@@ -98,6 +141,9 @@ const CartPage: React.FC = () => {
         total: item.price * item.quantity,
       })),
       totalAmount: total,
+      discount: discount,
+      finalAmount: finalAmount,
+      couponCode: couponApplied ? couponCode : null,
     };
 
     try {
@@ -106,7 +152,9 @@ const CartPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
       });
+
       const data = await res.json();
+
       if (res.ok) {
         toast.success(`Order placed! ID: ${data.orderId}`);
         setCartItems([]);
@@ -168,7 +216,6 @@ const CartPage: React.FC = () => {
 
                   <div className={styles.quantityRow}>
                     <label>Qty:</label>
-
                     <input
                       type="number"
                       min="1"
@@ -186,7 +233,6 @@ const CartPage: React.FC = () => {
                 </div>
 
                 <button
-                  data-testid="remove-btn"
                   onClick={() => handleRemove(item.id)}
                   className={styles.removeBtn}
                 >
@@ -198,6 +244,34 @@ const CartPage: React.FC = () => {
 
           <div className={styles.summary}>
             <h2>Total Amount: ₹{total}</h2>
+
+            <div className={styles.couponBox}>
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                disabled={couponApplied}
+                className={styles.couponInput}
+              />
+
+              <button
+                onClick={handleApplyCoupon}
+                disabled={couponApplied}
+                className={styles.couponBtn}
+              >
+                Apply
+              </button>
+            </div>
+
+            {discount > 0 && (
+              <>
+                <p>
+                  Discount: <strong>- ₹{discount}</strong>
+                </p>
+                <h2>Final Amount: ₹{finalAmount}</h2>
+              </>
+            )}
 
             <button onClick={handleFinalOrder} className={styles.finalBtn}>
               Final Order

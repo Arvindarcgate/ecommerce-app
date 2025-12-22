@@ -1,6 +1,9 @@
 import { Router } from 'express';
-import { createCoupon ,  getAllCoupons,
-  deleteCoupon, } from '../controllers/coupon.controller';
+import {
+  createCoupon,
+  getAllCoupons,
+  deleteCoupon,
+} from '../controllers/coupon.controller';
 
 const router = Router();
 
