@@ -5,7 +5,7 @@
     "target": "ES2022",
     "outDir": "../../dist/packages/backend",
     "rootDir": "src",
-    "types": ["node"]
+    "types": ["node" , "jest"]
   },
   "include": ["src/**/*.ts"]
 }

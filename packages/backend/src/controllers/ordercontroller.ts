@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { db } from '../db/db';
+import { applyCoupon } from '../service/coupon.service'; 
+
 
 export const createOrder = async (req: Request, res: Response) => {
   const { email, items, totalAmount } = req.body;
@@ -38,6 +40,9 @@ export const createOrder = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
 
 export const getAllOrders = async (req: Request, res: Response) => {
   try {

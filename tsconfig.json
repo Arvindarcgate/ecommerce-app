@@ -11,5 +11,5 @@
   "include": [
     "**/*.ts",
     "packages/admin/src/lib/admin.tsx"
-  ]
+, "packages/backend/jest.config.cjs"  ]
 }

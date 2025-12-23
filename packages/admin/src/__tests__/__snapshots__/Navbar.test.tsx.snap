@@ -55,6 +55,13 @@ exports[`Navbar Component matches snapshot 1`] = `
       >
         Order History
       </a>
+      <a
+        class="link"
+        data-discover="true"
+        href="/coupon"
+      >
+        coupon
+      </a>
     </div>
   </nav>
 </div>
