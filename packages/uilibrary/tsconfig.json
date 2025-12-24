@@ -2,20 +2,21 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
+
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+
     "composite": true,
     "outDir": "../../dist/out-tsc",
     "rootDir": "./src",
+
     "allowJs": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "types": [
-      "vite/client"
-    ]
+
+    "types": ["vite/client"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
     "node_modules",
     "dist",

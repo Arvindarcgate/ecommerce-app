@@ -16,7 +16,7 @@ type ApplyDiscountResult = {
   couponCode: string;
   discountAmount: number;
   finalAmount: number;
-};
+};  
 
 export function applyDiscount({
   orderAmount,
