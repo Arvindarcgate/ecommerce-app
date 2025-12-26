@@ -1,19 +1,40 @@
 import { Request, Response } from 'express';
 import { db } from '../db/db';
-import { applyCoupon } from '../service/coupon.service'; 
-
+import { applyCoupon } from '../service/coupon.service';
 
 export const createOrder = async (req: Request, res: Response) => {
-  const { email, items, totalAmount } = req.body;
+  const {
+    email,
+    items,
+    totalAmount,
+    discountAmount = 0,
+    finalAmount,
+    couponCode = null,
+  } = req.body;
 
   if (!email || !items || items.length === 0) {
     return res.status(400).json({ message: 'Invalid order data' });
+  }
+
+  if (finalAmount == null) {
+    return res.status(400).json({ message: 'Final amount is required' });
+  }
+
+  const calculatedFinal = Number(totalAmount) - Number(discountAmount);
+
+  if (Number(finalAmount.toFixed(2)) !== Number(calculatedFinal.toFixed(2))) {
+    return res.status(400).json({
+      message: 'Invalid discount calculation',
+    });
   }
 
   try {
     const [orderId] = await db('orders').insert({
       email,
       total_amount: totalAmount,
+      discount_amount: discountAmount,
+      final_amount: finalAmount,
+      coupon_code: couponCode,
       created_at: new Date(),
     });
 
@@ -29,20 +50,17 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     res.status(201).json({
-      message: ' Order placed successfully',
+      message: 'Order placed successfully',
       orderId,
     });
   } catch (error: any) {
     console.error('Error creating order:', error);
     res.status(500).json({
       message: 'Server error while placing order',
-      error: error.message,
+      error: error.sqlMessage || error.message,
     });
   }
 };
-
-
-
 
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
@@ -54,6 +72,9 @@ export const getAllOrders = async (req: Request, res: Response) => {
         'o.id',
         'o.email',
         'o.total_amount',
+        'o.discount_amount',
+        'o.final_amount',
+        'o.coupon_code',
         'o.created_at',
         'oi.name as product',
         'oi.quantity',
@@ -62,7 +83,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
       .orderBy('o.created_at', 'desc');
 
     if (email && email.length > 0) {
-      query = query.where('o.email', '=', email);
+      query = query.where('o.email', email);
     }
 
     const rows = await query;
@@ -75,15 +96,21 @@ export const getAllOrders = async (req: Request, res: Response) => {
           id: row.id,
           email: row.email,
           total_amount: row.total_amount,
+          discount_amount: row.discount_amount,
+          final_amount: row.final_amount,
+          coupon_code: row.coupon_code,
           created_at: row.created_at,
           items: [],
         };
       }
-      ordersMap[row.id].items.push({
-        product: row.product,
-        quantity: row.quantity,
-        item_total: row.item_total,
-      });
+
+      if (row.product) {
+        ordersMap[row.id].items.push({
+          product: row.product,
+          quantity: row.quantity,
+          item_total: row.item_total,
+        });
+      }
     }
 
     res.json(Object.values(ordersMap));

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./couponform.module.css";
+import styles from './couponform.module.css'
 
 export type DiscountType = "PERCENTAGE" | "FLAT";
 
@@ -27,23 +27,24 @@ export const CouponForm: React.FC<CouponFormProps> = ({
   const [form, setForm] = useState<CouponFormValues>({
     code: initialValues.code || "",
     discountType: initialValues.discountType || "PERCENTAGE",
-    discountValue: initialValues.discountValue ?? 0,
-    minOrderAmount: initialValues.minOrderAmount ?? 0,
-    maxDiscount: initialValues.maxDiscount ?? 0,
+    discountValue: initialValues.discountValue || 0,
+    minOrderAmount: initialValues.minOrderAmount || 0,
+    maxDiscount: initialValues.maxDiscount || 0,
     startDate: initialValues.startDate || "",
     endDate: initialValues.endDate || "",
-    usageLimitPerUser: initialValues.usageLimitPerUser ?? 1,
+    usageLimitPerUser: initialValues.usageLimitPerUser || 1,
     status: initialValues.status || "ACTIVE",
   });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "number" ? Number(value) : value,
+      [name]:
+        e.target.type === "number" ? Number(value) : value,
     }));
   };
 
@@ -52,155 +53,129 @@ export const CouponForm: React.FC<CouponFormProps> = ({
     onSubmit(form);
   };
 
-  return (
-    <form onSubmit={handleSubmit} className={styles.container}>
-      <h2 className={styles.heading}>Create Coupon</h2>
+return (
+  <form onSubmit={handleSubmit} className={styles.container}>
+    <h2 className={styles.heading}>Create Coupon</h2>
 
+    <div className={styles.field}>
+      <label className={styles.label}>Coupon Code</label>
+      <input
+        className={styles.input}
+        type="text"
+        name="code"
+        value={form.code}
+        onChange={handleChange}
+        required
+      />
+    </div>
+
+    <div className={styles.field}>
+      <label className={styles.label}>Discount Type</label>
+      <select
+        className={styles.select}
+        name="discountType"
+        value={form.discountType}
+        onChange={handleChange}
+      >
+        <option value="PERCENTAGE">Percentage (%)</option>
+        <option value="FLAT">Flat Amount</option>
+      </select>
+    </div>
+
+    <div className={styles.row}>
       <div className={styles.field}>
-        <label htmlFor="code" className={styles.label}>
-          Coupon Code
-        </label>
+        <label className={styles.label}>Discount Value</label>
         <input
-          id="code"
           className={styles.input}
-          type="text"
-          name="code"
-          value={form.code}
+          type="number"
+          name="discountValue"
+          value={form.discountValue}
           onChange={handleChange}
           required
         />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="discountType" className={styles.label}>
-          Discount Type
-        </label>
-        <select
-          id="discountType"
-          className={styles.select}
-          name="discountType"
-          value={form.discountType}
+        <label className={styles.label}>Minimum Order</label>
+        <input
+          className={styles.input}
+          type="number"
+          name="minOrderAmount"
+          value={form.minOrderAmount}
           onChange={handleChange}
-        >
-          <option value="PERCENTAGE">Percentage (%)</option>
-          <option value="FLAT">Flat Amount</option>
-        </select>
+        />
       </div>
+    </div>
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="discountValue" className={styles.label}>
-            Discount Value
-          </label>
-          <input
-            id="discountValue"
-            className={styles.input}
-            type="number"
-            name="discountValue"
-            value={form.discountValue}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="minOrderAmount" className={styles.label}>
-            Minimum Order
-          </label>
-          <input
-            id="minOrderAmount"
-            className={styles.input}
-            type="number"
-            name="minOrderAmount"
-            value={form.minOrderAmount}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="maxDiscount" className={styles.label}>
-            Max Discount
-          </label>
-          <input
-            id="maxDiscount"
-            className={styles.input}
-            type="number"
-            name="maxDiscount"
-            value={form.maxDiscount}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="usageLimitPerUser" className={styles.label}>
-            Usage / User
-          </label>
-          <input
-            id="usageLimitPerUser"
-            className={styles.input}
-            type="number"
-            name="usageLimitPerUser"
-            value={form.usageLimitPerUser}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="startDate" className={styles.label}>
-            Start Date
-          </label>
-          <input
-            id="startDate"
-            className={styles.input}
-            type="date"
-            name="startDate"
-            value={form.startDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="endDate" className={styles.label}>
-            End Date
-          </label>
-          <input
-            id="endDate"
-            className={styles.input}
-            type="date"
-            name="endDate"
-            value={form.endDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
+    <div className={styles.row}>
+      <div className={styles.field}>
+        <label className={styles.label}>Max Discount</label>
+        <input
+          className={styles.input}
+          type="number"
+          name="maxDiscount"
+          value={form.maxDiscount}
+          onChange={handleChange}
+        />
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="status" className={styles.label}>
-          Status
-        </label>
-        <select
-          id="status"
-          className={styles.select}
-          name="status"
-          value={form.status}
+        <label className={styles.label}>Usage / User</label>
+        <input
+          className={styles.input}
+          type="number"
+          name="usageLimitPerUser"
+          value={form.usageLimitPerUser}
           onChange={handleChange}
-        >
-          <option value="ACTIVE">Active</option>
-          <option value="INACTIVE">Inactive</option>
-        </select>
+        />
+      </div>
+    </div>
+
+    <div className={styles.row}>
+      <div className={styles.field}>
+        <label className={styles.label}>Start Date</label>
+        <input
+          className={styles.input}
+          type="date"
+          name="startDate"
+          value={form.startDate}
+          onChange={handleChange}
+          required
+        />
       </div>
 
-      <button type="submit" className={styles.button}>
-        Save Coupon
-      </button>
-    </form>
-  );
+      <div className={styles.field}>
+        <label className={styles.label}>End Date</label>
+        <input
+          className={styles.input}
+          type="date"
+          name="endDate"
+          value={form.endDate}
+          onChange={handleChange}
+          required
+        />
+      </div>
+    </div>
+
+    <div className={styles.field}>
+      <label className={styles.label}>Status</label>
+      <select
+        className={styles.select}
+        name="status"
+        value={form.status}
+        onChange={handleChange}
+      >
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
+      </select>
+    </div>
+
+    <button type="submit" className={styles.button}>
+      Save Coupon
+    </button>
+  </form>
+);
+
 };
 
 export default CouponForm;

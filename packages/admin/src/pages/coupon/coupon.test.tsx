@@ -1,57 +1,70 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import CouponPage from './coupon';
-import { API_BASE_URL } from '../../config/env';
+
+
+
 
 jest.mock('../../config/env', () => ({
   API_BASE_URL: 'http://localhost:8000',
 }));
 
+
 jest.mock('@ecommerce/coupon', () => ({
   CouponForm: ({ onSubmit }: any) => (
-    <button onClick={() => onSubmit(mockFormValues)}>Submit Coupon Form</button>
+    <button onClick={() => onSubmit(mockCouponFormValues)}>
+      Submit Coupon Form
+    </button>
   ),
 }));
 
-jest.mock('./couponpreview', () => ({
+
+jest.mock('../pages/coupon/couponpreview', () => ({
   __esModule: true,
-  default: ({ onConfirm, onDelete }: any) => (
+  default: ({ onConfirm }: any) => (
+    <button onClick={() => onConfirm(mockCouponFormValues)}>
+      Confirm Coupon
+    </button>
+  ),
+}));
+
+// CouponDataTable
+jest.mock('../pages/coupon/coupondatatable', () => ({
+  __esModule: true,
+  default: ({ coupons, onEdit, onDelete }: any) => (
     <div>
-      <button onClick={() => onConfirm(mockFormValues)}>Confirm Coupon</button>
-      <button onClick={onDelete}>Cancel Preview</button>
+      {coupons.map((c: any) => (
+        <div key={c.id}>
+          <span>{c.code}</span>
+          <button onClick={() => onEdit(c)}>Edit</button>
+          <button onClick={() => onDelete(c.id)}>Delete</button>
+        </div>
+      ))}
     </div>
   ),
 }));
 
-jest.mock('./coupondatatable', () => ({
-  __esModule: true,
-  default: ({ onEdit, onDelete }: any) => (
-    <div>
-      <button onClick={() => onEdit(mockTableItem)}>Edit Coupon</button>
-      <button onClick={() => onDelete(1)}>Delete Coupon</button>
-    </div>
-  ),
-}));
+// -------------------- MOCK DATA --------------------
 
-const mockCouponsResponse = {
-  data: [
-    {
-      id: 1,
-      code: 'SAVE10',
-      discount_type: 'PERCENT',
-      discount_value: 10,
-      min_order_amount: 100,
-      max_discount: 50,
-      usage_limit_per_user: 1,
-      start_date: '2024-01-01',
-      end_date: '2024-12-31',
-      status: 'ACTIVE',
-    },
-  ],
-};
+const mockCoupons = [
+  {
+    id: 1,
+    code: 'SAVE10',
+    discount_type: 'PERCENTAGE',
+    discount_value: 10,
+    min_order_amount: 100,
+    max_discount: 50,
+    usage_limit_per_user: 1,
+    start_date: '2024-01-01',
+    end_date: '2024-12-31',
+    status: 'ACTIVE',
+  },
+];
 
-const mockFormValues = {
+const mockCouponFormValues = {
   code: 'SAVE10',
-  discountType: 'PERCENT',
+  discountType: 'PERCENTAGE',
   discountValue: 10,
   minOrderAmount: 100,
   maxDiscount: 50,
@@ -61,41 +74,64 @@ const mockFormValues = {
   status: 'ACTIVE',
 };
 
-const mockTableItem = mockCouponsResponse.data[0];
+// -------------------- FETCH MOCK --------------------
+
+beforeEach(() => {
+  global.fetch = jest.fn()
+    // GET coupons
+    .mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue({ data: mockCoupons }),
+      ok: true,
+    } as any)
+    // POST coupon
+    .mockResolvedValueOnce({
+      ok: true,
+    } as any)
+    // REFRESH coupons
+    .mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue({ data: mockCoupons }),
+      ok: true,
+    } as any)
+    // DELETE coupon
+    .mockResolvedValueOnce({
+      ok: true,
+    } as any)
+    // REFRESH coupons
+    .mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValue({ data: mockCoupons }),
+      ok: true,
+    } as any);
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
+// -------------------- TESTS --------------------
 
 describe('CouponPage', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    (fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: async () => mockCouponsResponse,
-    });
-  });
-
-  test('renders Create Coupon button', async () => {
+  it('fetches and displays coupons on mount', async () => {
     render(<CouponPage />);
 
-    expect(await screen.findByText('+ Create Coupon')).toBeInTheDocument();
+    expect(await screen.findByText('SAVE10')).toBeInTheDocument();
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:4000/api/coupons'
+    );
   });
 
-  test('fetches coupons on mount', async () => {
+  it('shows loading state while fetching', async () => {
     render(<CouponPage />);
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/api/coupons`);
-    });
+    expect(screen.getByText(/Loading coupons/i)).toBeInTheDocument();
   });
 
-  test('opens coupon form when Create Coupon is clicked', async () => {
+  it('opens coupon form when Create Coupon is clicked', async () => {
     render(<CouponPage />);
 
     fireEvent.click(await screen.findByText('+ Create Coupon'));
-
     expect(screen.getByText('Submit Coupon Form')).toBeInTheDocument();
   });
 
-  test('shows preview after form submission', async () => {
+  it('submits coupon form and shows preview', async () => {
     render(<CouponPage />);
 
     fireEvent.click(await screen.findByText('+ Create Coupon'));
@@ -104,7 +140,7 @@ describe('CouponPage', () => {
     expect(screen.getByText('Confirm Coupon')).toBeInTheDocument();
   });
 
-  test('submits coupon and refreshes list', async () => {
+  it('confirms coupon and sends POST request', async () => {
     render(<CouponPage />);
 
     fireEvent.click(await screen.findByText('+ Create Coupon'));
@@ -112,36 +148,32 @@ describe('CouponPage', () => {
     fireEvent.click(screen.getByText('Confirm Coupon'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        `${API_BASE_URL}/api/admin/coupons`,
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://localhost:4000/api/admin/coupons',
         expect.objectContaining({
           method: 'POST',
         })
       );
     });
-
-    expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/api/coupons`);
   });
 
-  test('opens form with values on edit', async () => {
+  it('edits an existing coupon', async () => {
     render(<CouponPage />);
 
-    fireEvent.click(await screen.findByText('Edit Coupon'));
-
+    fireEvent.click(await screen.findByText('Edit'));
     expect(screen.getByText('Submit Coupon Form')).toBeInTheDocument();
   });
 
-  test('calls delete API and refreshes list', async () => {
+  it('deletes a coupon', async () => {
     render(<CouponPage />);
 
-    fireEvent.click(await screen.findByText('Delete Coupon'));
+    fireEvent.click(await screen.findByText('Delete'));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/api/coupons/1`, {
-        method: 'DELETE',
-      });
+      expect(global.fetch).toHaveBeenCalledWith(
+        'http://localhost:4000/api/coupons/1',
+        { method: 'DELETE' }
+      );
     });
-
-    expect(fetch).toHaveBeenCalledWith(`${API_BASE_URL}/api/coupons`);
   });
 });

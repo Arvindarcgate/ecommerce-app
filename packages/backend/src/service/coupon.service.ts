@@ -1,3 +1,4 @@
+// applyCoupon.service.ts
 import Coupon from '../models/coupon';
 import { validateCoupon } from '@ecommerce/coupon-core';
 
