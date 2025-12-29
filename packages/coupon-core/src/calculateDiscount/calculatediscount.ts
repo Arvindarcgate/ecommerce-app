@@ -31,7 +31,7 @@ export function calculateDiscount({
   if (maxDiscount && discountAmount > maxDiscount) {
     discountAmount = maxDiscount;
   }
-
+    
   if (discountAmount > orderAmount) {
     discountAmount = orderAmount;
   }

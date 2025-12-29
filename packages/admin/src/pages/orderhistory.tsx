@@ -12,6 +12,9 @@ interface Order {
   id: number;
   email: string;
   total_amount: string;
+  discount_amount: string;
+  final_amount: string;
+  coupon_code: string | null;
   created_at: string;
   items: OrderItem[];
 }
@@ -34,11 +37,12 @@ const OrderHistory: React.FC = () => {
         : `${API_BASE_URL}/api/orders/all`;
 
       const res = await fetch(url);
-      const data = await res.json();
+      const data: Order[] = await res.json();
 
       const sortedData = data.sort(
-        (a: any, b: any) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        (a, b) =>
+          new Date(b.created_at).getTime() -
+          new Date(a.created_at).getTime()
       );
 
       setOrders(sortedData);
@@ -64,7 +68,7 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>🧾 Order History</h2>
+      <h2 className={styles.heading}>Order History</h2>
 
       <div className={styles.filterSection}>
         <input
@@ -86,26 +90,50 @@ const OrderHistory: React.FC = () => {
               <th>ID</th>
               <th>User Email</th>
               <th>Products</th>
-              <th>Total Amount</th>
+              <th>Amount Details</th>
               <th>Order Time</th>
             </tr>
           </thead>
+
           <tbody>
             {paginatedOrders.length > 0 ? (
               paginatedOrders.map((order) => (
                 <tr key={order.id}>
                   <td>{order.id}</td>
                   <td>{order.email}</td>
+
                   <td>
                     {order.items.map((item, i) => (
                       <div key={i} className={styles.productItem}>
-                        🛍️ <strong>{item.product}</strong> × {item.quantity} = ₹
+                         <strong>{item.product}</strong> × {item.quantity} = ₹
                         {item.item_total}
                       </div>
                     ))}
                   </td>
-                  <td>₹{order.total_amount}</td>
-                  <td>{new Date(order.created_at).toLocaleString()}</td>
+
+                  <td>
+                    <div>Subtotal: ₹{order.total_amount}</div>
+
+                    {Number(order.discount_amount) > 0 && (
+                      <div className={styles.discount}>
+                        Discount: −₹{order.discount_amount}
+                      </div>
+                    )}
+
+                    <div className={styles.finalAmount}>
+                      <strong>Final: ₹{order.final_amount}</strong>
+                    </div>
+
+                    {order.coupon_code && (
+                      <div className={styles.coupon}>
+                        Coupon: <strong>{order.coupon_code}</strong>
+                      </div>
+                    )}
+                  </td>
+
+                  <td>
+                    {new Date(order.created_at).toLocaleString()}
+                  </td>
                 </tr>
               ))
             ) : (

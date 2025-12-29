@@ -27,6 +27,7 @@ describe('Navbar Component', () => {
     expect(screen.getByText('Product Launch')).toBeInTheDocument();
     expect(screen.getByText('Product edit')).toBeInTheDocument();
     expect(screen.getByText('Order History')).toBeInTheDocument();
+     expect(screen.getByText('coupon')).toBeInTheDocument();
   });
 
   test('each link has correct route', () => {
@@ -59,6 +60,11 @@ describe('Navbar Component', () => {
     expect(screen.getByText('Order History').closest('a')).toHaveAttribute(
       'href',
       '/admin/orders'
+    );
+
+      expect(screen.getByText('coupon').closest('a')).toHaveAttribute(
+      'href',
+      '/coupon'
     );
   });
 

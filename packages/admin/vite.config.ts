@@ -5,12 +5,12 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    // alias: {
-    //   "@ecommerce/coupon": path.resolve(
-    //     __dirname,
-    //     "../../packages/coupon/src/index.ts"
-    //   ),
-    // },
+    alias: {
+      "@ecommerce/coupon": path.resolve(
+        __dirname,
+        "../../packages/coupon/src/index.ts"
+      ),
+    },
   },
   server: {
     port: 3001,

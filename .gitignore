@@ -50,7 +50,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 
-todo.*
+
 todo/
 **/todo
 **/todo.*
