@@ -3,8 +3,8 @@
    "target": "esnext",
     "module": "esnext",
     "lib": ["DOM", "ESNext"],
-    "jsx": "react-jsx",           // <-- Add this
-    "types": ["jest", "node"],    // <-- Include jest types
+    "jsx": "react-jsx",          
+    "types": ["jest", "node"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,5 +12,4 @@
   },
   "include": ["src"]
 }
-
   
