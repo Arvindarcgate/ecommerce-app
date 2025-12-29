@@ -3,12 +3,10 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import OrderHistory from '../pages/orderhistory';
 
-// ✅ Mock CSS module
 jest.mock('../pages/orderhistory.module.css', () => ({}));
 
-// ✅ Mock env config
 jest.mock('../config/env', () => ({
-  API_BASE_URL: 'http://localhost:4000',
+  API_BASE_URL: 'http://localhost:8000',
 }));
 
 const mockOrders = [
@@ -47,7 +45,6 @@ const mockOrders = [
 ];
 
 beforeEach(() => {
-  // ✅ Correct way to mock fetch (NO spyOn)
   global.fetch = jest.fn().mockResolvedValue({
     json: jest.fn().mockResolvedValue(mockOrders),
   } as any);
@@ -63,7 +60,7 @@ describe('OrderHistory Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:4000/api/orders/all'
+        'http://localhost:8000/api/orders/all'
       );
     });
 
@@ -84,7 +81,7 @@ describe('OrderHistory Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:4000/api/orders/all?email=user1@test.com'
+        'http://localhost:8000/api/orders/all?email=user1@test.com'
       );
     });
   });

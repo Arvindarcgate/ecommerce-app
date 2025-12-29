@@ -2,7 +2,6 @@ import { applyCoupon } from './applycoupon.service';
 import Coupon from '../models/coupon';
 import { validateCoupon } from '@ecommerce/coupon-core';
 
-// Mock external dependencies
 jest.mock('../models/coupon');
 jest.mock('@ecommerce/coupon-core');
 
@@ -18,14 +17,14 @@ describe('applyCoupon service', () => {
     start_date: new Date('2025-01-01'),
     end_date: new Date('2025-12-31'),
     status: 'ACTIVE',
-  };
+  }; 
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should return invalid when coupon is not found', async () => {
-    // Mock DB query chain
+
     (Coupon.query as jest.Mock).mockReturnValue({
       where: jest.fn().mockReturnThis(),
       first: jest.fn().mockResolvedValue(null),

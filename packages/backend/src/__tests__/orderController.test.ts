@@ -18,10 +18,6 @@ describe('Order Controller', () => {
     jest.clearAllMocks();
   });
 
-  /* =========================
-      CREATE ORDER TESTS
-  ========================== */
-
   describe('createOrder', () => {
     it('should create order successfully', async () => {
       const req = {
@@ -109,7 +105,7 @@ describe('Order Controller', () => {
           email: 'test@example.com',
           totalAmount: 100,
           discountAmount: 10,
-          finalAmount: 95, // ❌ incorrect
+          finalAmount: 95,
           items: [{ product_id: 1 }],
         },
       } as Request;
@@ -151,10 +147,6 @@ describe('Order Controller', () => {
       );
     });
   });
-
-  /* =========================
-      GET ALL ORDERS TESTS
-  ========================== */
 
   describe('getAllOrders', () => {
     it('should return orders with items', async () => {

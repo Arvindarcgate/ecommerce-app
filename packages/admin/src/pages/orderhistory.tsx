@@ -68,7 +68,7 @@ const OrderHistory: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>🧾 Order History</h2>
+      <h2 className={styles.heading}>Order History</h2>
 
       <div className={styles.filterSection}>
         <input
@@ -105,7 +105,7 @@ const OrderHistory: React.FC = () => {
                   <td>
                     {order.items.map((item, i) => (
                       <div key={i} className={styles.productItem}>
-                        🛍️ <strong>{item.product}</strong> × {item.quantity} = ₹
+                         <strong>{item.product}</strong> × {item.quantity} = ₹
                         {item.item_total}
                       </div>
                     ))}
@@ -126,7 +126,7 @@ const OrderHistory: React.FC = () => {
 
                     {order.coupon_code && (
                       <div className={styles.coupon}>
-                        🎟️ Coupon: <strong>{order.coupon_code}</strong>
+                        Coupon: <strong>{order.coupon_code}</strong>
                       </div>
                     )}
                   </td>

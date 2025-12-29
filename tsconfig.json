@@ -10,6 +10,8 @@
   },
   "include": [
     "**/*.ts",
-    "packages/admin/src/lib/admin.tsx"
-, "packages/backend/jest.config.cjs"  ]
+    "packages/admin/src/lib/admin.tsx",
+    "packages/backend/jest.config.cjs",
+    "packages/coupon/jest.config.js"
+  ]
 }

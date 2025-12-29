@@ -100,7 +100,6 @@ export default function CouponDataTable({
   );
 }
 
-/* ---------- Utils ---------- */
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString();
 }
