@@ -1,5 +1,4 @@
-import type { Knex } from "knex";
-
+import type { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable('coupons', (table) => {
@@ -7,9 +6,7 @@ export async function up(knex: Knex): Promise<void> {
 
     table.string('code').notNullable().unique();
 
-    table
-      .enu('discount_type', ['PERCENTAGE', 'FLAT'])
-      .notNullable();
+    table.enu('discount_type', ['PERCENTAGE', 'FLAT']).notNullable();
 
     table.decimal('discount_value', 10, 2).notNullable();
     table.decimal('min_order_amount', 10, 2).notNullable();
@@ -27,9 +24,8 @@ export async function up(knex: Knex): Promise<void> {
 
     table.timestamps(true, true);
   });
-};
+}
 
 export async function down(knex: Knex): Promise<void> {
   return knex.schema.dropTable('coupons');
-};
-
+}

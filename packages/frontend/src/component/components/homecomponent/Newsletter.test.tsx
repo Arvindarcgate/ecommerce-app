@@ -4,7 +4,6 @@ import Newsletter from './NewsLetter';
 import { useSubscribeNewsletter } from '../../../hook/useSubscribeNewsletter';
 import { toast } from 'react-hot-toast';
 
-// Mock toast
 jest.mock('react-hot-toast', () => ({
   toast: {
     success: jest.fn(),
@@ -12,7 +11,6 @@ jest.mock('react-hot-toast', () => ({
   },
 }));
 
-// Mock hook
 const mutateMock = jest.fn();
 jest.mock('../../../hook/useSubscribeNewsletter', () => ({
   useSubscribeNewsletter: jest.fn(),
