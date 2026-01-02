@@ -1,0 +1,16 @@
+{
+  "name": "coupon-core",
+  "sourceRoot": "packages/coupon-core/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/coupon-core/dist",
+        "main": "packages/coupon-core/src/index.ts",
+        "tsConfig": "packages/coupon-core/tsconfig.json"
+      }
+    }
+  }
+}
