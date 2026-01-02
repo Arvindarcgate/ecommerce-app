@@ -11,10 +11,9 @@ interface Props {
   onConfirm: (coupon: CouponFormValues) => void;
 }
 
-
 const toInputDate = (iso?: string) => {
   if (!iso) return '';
-  return iso.split('T')[0]; 
+  return iso.split('T')[0];
 };
 
 export default function CouponPreview({
@@ -58,7 +57,7 @@ export default function CouponPreview({
         maxDiscount: Number(coupon.maxDiscount),
         usageLimitPerUser: Number(coupon.usageLimitPerUser),
         startDate: coupon.startDate,
-        endDate: coupon.endDate, 
+        endDate: coupon.endDate,
       };
 
       const res = await fetch(`${API_BASE_URL}/api/admin/coupons`, {
